@@ -1,0 +1,22 @@
+f1-store
+├── src
+│   ├── components
+│   │   ├── Header.jsx
+│   │   ├── Footer.jsx
+│   │   ├── Navbar.jsx
+│   │   └── ProductCard.jsx
+│   ├── pages
+│   │   ├── Home.jsx
+│   │   ├── Shop.jsx
+│   │   ├── ProductDetails.jsx
+│   │   ├── Cart.jsx
+│   │   └── About.jsx
+│   ├── routes
+│   │   └── index.jsx
+│   ├── styles
+│   │   └── main.css
+│   ├── utils
+│   │   └── helpers.js
+│   └── App.jsx
+├── package.json
+└── README.md
