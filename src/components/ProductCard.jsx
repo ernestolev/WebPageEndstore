@@ -11,7 +11,7 @@ const ProductCard = ({ product }) => {
       </div>
       <div className={styles.content}>
         <h3 className={styles.title}>{product.title}</h3>
-        <span className={styles.price}>${product.price}</span>
+        <span className={styles.price}>S/.{product.price}</span>
         <button className={styles.addToCart}>
           Agregar al carrito
         </button>

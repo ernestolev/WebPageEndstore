@@ -10,7 +10,7 @@ const ProductDetails = () => {
     id: id,
     title: 'Formula 1 Racing Car',
     description: 'High-speed racing car used in Formula 1 competitions.',
-    price: '$250,000',
+    price: 'S/.250,000',
     images: [
       'image1.jpg',
       'image2.jpg',
