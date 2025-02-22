@@ -1,0 +1,193 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 600px;
+    height: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.closeButton {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.closeButton:hover {
+    background: none;
+    box-shadow: none;
+    transform: none;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.formoverf {
+    height: 70vh;
+    overflow-y: auto;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 20px;
+}
+
+.formGroup label {
+    font-weight: 500;
+    color: #374151;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.formGroup textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.sizesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.sizeInput {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sizeInput label {
+    font-weight: 600;
+    text-align: center;
+}
+
+.sizeInput input {
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.error {
+    background-color: #fee2e2;
+    color: #dc2626;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-top: 1rem;
+}
+
+.submitButton {
+    background-color: #e10600;
+    color: white;
+    padding: 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+    background-color: #cc0500;
+}
+
+.submitButton:disabled {
+    background-color: #e5e7eb;
+    cursor: not-allowed;
+}
+.imageUploadContainer {
+    margin-top: 1rem;
+}
+
+.imageInput {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px dashed #e5e7eb;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.imageInput:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.uploadProgress {
+    margin-top: 0.5rem;
+    color: #4b5563;
+    font-size: 0.875rem;
+}
+
+.imageHelp {
+    display: block;
+    margin-top: 0.5rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.inputDisabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.sizeInput input:disabled {
+    background-color: #f5f5f5;
+    border-color: #ddd;
+    cursor: not-allowed;
+}
+
+@media (max-width: 468px) {
+    .modal {
+        padding: 1rem;
+    }
+
+    .form {
+        gap: 2rem;
+    }
+
+    .sizesGrid {
+        gap: 2rem;
+    }
+
+    .sizeInput {
+        gap: 1rem;
+    }
+}

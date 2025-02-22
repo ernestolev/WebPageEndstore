@@ -1,0 +1,161 @@
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 24px;
+    height: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+  }
+  
+  .line {
+    width: 100%;
+    height: 2px;
+    background-color: #121212;
+    transition: all 0.3s ease;
+    transform-origin: 1px;
+  }
+  
+  .active .line:nth-child(1) {
+    transform: rotate(45deg);
+  }
+  
+  .active .line:nth-child(2) {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  
+  .active .line:nth-child(3) {
+    transform: rotate(-45deg);
+  }
+  
+  @media (max-width: 768px) {
+    .hamburger {
+      display: flex;
+    }
+  }
+
+  @media (max-width: 768px) {
+  .navbar {
+    height: 60px;
+    top: 0;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .mobileLeft {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .logoImg {
+    height: 30px;
+  }
+
+  .leftSection {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 80%;
+    max-width: 300px;
+    height: 100vh;
+    background: white;
+    padding: 1rem;
+    transition: left 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    z-index: 1001;
+  }
+
+  .mobileMenuOpen {
+    left: 0;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .navLinks {
+    flex-direction: column;
+    gap: 0;
+    margin-top: 2rem;
+  }
+
+  .navLink {
+    padding: 1rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    width: 100%;
+  }
+
+  .dropdown .dropdownContent {
+    position: static;
+    box-shadow: none;
+    display: none;
+    padding-left: 1rem;
+  }
+
+  .dropdown:hover .dropdownContent {
+    display: block;
+  }
+
+  .mobileHeader {
+    padding: 1rem 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .mobileUser {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .mobileAuthButton {
+    width: 100%;
+    padding: 0.75rem;
+    background: #e10600;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+
+  .mobileFooter {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .mobileLink {
+    display: block;
+    padding: 0.75rem 0;
+    color: #121212;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+
+  .rightSection {
+    gap: 1rem;
+  }
+
+  .userButton {
+    display: none;
+  }
+
+  .cartLink {
+    font-size: 1.1rem;
+  }
+}

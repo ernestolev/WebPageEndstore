@@ -1,13 +1,17 @@
 .card {
-    background: #ffffff;
-    border-radius: 12px;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 8px;
     overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+    background: white;
+    height: 100%;
 }
 
+
 .card:hover {
-    transform: translateY(-8px);
+    transform: none;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 }
 
@@ -15,6 +19,13 @@
     position: relative;
     padding-top: 100%;
     background-color: #f8f8f8;
+    overflow: hidden;
+}
+
+.imageWrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
     overflow: hidden;
 }
 
@@ -80,17 +91,174 @@
     background-color: #e10600;
 }
 
+.productCard {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+
+.productCard:hover {
+    transform: none;
+}
+
+.imageContainer {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    overflow: hidden;
+    background: #f5f5f6;
+}
+.productImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+.outOfStock .productImage {
+    filter: grayscale(100%);
+}
+
+.outOfStockOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-weight: 600;
+    font-size: 1.2rem;
+    z-index: 2;
+  }
+
+.outOfStockLabel {
+    display: block;
+    color: #ef4444;
+    font-weight: 500;
+    margin-top: 0.5rem;
+}
+
+.outOfStockOverlay span {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 0.5rem 1rem;
+    color: rgb(255, 0, 0);
+    border-radius: 4px;
+    letter-spacing: 1px;
+  }
+
+  .productImage.outOfStock {
+    filter: grayscale(100%);
+  }
+
+.productInfo {
+    padding: 1rem;
+}
+
+.productName {
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0;
+    color: #1f2937;
+}
+
+.productCategory {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0.25rem 0;
+}
+
+.productPrice {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #e10600;
+    margin: 0.5rem 0 0;
+}
+
+.secondImage {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.secondImage.show {
+    opacity: 1;
+}
+
+.discountBadge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #e10600;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    z-index: 1;
+}
+
+.priceContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.originalPrice {
+    color: #666;
+    text-decoration: line-through;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.discountedPrice {
+    color: #e10600;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.price {
+    color: #111;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.imageContainer {
+    position: relative;
+}
+
+.productImage.visible {
+    opacity: 1;
+}
+
+/* Add this to your existing .outOfStock style */
+.outOfStock.visible {
+    filter: grayscale(100%);
+}
 
 
 @media (max-width: 768px) {
     .content {
         padding: 1rem;
     }
-    
+
     .title {
         font-size: 1rem;
     }
-    
+
     .price {
         font-size: 1.1rem;
     }

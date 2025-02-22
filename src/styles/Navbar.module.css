@@ -3,7 +3,8 @@
     position: fixed;
     width: 100%;
     height: 80px;
-    top: 30px; /* Updated to account for announcement bar */
+    top: 30px;
+    /* Updated to account for announcement bar */
     z-index: 1000;
     font-family: 'Montserrat';
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -85,6 +86,7 @@
     font-family: 'Montserrat';
     cursor: pointer;
     color: #121212;
+
 }
 
 .currencyDropdown {
@@ -117,6 +119,7 @@
 
 .currencyDropdown button:hover {
     background-color: #f5f5f5;
+
 }
 
 .dropdown {
@@ -176,16 +179,154 @@
     font-weight: bold;
 }
 
-@media (max-width: 1024px) {
+.userButton {
+    background: none;
+    border: none;
+    color: #121212;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.userButton:hover {
+    transform: none;
+    background: none;
+    box-shadow: none;
+}
+
+.userMenu {
+    position: relative;
+}
+
+.userName {
+    margin-left: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.userDropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    z-index: 1000;
+    margin-top: 0.5rem;
+}
+
+.dropdownItem {
+    display: block;
+    padding: 0.8rem 1rem;
+    color: #121212;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
+.dropdownItem:hover {
+    background-color: #f8f8f8;
+    color: #e10600;
+}
+
+@media (max-width: 768px) {
     .container {
         padding: 0 1rem;
     }
 
     .leftSection {
-        gap: 2rem;
+        gap: 1rem;
     }
 
     .navLinks {
-        gap: 1.5rem;
+        display: none;
+    }
+
+    .rightSection {
+        gap: 1rem;
+    }
+
+    .currencySelector {
+        display: none;
+    }
+
+    .userButton {
+        font-size: 1.5rem;
+    }
+
+    .userDropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        display: none;
+        min-width: 200px;
+    }
+
+    .userMenu:hover .userDropdown {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .userName {
+        display: none;
+    }
+
+    .cartLink {
+        font-size: 1.5rem;
+    }
+
+    .cartCount {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .navLinks {
+        display: none;
+    }
+
+    .currencySelector {
+        display: none;
+    }
+
+    .userButton {
+        font-size: 1.5rem;
+    }
+
+    .userDropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        display: none;
+        min-width: 200px;
+    }
+
+    .userMenu:hover .userDropdown {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .userName {
+        display: none;
+    }
+
+    .cartLink {
+        font-size: 1.5rem;
+    }
+
+    .cartCount {
+        font-size: 0.9rem;
     }
 }

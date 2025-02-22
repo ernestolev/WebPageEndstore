@@ -1,85 +1,85 @@
-.testimonialSlider {
+.testimonialWrapper {
     width: 100%;
+    max-width: 100%;
     overflow: hidden;
-    position: relative;
     padding: 2rem 0;
+    position: relative;
   }
   
-  .sliderTrack {
+  .testimonialTrack {
     display: flex;
-    transition: transform 0.5s ease-in-out;
+    gap: 2rem;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    cursor: grab;
+    user-select: none;
+  }
+  
+  .testimonialTrack:active {
+    cursor: grabbing;
   }
   
   .testimonialCard {
-    min-width: calc(33.33% - 2rem);
-    margin: 0 1rem;
+    flex: 0 0 300px;
+    min-width: 300px;
+    padding: 1rem;
+  }
+  
+  .testimonialContent {
+    background: white;
     padding: 2rem;
-    background: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    transition: transform 0.2s ease;
+  }
+  
+  .testimonialContent:hover {
+    transform: translateY(-5px);
   }
   
   .testimonialText {
     font-size: 1rem;
     line-height: 1.6;
-    color: #666666;
+    color: #333;
     margin-bottom: 1.5rem;
-    font-style: italic;
   }
   
   .authorName {
     font-size: 1.1rem;
-    color: #121212;
-    font-weight: 600;
-    margin-bottom: 1rem;
+    color: #111;
+    margin-bottom: 0.5rem;
   }
   
   .stars {
     color: #e10600;
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
   
-  .stars i {
-    margin: 0 2px;
+  @media (max-width: 768px) {
+    .testimonialCard {
+      flex: 0 0 280px;
+      min-width: 280px;
+    }
+  
+    .testimonialContent {
+      padding: 1.5rem;
+    }
   }
   
-  .sliderDots {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 2rem;
-  }
+  @media (max-width: 480px) {
+    .testimonialCard {
+      flex: 0 0 260px;
+      min-width: 260px;
+    }
   
-  .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #e5e5e5;
-    border: none;
-    cursor: pointer;
-    padding: 0px;
-    transition: all 0.3s ease;
-  }
+    .testimonialContent {
+      padding: 1rem;
+    }
   
-  .dot.active {
-    background: #e10600;
-    transform: scale(1.2);
-  }
+    .testimonialText {
+      font-size: 0.9rem;
+    }
 
-  
-  
-  @media (max-width: 968px) {
-    .testimonialCard {
-      min-width: calc(50% - 2rem);
-    }
-  }
-  
-  @media (max-width: 568px) {
-    .testimonialCard {
-      min-width: calc(100% - 2rem);
-    }
   }

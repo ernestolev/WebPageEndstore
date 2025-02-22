@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from '../styles/TestimonialSlider.module.css';
 
 const testimonials = [
@@ -29,47 +29,79 @@ const testimonials = [
 ];
 
 const TestimonialSlider = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prevIndex) => 
-        prevIndex === testimonials.length - 3 ? 0 : prevIndex + 1
-      );
-    }, 5000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  return (
-    <div className={styles.testimonialSlider}>
-      <div 
-        className={styles.sliderTrack}
-        style={{ transform: `translateX(-${currentIndex * 33.33}%)` }}
-      >
-        {testimonials.map((testimonial) => (
-          <div key={testimonial.id} className={styles.testimonialCard}>
-            <p className={styles.testimonialText}>{testimonial.text}</p>
-            <h4 className={styles.authorName}>{testimonial.author}</h4>
-            <div className={styles.stars}>
-              {[...Array(testimonial.stars)].map((_, i) => (
-                <i key={i} className="fas fa-star"></i>
-              ))}
+    const sliderRef = useRef(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+  
+    useEffect(() => {
+      const slider = sliderRef.current;
+      if (!slider) return;
+  
+      const scroll = () => {
+        if (isDragging) return;
+        slider.scrollLeft += 1;
+        if (slider.scrollLeft >= slider.scrollWidth / 2) {
+          slider.scrollLeft = 0;
+        }
+      };
+  
+      const intervalId = setInterval(scroll, 30);
+      return () => clearInterval(intervalId);
+    }, [isDragging]);
+  
+    const handleMouseDown = (e) => {
+      setIsDragging(true);
+      setStartX(e.pageX - sliderRef.current.offsetLeft);
+      setScrollLeft(sliderRef.current.scrollLeft);
+    };
+  
+    const handleMouseLeave = () => {
+      setIsDragging(false);
+    };
+  
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+  
+    const handleMouseMove = (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const x = e.pageX - sliderRef.current.offsetLeft;
+      const walk = (x - startX) * 2;
+      sliderRef.current.scrollLeft = scrollLeft - walk;
+    };
+  
+    return (
+      <div className={styles.testimonialWrapper}>
+        <div
+          className={styles.testimonialTrack}
+          ref={sliderRef}
+          onMouseDown={handleMouseDown}
+          onMouseLeave={handleMouseLeave}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+        >
+          {/* Double the testimonials for infinite effect */}
+          {[...testimonials, ...testimonials].map((testimonial, index) => (
+            <div
+              key={`${testimonial.id}-${index}`}
+              className={styles.testimonialCard}
+            >
+              <div className={styles.testimonialContent}>
+                <p className={styles.testimonialText}>{testimonial.text}</p>
+                <h4 className={styles.authorName}>{testimonial.author}</h4>
+                <div className={styles.stars}>
+                  {[...Array(testimonial.stars)].map((_, i) => (
+                    <i key={i} className="fas fa-star"></i>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-      <div className={styles.sliderDots}>
-        {[...Array(testimonials.length - 2)].map((_, idx) => (
-          <button
-            key={idx}
-            className={`${styles.dot} ${currentIndex === idx ? styles.active : ''}`}
-            onClick={() => setCurrentIndex(idx)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default TestimonialSlider;
+    );
+  };
+  
+  export default TestimonialSlider;

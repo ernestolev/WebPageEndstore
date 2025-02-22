@@ -1,0 +1,228 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.modal {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 550px;
+    position: relative;
+    animation: modalEnter 0.3s ease;
+}
+
+.closeButton {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #666666;
+    transition: color 0.3s ease;
+}
+
+.closeButton:hover {
+    color: #e10600;
+    background: none;
+    box-shadow: none;
+    transform: none;
+}
+
+.modalContent {
+    padding: 2rem;
+}
+
+.tabs {
+    margin-top: 40px;
+    display: flex;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.tab {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    background: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #666666;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tab.active {
+    color: #e10600;
+    border-bottom-color: #e10600;
+}
+
+.tab:hover{
+    background: none;
+    transform: none;
+    box-shadow: none;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.formGroup label {
+    font-size: 0.9rem;
+    color: #666666;
+}
+
+.formGroup input {
+    padding: 0.8rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.formGroup input:focus {
+    outline: none;
+    border-color: #e10600;
+}
+
+.forgotPassword {
+    text-align: right;
+}
+
+.forgotPassword a {
+    color: #666666;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.forgotPassword a:hover {
+    color: #e10600;
+}
+
+.submitButton {
+    background: #121212;
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submitButton:hover {
+    background: #e10600;
+}
+
+.socialLogin {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.socialLogin p {
+    color: #666666;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.socialLogin p::before,
+.socialLogin p::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 30%;
+    height: 1px;
+    background: #e5e5e5;
+}
+
+.socialLogin p::before {
+    left: 0;
+}
+
+.socialLogin p::after {
+    right: 0;
+}
+
+.socialButtons {
+    display: flex;
+    gap: 1rem;
+}
+
+.socialButtons button {
+    flex: 1;
+    padding: 0.8rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    background: white;
+    display: flex;
+    color: #121212;
+
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.socialButtons button:hover {
+    background: #f8f8f8;
+}
+
+.terms {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #666666;
+}
+
+.error {
+    background-color: #fee2e2;
+    color: #dc2626;
+    padding: 1rem;
+    border-radius: 6px;
+    margin: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .submitButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  .socialButtons button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+@keyframes modalEnter {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

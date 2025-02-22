@@ -1,42 +1,160 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import AnnouncementBar from '../components/AnnouncementBar';
 import SlideBar from '../components/SlideBar';
 import styles from '../styles/Home.module.css';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
 import modelimg from '../assets/imgs/img-1.png';
 import imgejemplo1 from '../assets/imgs/img-ejemplo1.png';
 import TestimonialSlider from '../components/TestimonialSlider';
+import LoadingSpinner from '../components/LoadingSpinner';
+import { collection, getDocs, query, where } from 'firebase/firestore'; import { db } from '../Firebase';
+import sumercol from '../assets/imgs/Summercollect.png';
+import racingcol from '../assets/imgs/racingcollection.png';
+import streetcol from '../assets/imgs/streetcolect.png';
+
+import videoq from '../assets/video/vid-quiality.mov';
+import imgq from '../assets/imgs/qualityimg.png';
 
 const Home = () => {
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [hoveredCategory, setHoveredCategory] = useState(null);
+  const [products, setProducts] = useState([]); // Add this if you need it
+  const [categoryProducts, setCategoryProducts] = useState({});
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
+  const [saleProducts, setSaleProducts] = useState([]);
 
-  const [activeCategory, setActiveCategory] = useState('jackets');
+  useEffect(() => {
+    const fetchSaleProducts = async () => {
+      try {
+        const querySnapshot = await getDocs(
+          query(
+            collection(db, 'Productos'),
+            where('discount', '>', 0)
+          )
+        );
+        const products = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setSaleProducts(products);
+      } catch (error) {
+        console.error('Error fetching sale products:', error);
+      }
+    };
 
-  const categoryProducts = {
-    jackets: [
-      { id: 1, name: 'Racing Jacket Black', image: imgejemplo1 },
-      { id: 2, name: 'F1 Team Jacket', image: imgejemplo1 },
-      { id: 3, name: 'Speed Master Jacket', image: imgejemplo1 },
-      { id: 4, name: 'Pro Racing Jacket', image: imgejemplo1 },
-      { id: 5, name: 'Track Day Jacket', image: imgejemplo1 },
-      { id: 6, name: 'Circuit Jacket', image: imgejemplo1 },
-    ],
-    hoodies: [
-      { id: 1, name: 'Racing Hoodie', image: imgejemplo1 },
-      { id: 2, name: 'F1 Team Hoodie', image: imgejemplo1 },
-      { id: 3, name: 'Speed Hoodie', image: imgejemplo1 },
-      // Add more hoodies...
-    ],
-    polos: [
-      { id: 1, name: 'Racing Polo', image: imgejemplo1 },
-      { id: 2, name: 'F1 Team Polo', image: imgejemplo1 },
-      { id: 3, name: 'Speed Polo', image: imgejemplo1 },
-      // Add more polos...
-    ]
-  };
+    fetchSaleProducts();
+  }, []);
 
+
+  useEffect(() => {
+    if (categories.length > 0 && !activeCategory) {
+      setActiveCategory(categories[0].name.toLowerCase());
+    }
+  }, [categories]);
+
+
+  useEffect(() => {
+    const fetchSaleProducts = async () => {
+      try {
+        const querySnapshot = await getDocs(
+          query(
+            collection(db, 'Productos'),
+            where('discount', '>', 0)
+          )
+        );
+        const products = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          console.log('Product data:', data); // Add this log
+          return {
+            id: doc.id,
+            ...data,
+            images: Array.isArray(data.images) ? data.images : [] // Add this validation
+          };
+        });
+        setSaleProducts(products);
+        console.log('Sale products:', products); // Add this log
+      } catch (error) {
+        console.error('Error fetching sale products:', error);
+      }
+    };
+
+    fetchSaleProducts();
+  }, []);
+
+  useEffect(() => {
+    if (activeCategory && categories.length > 0) {
+      const fetchProductsByCategory = async () => {
+        setLoadingProducts(true);
+        try {
+          // Find the exact category name from categories array
+          const categoryObj = categories.find(
+            cat => cat.name.toLowerCase() === activeCategory
+          );
+
+          if (categoryObj) {
+            const querySnapshot = await getDocs(
+              query(
+                collection(db, 'Productos'),
+                where('category', '==', categoryObj.name) // Use exact category name
+              )
+            );
+
+            const products = querySnapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            }));
+
+            setCategoryProducts(prev => ({
+              ...prev,
+              [activeCategory]: products
+            }));
+          }
+        } catch (error) {
+          console.error('Error fetching products:', error);
+        } finally {
+          setLoadingProducts(false);
+        }
+      };
+
+      if (!categoryProducts[activeCategory]) {
+        fetchProductsByCategory();
+      }
+    }
+  }, [activeCategory, categories]);
+  useEffect(() => {
+    // Loading timer
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    // Fetch categories
+    const fetchCategories = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'Categorias'));
+        const categoriesData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+
+    // Cleanup function
+    return () => clearTimeout(timer);
+  }, []); // Single useEffect for initial loading
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   const featuredProducts = [
     {
@@ -121,27 +239,6 @@ const Home = () => {
     }
   ];
 
-  const categories = [
-    {
-      id: 1,
-      name: 'Jackets',
-      image: imgejemplo1,
-      link: '/shop/jackets'
-    },
-    {
-      id: 2,
-      name: 'Hoodies',
-      image: imgejemplo1,
-      link: '/shop/hoodies'
-    },
-    {
-      id: 3,
-      name: 'Polos',
-      image: imgejemplo1,
-      link: '/shop/polos'
-    }
-  ];
-
 
   return (
     <>
@@ -157,7 +254,7 @@ const Home = () => {
               Descubre nuestras exclusivas colecciones basadas en inspiraciones de carros y tematicas F1.
               Hoodies, Jackets, Camisetas y más.
             </p>
-            <button className={styles.shopNow}>Explorar</button>
+            <Link to="/catalogo" className={styles.shopNow}>Explorar</Link>
           </div>
           <div className={styles.heroRight}>
             <div className={styles.imageWrapper}>
@@ -171,9 +268,27 @@ const Home = () => {
             <h2 className={styles.sectionTitle}>Nuestra Top Collection</h2>
             <div className={styles.categoriesGrid}>
               {categories.map(category => (
-                <Link to={category.link} key={category.id} className={styles.categoryCard}>
+                <Link
+                  to={`/shop/${category.name.toLowerCase()}`}
+                  key={category.id}
+                  className={styles.categoryCard}
+                  onMouseEnter={() => setHoveredCategory(category.id)}
+                  onMouseLeave={() => setHoveredCategory(null)}
+                >
                   <div className={styles.categoryImageContainer}>
-                    <img src={category.image} alt={category.name} className={styles.categoryImage} />
+                    <img
+                      src={category.images[0]}
+                      alt={category.name}
+                      className={`${styles.categoryImage} ${styles.primaryImage}`}
+                    />
+                    {category.images[1] && (
+                      <img
+                        src={category.images[1]}
+                        alt={category.name}
+                        className={`${styles.categoryImage} ${styles.secondaryImage} ${hoveredCategory === category.id ? styles.show : ''
+                          }`}
+                      />
+                    )}
                   </div>
                   <h3 className={styles.categoryName}>{category.name}</h3>
                 </Link>
@@ -185,7 +300,7 @@ const Home = () => {
           <div className={styles.container}>
             <div className={styles.gridGallery}>
               <div className={styles.mainImage}>
-                <img src={imgejemplo1} alt="Racing Collection" />
+                <img src={racingcol} alt="Racing Collection" />
                 <div className={styles.overlay}>
                   <h3>Racing Collection</h3>
                   <Link to="/shop/racing" className={styles.linkButton}>Ver más</Link>
@@ -193,14 +308,14 @@ const Home = () => {
               </div>
               <div className={styles.secondaryImages}>
                 <div className={styles.topImage}>
-                  <img src={imgejemplo1} alt="Summer Collection" />
+                  <img src={sumercol} alt="Summer Collection" />
                   <div className={styles.overlay}>
                     <h3>Summer Collection</h3>
                     <Link to="/shop/summer" className={styles.linkButton}>Ver más</Link>
                   </div>
                 </div>
                 <div className={styles.bottomImage}>
-                  <img src={imgejemplo1} alt="Street Collection" />
+                  <img src={streetcol} alt="Street Collection" />
                   <div className={styles.overlay}>
                     <h3>Street Collection</h3>
                     <Link to="/shop/street" className={styles.linkButton}>Ver más</Link>
@@ -214,66 +329,109 @@ const Home = () => {
           <div className={styles.container}>
             <div className={styles.saleHeader}>
               <h2 className={styles.saleTitle}>Ofertas Flash</h2>
-              <p className={styles.saleSubtitle}>20% en todos estos productos hoy!</p>
+              <p className={styles.saleSubtitle}>¡Productos con descuento!</p>
             </div>
             <div className={styles.saleGrid}>
-              {featuredProducts.map(product => (
-                <div key={product.id} className={styles.saleCard}>
-                  <div className={styles.cardTop}>
-                    <div className={styles.imageContainer}>
-                      <img src={product.image} alt={product.title} />
-                      {product.inStock ? (
-                        <span className={styles.stockBadge}>En stock</span>
-                      ) : (
-                        <span className={styles.stockBadge}>Agotado</span>
-                      )}
-                    </div>
-                    <div className={styles.colorOptions}>
-                      {product.colors.map((color, index) => (
+              {saleProducts.length > 0 ? (
+                saleProducts.map(product => {
+                  const discountedPrice = product.price * (1 - product.discount / 100);
+                  return (
+                    <div key={product.id} className={styles.saleCard}>
+                      <Link to={`/product/${product.id}`} className={styles.saleCard}>
+                        <div className={styles.cardTop}>
+                          <div className={styles.imageContainer}>
+                            {product.images && product.images.length > 0 ? (
+                              <img
+                                src={product.images[0]}
+                                alt={product.name}
+                                onError={(e) => {
+                                  console.error('Image load error:', e);
+                                  e.target.src = 'fallback-image-url'; // Add a fallback image
+                                }}
+                              />
+                            ) : (
+                              <div className={styles.noImage}>
+                                <i className="fas fa-image"></i>
+                              </div>
+                            )}
+                            <span className={styles.discountBadge}>
+                              -{product.discount}%
+                            </span>
+                            <span className={`${styles.stockBadge} ${product.stock > 0 ? styles.inStock : styles.outStock
+                              }`}>
+                              {product.stock > 0 ? 'En stock' : 'Agotado'}
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                      <div className={styles.cardBottom}>
+                        <div className={styles.productInfo}>
+                          <span className={styles.category}>{product.category}</span>
+                          <h3 className={styles.productTitle}>{product.name}</h3>
+                          <div className={styles.priceContainer}>
+                            <span className={styles.currentPrice}>
+                              S/. {discountedPrice.toFixed(2)}
+                            </span>
+                            <span className={styles.oldPrice}>
+                              S/. {product.price.toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
                         <button
-                          key={index}
-                          className={styles.colorCircle}
-                          style={{ backgroundColor: color }}
-                          aria-label={`Color ${color}`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <div className={styles.cardBottom}>
-                    <div className={styles.productInfo}>
-                      <span className={styles.category}>{product.category}</span>
-                      <h3 className={styles.productTitle}>{product.title}</h3>
-                      <div className={styles.priceContainer}>
-                        <span className={styles.currentPrice}>S/.{product.price}</span>
-                        <span className={styles.oldPrice}>S/.{product.oldPrice}</span>
+                          className={styles.addToCartBtn}
+                          disabled={product.stock === 0}
+                        >
+                          {product.stock > 0 ? 'Añadir al carrito' : 'Agotado'}
+                        </button>
                       </div>
                     </div>
-                    <button className={styles.addToCartBtn}>
-                      Añadir al carrito
-                    </button>
-                  </div>
+                  );
+                })
+              ) : (
+                <div className={styles.noSaleProducts}>
+                  No hay productos en oferta en este momento
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </section>
         <section className={styles.qualitySection}>
           <div className={styles.qualityContainer}>
             <div className={styles.mediaContainer}>
-              <div className={styles.mediaSlider}>
-                <img
-                  src={imgejemplo1}
-                  className={styles.mediaElement}
-                />
-                <div className={styles.sliderArrows}>
-                  <button className={styles.arrowButton}>
-                    <i className="fas fa-chevron-left"></i>
-                  </button>
-                  <button className={styles.arrowButton}>
-                    <i className="fas fa-chevron-right"></i>
-                  </button>
-                </div>
+              <button
+                className={`${styles.mediaArrow} ${styles.leftArrow}`}
+                onClick={() => setShowVideo(!showVideo)}
+                aria-label="Previous media"
+              >
+                <i className="fas fa-chevron-left"></i>
+              </button>
+
+              <div className={styles.mediaContent}>
+                {showVideo ? (
+                  <video
+                    src={videoq}
+                    className={styles.qualityVideo}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
+                ) : (
+                  <img
+                    src={imgq}
+                    alt="Quality"
+                    className={styles.qualityImage}
+                  />
+                )}
               </div>
+
+              <button
+                className={`${styles.mediaArrow} ${styles.rightArrow}`}
+                onClick={() => setShowVideo(!showVideo)}
+                aria-label="Next media"
+              >
+                <i className="fas fa-chevron-right"></i>
+              </button>
             </div>
             <div className={styles.qualityContent}>
               <h2 className={styles.qualityTitle}>Calidad Incomparable</h2>
@@ -295,8 +453,15 @@ const Home = () => {
             <h2 className={styles.browseTitle}>Comprar por categoría</h2>
             <div className={styles.browseContent}>
               <div className={styles.categoryMenu}>
-                <div className={styles.categoryImage}>
-                  <img src={imgejemplo1} alt="Category Featured" />
+                <div className={styles.categorieImage}>
+                  {categories.length > 0 && activeCategory && (
+                    <img
+                      src={categories.find(cat =>
+                        cat.name.toLowerCase() === activeCategory
+                      )?.images[0]}
+                      alt="Category Featured"
+                    />
+                  )}
                 </div>
                 <div className={styles.categoryLinks}>
                   {categories.map(category => (
@@ -313,13 +478,27 @@ const Home = () => {
                 </div>
               </div>
               <div className={styles.productsGrid}>
-                {categoryProducts[activeCategory].map(product => (
-                  <Link to={`/product/${product.id}`} key={product.id} className={styles.productCard}>
-                    <div className={styles.productImage}>
-                      <img src={product.image} alt={product.name} />
-                    </div>
-                  </Link>
-                ))}
+                {loadingProducts ? (
+                  <div className={styles.loadingState}>
+                    <LoadingSpinner />
+                  </div>
+                ) : categoryProducts[activeCategory]?.length > 0 ? (
+                  categoryProducts[activeCategory].map(product => (
+                    <Link
+                      to={`/product/${product.id}`}
+                      key={product.id}
+                      className={styles.productCard}
+                    >
+                      <div className={styles.productImage}>
+                        <img src={product.images[0]} alt={product.name} />
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <div className={styles.emptyState}>
+                    No se encontraron productos en esta categoría
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -390,7 +569,6 @@ const Home = () => {
             </div>
           </div>
         </section>
-        <Footer />
       </div>
     </>
   );

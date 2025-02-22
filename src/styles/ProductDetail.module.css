@@ -1,0 +1,531 @@
+.productDetail {
+    max-width: 1200px;
+    margin: 130px auto 0;
+    padding: 0 2rem;
+}
+
+.breadcrumb {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    color: #666;
+}
+
+.breadcrumb a {
+    color: #333;
+    text-decoration: none;
+}
+
+.productContent {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem; /* Increased gap to accommodate magnifier */
+    position: relative;
+}
+
+.imageSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.mainImage {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    background: #f8f9fa;
+}
+.mainImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.thumbnails {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+}
+
+.thumbnails img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.thumbnails img:hover {
+    opacity: 0.8;
+}
+
+.thumbnails img.active {
+    border: 2px solid #e10600;
+}
+
+.productInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.category {
+    color: #666;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 1px;
+}
+
+.productInfo h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: #111;
+}
+
+.description {
+    color: #444;
+    line-height: 1.6;
+}
+
+.stock {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+    font-weight: 500;
+}
+
+.stock.outOfStock {
+    background-color: #fef2f2;
+    color: #ef4444;
+}
+
+.price {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #e10600;
+}
+
+.sizesButton {
+    background: none;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    color: #111;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.sizesButton:hover {
+    background-color: #f5f5f5;
+    transform: none;
+    box-shadow: none;
+}
+
+.sizesTable {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.sizeOption {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.sizeOption:hover {
+    background-color: #f5f5f5;
+}
+
+.sizeOption.selected {
+    background-color: #e10600;
+    color: white;
+}
+
+.addToCart {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.quantitySelector {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.quantitySelector button {
+    padding: 0.5rem 1rem;
+    border: none;
+    font-size: 0.8rem;
+    background: none;
+    color: #111;
+    cursor: pointer;
+}
+
+.quantitySelector button:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.quantitySelector input {
+    width: 30px;
+    text-align: center;
+    border: none;
+    -moz-appearance: textfield;
+}
+
+.addToCartButton {
+    width: 100%;
+    padding: 0.75rem;
+    background: #e10600;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+
+.addToCartButton:hover {
+    background: #cc0500;
+}
+
+.addToCartButton.disabled {
+    background: #666;
+    cursor: not-allowed;
+}
+
+.addToCartSection {
+    margin-top: 1rem;
+}
+
+.sizesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.sizeButton {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sizeButton.selected {
+    background: #e10600;
+    color: white;
+    border-color: #e10600;
+}
+
+.sizeButton.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f5f5f5;
+}
+
+.shippingInfo {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.infoItem {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.infoItem i {
+    font-size: 1.5rem;
+    color: #e10600;
+}
+
+.infoItem h4 {
+    margin: 0 0 0.5rem;
+    color: #333;
+}
+
+.infoItem p {
+    margin: 0;
+    color: #666;
+    font-size: 0.875rem;
+}
+
+.relatedProducts {
+    margin-top: 4rem;
+    padding: 2rem 0;
+    border-top: 1px solid #e5e7eb;
+}
+
+.relatedProducts h2 {
+    font-size: 1.5rem;
+    color: #111827;
+    margin-bottom: 2rem;
+}
+
+.relatedGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+}
+
+.relatedCard {
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s;
+}
+
+.relatedCard:hover {
+    transform: translateY(-4px);
+}
+
+.relatedImage {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.relatedImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.relatedInfo h3 {
+    font-size: 1rem;
+    color: #1f2937;
+    margin: 0;
+    margin-bottom: 0.5rem;
+}
+
+.relatedPrice {
+    font-weight: 600;
+    color: #e10600;
+    margin: 0;
+}
+
+.noProducts {
+    text-align: center;
+    color: #6b7280;
+    padding: 2rem;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.priceSection {
+    margin: 1.5rem 0;
+}
+
+.discountBadge {
+    display: inline-block;
+    background: #e10600;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.prices {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.originalPrice {
+    color: #666;
+    text-decoration: line-through;
+    font-size: 1.1rem;
+}
+
+.finalPrice {
+    color: #e10600;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.price {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #111;
+}
+
+.relatedDiscountBadge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #e10600;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.relatedPriceContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.relatedOriginalPrice {
+    color: #666;
+    text-decoration: line-through;
+    font-size: 0.9rem;
+}
+
+.relatedFinalPrice {
+    color: #e10600;
+    font-weight: 600;
+}
+
+.relatedPrice {
+    color: #111;
+    font-weight: 600;
+}
+
+.outOfStock .mainImage img {
+    filter: grayscale(100%);
+}
+
+.outOfStockOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    z-index: 2;
+}
+
+.outOfStockMessage {
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    color: #ef4444;
+    font-weight: 500;
+}
+
+.sizesSection {
+    margin: 1.5rem 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.sizesTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    margin: 0;
+    background: #f9fafb;
+    border-bottom: 1px solid #ddd;
+}
+
+.sizesToggle {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.sizesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.5rem;
+    padding: 1rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.sizesGrid.show {
+    max-height: 500px;
+}
+
+.sizeButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sizeButton.selected {
+    border-color: #e10600;
+    background: #fff5f5;
+}
+
+.sizeButton.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f5f5f5;
+}
+
+.sizeLabel {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.stockLabel {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .relatedGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .productDetail {
+        padding: 0 1rem;
+    }
+    .productContent{
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+    .productInfo{     
+        gap: 0.5rem;
+    }
+    .stock{
+        padding: 0.5rem 0rem;
+        margin: 0rem 0;
+    }
+}
