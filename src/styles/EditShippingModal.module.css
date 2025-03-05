@@ -1,0 +1,132 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.closeButton {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.modal.disabled {
+    opacity: 0.95;
+    pointer-events: auto;
+}
+
+.modal.disabled input {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.notice {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem;
+    background-color: #fff8e1;
+    border-radius: 8px;
+    margin: 1rem 0;
+    align-items: center;
+}
+
+.notice i {
+    color: #ffa000;
+}
+
+.formGroup {
+    margin-bottom: 1rem;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.formGroup input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.submitButton {
+    width: 100%;
+    padding: 0.875rem;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.notice.warning {
+    background-color: #fef2f2;
+    border: 1px solid #fee2e2;
+}
+
+.notice.warning i {
+    color: #dc2626;
+}
+
+.notice.warning p {
+    color: #991b1b;
+}
+
+.submitButton.disabled {
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.submitButton:hover:not(:disabled) {
+    background: #1976D2;
+}
+
+.submitButton:disabled {
+    background: #e0e0e0;
+    cursor: not-allowed;
+}
+
+.error {
+    color: #dc2626;
+    margin: 1rem 0;
+    padding: 0.75rem;
+    background: #fef2f2;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}

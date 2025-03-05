@@ -8,21 +8,21 @@ const AnnouncementBar = () => {
         <div className={styles.slide}>
           <span className={styles.tag}>#Ofertas:</span> Últimas novedades en F1 Racing Collection
           <span className={styles.divider}>•</span>
-          <span className={styles.tag}>#Bienvenido:</span> Explora las nuevas llegadas y ofertas
+          <span className={styles.tag}>#Bienvenido:</span> Explora las nuevas ofertas de cada día
           <span className={styles.divider}>•</span>
-          <span className={styles.tag}>#EndStore:</span> Estilo Racing para todos
+          <span className={styles.tag}>#EndStore:</span> Diferentes estilos
           <span className={styles.divider}>•</span>
-          <span className={styles.tag}>#Envío:</span> Gratis en compras mayores a S/299
+          <span className={styles.tag}>#Envío:</span> Gratis en compras mayores a S/99
         </div>
         <div className={styles.slide} aria-hidden="true">
           {/* Duplicate for seamless loop */}
           <span className={styles.tag}>#Ofertas:</span> Últimas novedades en F1 Racing Collection
           <span className={styles.divider}>•</span>
-          <span className={styles.tag}>#Bienvenido:</span> Explora las nuevas llegadas y ofertas
+          <span className={styles.tag}>#Bienvenido:</span> Explora las nuevas ofertas de cada día
           <span className={styles.divider}>•</span>
-          <span className={styles.tag}>#EndStore:</span> Estilo Racing para todos
+          <span className={styles.tag}>#EndStore:</span> Diferentes estilos
           <span className={styles.divider}>•</span>
-          <span className={styles.tag}>#Envío:</span> Gratis en compras mayores a S/299
+          <span className={styles.tag}>#Envío:</span> Gratis en compras mayores a S/99
         </div>
       </div>
     </div>

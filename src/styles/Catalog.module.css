@@ -4,6 +4,7 @@
     width: 100%;
     max-width: 1380px;
     margin: 120px auto;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .searchContainer {
@@ -25,6 +26,7 @@
     border-radius: 8px;
     font-size: 1rem;
     transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .searchInput:focus {
@@ -104,6 +106,7 @@
     border-radius: 4px;
     background: #ffffff;
     cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .productsGrid {

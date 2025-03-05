@@ -1,0 +1,332 @@
+.misPedidos {
+    max-width: 1200px;
+    width: 100%;
+    margin: 10rem auto;
+    padding: 0 1rem;
+}
+
+.misPedidos h1 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #333;
+}
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.emptyState i {
+    font-size: 4rem;
+    color: #9e9e9e;
+    margin-bottom: 1rem;
+}
+
+.emptyState h2 {
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.emptyState p {
+    color: #666;
+}
+
+.orderCard {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.orderHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.orderHeader h3 {
+    margin: 0;
+    color: #333;
+}
+
+.date {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.status {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    color: white;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.orderItems {
+    padding: 1.5rem;
+}
+
+.item:last-child {
+    border-bottom: none;
+}
+
+.itemDetails {
+    flex: 1;
+    min-width: 0;
+}
+
+.item img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 1rem;
+}
+.itemDetails h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.itemDetails {
+    flex: 1;
+}
+
+.itemDetails h4 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+}
+
+.itemDetails p {
+    margin: 0.25rem 0;
+    color: #666;
+}
+
+.price {
+    font-weight: bold;
+    color: #333;
+}
+
+.orderFooter {
+    display: flex;
+    justify-content: space-between;
+    padding: 1.5rem;
+    background: #f9f9f9;
+}
+
+.shipping {
+    flex: 1;
+}
+
+.shipping h4 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+}
+
+.shipping p {
+    margin: 0.25rem 0;
+    color: #666;
+}
+
+.total {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    padding-left: 2rem;
+}
+
+.total span:first-child {
+    color: #666;
+    margin-bottom: 0.25rem;
+}
+
+.total span:last-child {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.paymentInfo {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-top: 1px solid #e9ecef;
+}
+
+.paymentInfo h4 {
+    color: #2c3e50;
+    font-size: 1rem;
+    margin: 0 0 0.5rem 0;
+    font-weight: 600;
+}
+
+.paymentInfo p {
+    color: #6c757d;
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.paymentInfo p:last-child {
+    margin-bottom: 0;
+}
+
+.orderActions {
+    padding: 1rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.trackingButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.trackingButton:hover {
+    background: #1976D2;
+    transform: translateY(-1px);
+}
+
+/* Add hover effect */
+.orderCard:hover .paymentInfo {
+    background-color: #f0f2f5;
+    transition: background-color 0.2s ease;
+}
+
+.itemImage {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+    border: 1px solid #eee;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    gap: 1rem;
+}
+
+.orderActions {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.editButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: #f3f4f6;
+    color: #374151;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.editButton:hover:not(.disabled) {
+    background: #e5e7eb;
+    transform: translateY(-1px);
+}
+
+.editButton.disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    .orderFooter {
+        flex-direction: column;
+    }
+
+    .total {
+        margin-top: 1rem;
+        align-items: flex-start;
+        padding-left: 0;
+    }
+
+    .shipping {
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    .paymentInfo {
+        margin-top: 0.75rem;
+        padding: 0.75rem;
+    }
+    
+    .paymentInfo h4 {
+        font-size: 0.95rem;
+    }
+    
+    .paymentInfo p {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 468px) {
+    .misPedidos{
+        margin: 8rem 0 2rem;
+    }
+    .orderHeader, .orderItems, .orderActions, .orderFooter{
+        padding: 1rem;
+    }
+    .item{
+        padding: 0;
+    }
+}

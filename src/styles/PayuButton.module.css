@@ -1,0 +1,49 @@
+.payuButton {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    background-color: #e41e31;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    margin-top: 1.5rem;
+    box-shadow: none;
+}
+
+.payuButton:hover:not(:disabled) {
+    background-color: #c41929;
+    transform: translateY(-1px);
+    box-shadow: none;
+}
+
+.payuButton.disabled {
+    background-color: #d1d5db;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.payuButton i {
+    font-size: 1.1rem;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ffffff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

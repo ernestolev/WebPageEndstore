@@ -208,8 +208,52 @@ span{
     background: #f5f5f5;
 }
 
+.summary {
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    color: #4b5563;
+}
+
+.summaryRow.total {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #111827;
+}
+
+.freeShipping {
+    color: #059669;
+    font-weight: 500;
+}
+
+.shippingInfo {
+    font-size: 0.85rem;
+    color: #6b7280;
+    text-align: center;
+    padding: 0.5rem;
+    background: #fff;
+    border-radius: 6px;
+    margin: 0.5rem 0;
+    border: 1px dashed #e5e7eb;
+}
+
 @media (max-width: 480px) {
     .slideout {
         max-width: 100%;
+    }
+    .header{
+        padding: 1rem;
     }
 }

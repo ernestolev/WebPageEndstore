@@ -226,3 +226,9 @@
         transform: translateY(0);
     }
 }
+
+@media screen and (max-width: 468px) {
+    .modalContent {
+        padding: 1rem;
+    }
+}

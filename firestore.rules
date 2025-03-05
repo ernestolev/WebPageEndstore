@@ -2,48 +2,100 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper function to check if user is admin
+    // Helper functions
+    function isAuth() {
+      return request.auth != null;
+    }
+
     function isAdmin() {
       return request.auth != null && 
              exists(/databases/$(database)/documents/Users/$(request.auth.uid)) &&
              get(/databases/$(database)/documents/Users/$(request.auth.uid)).data.admin == true;
     }
 
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isValidPayuTransaction() {
+      return request.resource.data.keys().hasAll(['orderId', 'amount', 'userId', 'shipping', 'status', 'cartItems']) &&
+             request.resource.data.amount is number &&
+             request.resource.data.amount > 0 &&
+             request.resource.data.userId == request.auth.uid &&
+             request.resource.data.shipping.keys().hasAll(['email', 'fullName', 'address']) &&
+             request.resource.data.cartItems is list;
+    }
+
+    function isValidOrder() {
+      return request.resource.data.keys().hasAll(['userId', 'total', 'items', 'status']) &&
+             request.resource.data.total is number &&
+             request.resource.data.total > 0 &&
+             request.resource.data.items is list &&
+             request.resource.data.status in ['PENDING', 'PAID', 'COMPLETED', 'CANCELLED'];
+    }
+
+    // User rules
     match /Users/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && 
-        (request.auth.uid == userId || 
-         resource == null || 
-         request.resource.data.email == resource.data.email);
+      allow read: if isAuth();
+      allow write: if isAuth() && (isOwner(userId) || resource == null);
     }
     
+    // Product rules
     match /Productos/{productId} {
       allow read: if true;
       allow create, update, delete: if isAdmin();
     }
 
-    // Add this new rule for Categories
+    // Category rules
     match /Categorias/{categoryId} {
       allow read: if true;
       allow create, update, delete: if isAdmin();
     }
 
-     match /Carts/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-      allow write: if request.auth != null && request.auth.uid == userId;
+    // Cart rules
+    match /Carts/{userId} {
+      allow read, write: if isAuth() && isOwner(userId);
     }
 
-     match /Orders/{orderId} {
-      allow read: if request.auth != null && 
-        (resource == null || resource.data.userId == request.auth.uid);
-      allow create: if request.auth != null && 
+    // Order rules
+    match /Orders/{orderId} {
+      allow read: if isAuth() && 
+        (resource == null || resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuth() && isValidOrder() && 
         request.resource.data.userId == request.auth.uid;
+      allow update: if isAuth() && (
+        isAdmin() || 
+        (isOwner(resource.data.userId) && 
+         request.resource.data.diff(resource.data).affectedKeys()
+           .hasOnly(['status', 'updatedAt']))
+      );
+      allow delete: if isAdmin();
     }
 
-    match /databases/{database}/documents {
-    match /Users/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-      allow write: if request.auth != null && request.auth.uid == userId;
+    // PayU Transaction rules
+    match /PayuTransactions/{transactionId} {
+      allow read: if isAuth() && 
+        (resource == null || 
+         resource.data.userId == request.auth.uid || 
+         isAdmin());
+      
+      allow create: if isAuth() && isValidPayuTransaction();
+      
+      allow update: if isAuth() && (
+        isOwner(resource.data.userId) || 
+        isAdmin() || 
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'payuResponse', 'updatedAt', 'confirmationData'])
+      );
+
+      allow delete: if false;
+    }
+    match /tracking/{trackingId} {
+      allow read: if isAuth() && (
+        resource.data.orderId in get(/databases/$(database)/documents/Orders/$(trackingId)).data.orderId ||
+        isAdmin()
+      );
+      allow write: if isAdmin();
     }
   }
 }

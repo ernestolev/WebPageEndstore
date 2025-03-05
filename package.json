@@ -6,16 +6,24 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "kill-emulators": "npx kill-port 9095 8085 5005 4007",
+    "emulators": "npm run kill-emulators && firebase emulators:start --import=./emulator-data --export-on-exit"
   },
   "dependencies": {
     "@studio-freight/lenis": "^1.0.42",
+    "axios": "^1.7.9",
     "browser-image-compression": "^2.0.2",
+    "cors": "^2.8.5",
+    "culqi-node": "^2.1.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
     "firebase": "^11.3.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.1.5"
+    "react-router": "^6.22.3",
+    "react-router-dom": "^6.22.3",
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
@@ -27,6 +35,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.18",
     "globals": "^15.14.0",
-    "vite": "^6.1.0"
+    "kill-port": "^2.0.1",
+    "vite": "^6.2.0"
   }
 }

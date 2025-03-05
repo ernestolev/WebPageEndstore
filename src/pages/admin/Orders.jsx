@@ -1,32 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
+import { db } from '../../Firebase';
 import styles from '../../styles/Orders.module.css';
+import AdminTrackingModal from '../../components/AdminTrackingModal';
 
 const Orders = () => {
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
     const [dateRange, setDateRange] = useState('last30');
+    const [selectedOrderId, setSelectedOrderId] = useState(null);
 
-    // Example orders data
-    const orders = [
-        {
-            id: 'ORD-001234',
-            date: '2024-02-22T14:30:00',
-            customer: 'Juan Pérez',
-            email: 'juan@example.com',
-            total: 299.99,
-            status: 'paid',
-            items: [
-                { name: 'Camiseta Roja', size: 'M', quantity: 2, price: 49.99 },
-                { name: 'Pantalón Negro', size: 'L', quantity: 1, price: 200.01 }
-            ],
-            shipping: {
-                address: 'Av. La Marina 123',
-                city: 'Lima',
-                zipCode: '15086'
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                // Base query
+                let ordersQuery = query(
+                    collection(db, 'Orders'),
+                    where('status', '==', 'PAID'),
+                    orderBy('orderDate', 'desc')
+                );
+
+                const snapshot = await getDocs(ordersQuery);
+                const ordersData = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    orderDate: doc.data().orderDate?.toDate()
+                }));
+
+                setOrders(ordersData);
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+            } finally {
+                setLoading(false);
             }
-        },
-        // Add more example orders...
-    ];
+        };
+
+        fetchOrders();
+    }, []);
+
+    const filteredOrders = orders.filter(order => {
+        const matchesSearch =
+            order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            order.shipping.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            order.shipping.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesStatus = filterStatus === 'all' || order.status === filterStatus;
+
+        // Date range filter
+        const orderDate = new Date(order.orderDate);
+        const now = new Date();
+        const daysDiff = (now - orderDate) / (1000 * 60 * 60 * 24);
+
+        const matchesDate =
+            (dateRange === 'today' && daysDiff < 1) ||
+            (dateRange === 'last7' && daysDiff <= 7) ||
+            (dateRange === 'last30' && daysDiff <= 30) ||
+            (dateRange === 'last90' && daysDiff <= 90);
+
+        return matchesSearch && matchesStatus && matchesDate;
+    });
 
     const getStatusBadgeClass = (status) => {
         const statusClasses = {
@@ -105,14 +139,14 @@ const Orders = () => {
                     <div className={styles.column}>Acciones</div>
                 </div>
 
-                {orders.map(order => (
+                {filteredOrders.map(order => (
                     <div key={order.id} className={styles.orderRow}>
                         <div className={styles.column}>{order.id}</div>
-                        <div className={styles.column}>{formatDate(order.date)}</div>
+                        <div className={styles.column}>{formatDate(order.orderDate)}</div>
                         <div className={styles.column}>
                             <div className={styles.customerInfo}>
-                                <span className={styles.customerName}>{order.customer}</span>
-                                <span className={styles.customerEmail}>{order.email}</span>
+                                <span className={styles.customerName}>{order.shipping.fullName}</span>
+                                <span className={styles.customerEmail}>{order.shipping.email}</span>
                             </div>
                         </div>
                         <div className={styles.column}>S/. {order.total.toFixed(2)}</div>
@@ -122,6 +156,12 @@ const Orders = () => {
                             </span>
                         </div>
                         <div className={styles.column}>
+                            <button
+                                className={styles.actionButton}
+                                onClick={() => setSelectedOrderId(order.id)}
+                            >
+                                <i className="fas fa-truck"></i>
+                            </button>
                             <button className={styles.actionButton}>
                                 <i className="fas fa-eye"></i>
                             </button>
@@ -129,6 +169,12 @@ const Orders = () => {
                                 <i className="fas fa-print"></i>
                             </button>
                         </div>
+                        {selectedOrderId && (
+                            <AdminTrackingModal
+                                orderId={selectedOrderId}
+                                onClose={() => setSelectedOrderId(null)}
+                            />
+                        )}
                     </div>
                 ))}
             </div>

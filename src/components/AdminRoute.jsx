@@ -3,9 +3,9 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const AdminRoute = ({ children }) => {
-  const { user, userData } = useAuth();
+  const { user } = useAuth();
 
-  if (!user || (userData?.admin !== true && userData?.admin !== "true")) {
+  if (!user || user.email !== 'ermarlevh04@gmail.com') {
     return <Navigate to="/" replace />;
   }
 

@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '../Firebase';
 import styles from '../styles/CartSlideout.module.css';
 
 const CartSlideout = () => {
-    const { 
-        isCartOpen, 
-        setIsCartOpen, 
-        cart, 
-        removeFromCart, 
+    const {
+        isCartOpen,
+        setIsCartOpen,
+        cart,
+        removeFromCart,
         updateQuantity,
         addToCart,
-        getCartTotal 
+        getCartTotal,
+        getSubtotal,
+        getShippingCost,
+        SHIPPING_THRESHOLD,
+        SHIPPING_COST  // Add this line
     } = useCart();
 
     const [productsData, setProductsData] = useState({});
@@ -64,7 +68,7 @@ const CartSlideout = () => {
             <div className={styles.slideout}>
                 <header className={styles.header}>
                     <h2>Tu Carrito</h2>
-                    <button 
+                    <button
                         className={styles.closeButton}
                         onClick={() => setIsCartOpen(false)}
                     >
@@ -79,9 +83,9 @@ const CartSlideout = () => {
                                 const product = productsData[item.productId];
                                 return (
                                     <div key={`${item.productId}-${item.size}`} className={styles.item}>
-                                        <img 
-                                            src={item.image} 
-                                            alt={item.name} 
+                                        <img
+                                            src={item.image}
+                                            alt={item.name}
                                             className={styles.itemImage}
                                         />
                                         <div className={styles.itemInfo}>
@@ -98,9 +102,9 @@ const CartSlideout = () => {
                                                         className={styles.sizeSelect}
                                                     >
                                                         {Object.entries(product.sizes).map(([size, stock]) => (
-                                                            <option 
-                                                                key={size} 
-                                                                value={size} 
+                                                            <option
+                                                                key={size}
+                                                                value={size}
                                                                 disabled={stock === 0}
                                                             >
                                                                 {size} {stock === 0 ? '(Agotado)' : ''}
@@ -128,10 +132,10 @@ const CartSlideout = () => {
                                         </div>
                                         <div className={styles.itemActions}>
                                             <div className={styles.quantity}>
-                                                <button 
+                                                <button
                                                     onClick={() => updateQuantity(
-                                                        item.productId, 
-                                                        item.size, 
+                                                        item.productId,
+                                                        item.size,
                                                         item.quantity - 1
                                                     )}
                                                     disabled={item.quantity <= 1}
@@ -139,10 +143,10 @@ const CartSlideout = () => {
                                                     -
                                                 </button>
                                                 <span>{item.quantity}</span>
-                                                <button 
+                                                <button
                                                     onClick={() => updateQuantity(
-                                                        item.productId, 
-                                                        item.size, 
+                                                        item.productId,
+                                                        item.size,
                                                         item.quantity + 1
                                                     )}
                                                 >
@@ -161,12 +165,31 @@ const CartSlideout = () => {
                             })}
                         </div>
                         <footer className={styles.footer}>
-                            <div className={styles.total}>
-                                <span>Total</span>
-                                <span>S/. {getCartTotal().toFixed(2)}</span>
+                            <div className={styles.summary}>
+                                <div className={styles.summaryRow}>
+                                    <span>Subtotal</span>
+                                    <span>S/. {getSubtotal().toFixed(2)}</span>
+                                </div>
+                                <div className={styles.summaryRow}>
+                                    <span>Envío</span>
+                                    {getShippingCost() === 0 ? (
+                                        <span className={styles.freeShipping}>Gratis</span>
+                                    ) : (
+                                        <span>S/. {SHIPPING_COST.toFixed(2)}</span>
+                                    )}
+                                </div>
+                                {getShippingCost() > 0 && (
+                                    <div className={styles.shippingInfo}>
+                                        Te faltan S/. {(SHIPPING_THRESHOLD - getSubtotal()).toFixed(2)} para envío gratis
+                                    </div>
+                                )}
+                                <div className={`${styles.summaryRow} ${styles.total}`}>
+                                    <span>Total</span>
+                                    <span>S/. {getCartTotal().toFixed(2)}</span>
+                                </div>
                             </div>
-                            <Link 
-                                to="/checkout" 
+                            <Link
+                                to="/checkout"
                                 className={styles.checkoutButton}
                                 onClick={() => setIsCartOpen(false)}
                             >
@@ -178,7 +201,7 @@ const CartSlideout = () => {
                     <div className={styles.emptyCart}>
                         <i className="fas fa-shopping-cart"></i>
                         <p>Tu carrito está vacío</p>
-                        <button 
+                        <button
                             className={styles.continueButton}
                             onClick={() => setIsCartOpen(false)}
                         >

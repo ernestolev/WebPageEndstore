@@ -1,53 +1,51 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { auth, db } from '../Firebase';
-import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const AuthContext = createContext();
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const auth = getAuth();
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+                try {
+                    // Force token refresh on auth state change
+                    const token = await currentUser.getIdToken(true);
+                    console.log('Token refreshed:', !!token);
+                    setUser(currentUser);
+                } catch (error) {
+                    console.error('Error refreshing token:', error);
+                    setUser(null);
+                }
+            } else {
+                setUser(null);
+            }
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, [auth]);
+
+    const value = {
+        user,
+        loading,
+        isAuthenticated: !!user,
+    };
+
+    return (
+        <AuthContext.Provider value={value}>
+            {!loading && children}
+        </AuthContext.Provider>
+    );
 };
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      
-      if (currentUser) {
-        const userDoc = await getDoc(doc(db, 'Users', currentUser.uid));
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          console.log('Firestore User Data:', data);
-          setUserData(data);
-        }
-      } else {
-        setUserData(null);
-      }
-      
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const value = {
-    user,
-    userData,
-    loading
-  };
-
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
 };

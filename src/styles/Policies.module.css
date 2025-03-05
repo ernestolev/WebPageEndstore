@@ -1,0 +1,197 @@
+.policiesContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10rem 2rem 0rem;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+    border-radius: 12px;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.header p {
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+.contentWrapper {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+}
+
+.section {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #eee;
+}
+
+.section:last-child {
+    border-bottom: none;
+}
+
+.section h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+
+/* Info Lists Styles */
+.infoList, .useList, .securityList, .rightsList, 
+.termsList, .paymentsList, .cookieTypes {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.infoItem, .useItem, .securityItem, .rightItem,
+.termItem, .paymentItem, .cookieType {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.infoItem:hover, .useItem:hover, .securityItem:hover,
+.rightItem:hover, .termItem:hover, .paymentItem:hover,
+.cookieType:hover {
+    transform: translateY(-3px);
+}
+
+/* Icon Styles */
+.infoItem i, .useItem i, .securityItem i, .rightItem i,
+.termItem i, .paymentItem i, .cookieType i {
+    font-size: 1.5rem;
+    color: #3498db;
+    flex-shrink: 0;
+}
+
+/* Cookie Specific Styles */
+.cookieInfo {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.cookieInfo i {
+    font-size: 2.5rem;
+    color: #3498db;
+}
+
+.cookieTypes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.cookieType {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+}
+
+.cookieType i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.cookieType h3 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+/* Contact Section */
+.contact {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.contact p {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.contact a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.contact a:hover {
+    color: #2980b9;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .policiesContainer {
+        padding: 1rem;
+    }
+
+    .header {
+        padding: 1.5rem;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+    }
+
+    .contentWrapper {
+        padding: 1rem;
+    }
+
+    .section h2 {
+        font-size: 1.5rem;
+    }
+
+    .cookieTypes {
+        grid-template-columns: 1fr;
+    }
+
+    .infoItem, .useItem, .securityItem, .rightItem,
+    .termItem, .paymentItem, .cookieType {
+        padding: 1rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .policiesContainer {
+        padding: 0;
+    }
+
+    .header {
+        background: none;
+        color: #000;
+    }
+
+    .contentWrapper {
+        box-shadow: none;
+    }
+
+    .infoItem, .useItem, .securityItem, .rightItem,
+    .termItem, .paymentItem, .cookieType {
+        break-inside: avoid;
+        background: none;
+    }
+}

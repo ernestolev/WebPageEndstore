@@ -1,5 +1,5 @@
 .checkoutPage {
-    padding: 12rem 0 0;
+    padding: 10rem 0 3rem;
     background: #f9fafb;
     min-height: calc(100vh - 64px);
 }
@@ -198,6 +198,101 @@
     font-size: 1.2rem;
 }
 
+.freeShipping {
+    color: #059669;
+    font-weight: 500;
+}
+
+.shippingInfo {
+    font-size: 0.85rem;
+    color: #6b7280;
+    text-align: center;
+    padding: 0.5rem;
+    background: #f9fafb;
+    border-radius: 6px;
+    margin: 0.5rem 0;
+    border: 1px dashed #e5e7eb;
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    color: #4b5563;
+}
+
+.summaryRow.total {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #111827;
+}
+
+.select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    font-size: 0.95rem;
+    color: #374151;
+    background-color: white;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+}
+
+.shippingNotice {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 1rem;
+    padding: 1.25rem;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+.shippingNotice i {
+    color: #ff0000;
+    font-size: 1.25rem;
+    margin-top: 0.25rem;
+}
+
+.noticeContent {
+    flex: 1;
+}
+
+.noticeContent p {
+    margin: 0 0 0.5rem 0;
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.noticeContent ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    list-style-type: none;
+}
+
+.noticeContent li {
+    position: relative;
+    margin-bottom: 0.375rem;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.noticeContent li::before {
+    content: "•";
+    position: absolute;
+    left: -1rem;
+    color: #94a3b8;
+}
+
 @media (max-width: 968px) {
     .content {
         grid-template-columns: 1fr;
@@ -215,5 +310,12 @@
 
     .checkoutPage {
         padding: 1rem 0;
+    }
+    .shippingNotice {
+        padding: 1rem;
+    }
+
+    .noticeContent li {
+        font-size: 0.85rem;
     }
 }

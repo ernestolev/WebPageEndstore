@@ -1,0 +1,198 @@
+.libroReclamaciones {
+    padding: 10rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 2rem;
+    text-align: justify;
+    line-height: 1.6;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.section {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.section h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.formGroup {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.radioGroup {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.radioGroup label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.submitButton {
+    background: #2c3e50;
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.legalNotice {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.legalNotice i {
+    font-size: 1.5rem;
+}
+
+.companyInfo {
+    background: #e9ecef;
+    padding: 1.5rem;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+}
+
+.infoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.termsSection {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 4px;
+    margin-top: 2rem;
+}
+
+.checkbox {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.checkbox input[type="checkbox"] {
+    margin-top: 0.3rem;
+}
+
+.legalText {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+/* Make sure the submit button is disabled when terms are not accepted */
+.submitButton:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .companyInfo {
+        padding: 1rem;
+    }
+
+    .infoGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.submitButton:hover {
+    background: #34495e;
+}
+
+.submitButton:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .libroReclamaciones {
+        padding: 1rem;
+    }
+
+    .container {
+        padding: 1rem;
+    }
+
+    .section {
+        padding: 1rem;
+    }
+
+    .radioGroup {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}

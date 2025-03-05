@@ -100,6 +100,33 @@
     overflow: hidden;
 }
 
+.adminButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    margin: 0 10px;
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .adminButton:hover {
+    color: #007bff;
+  }
+  
+  .adminButton i {
+    font-size: 1.2rem;
+  }
+  
+  .rightSection {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
 .currencySelector:hover .currencyDropdown {
     display: flex;
     flex-direction: column;
@@ -233,6 +260,21 @@
     background-color: #f8f8f8;
     color: #e10600;
 }
+.mobileActions {
+    display: none;
+    align-items: center;
+    gap: 1rem;
+}
+
+.hamburgerButton {
+    display: none;
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+}
 
 @media (max-width: 768px) {
     .container {
@@ -328,5 +370,33 @@
 
     .cartCount {
         font-size: 0.9rem;
+    }
+
+    .navLinks,
+    .userMenuDesktop,
+    .desktopOnly {
+        display: none;
+    }
+
+    .mobileActions {
+        display: flex;
+    }
+
+    .hamburgerButton {
+        display: block;
+    }
+
+    .rightSection {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .cartLink {
+        margin-right: 0;
+    }
+
+    .userButton, .adminButton{
+        display: none;
     }
 }

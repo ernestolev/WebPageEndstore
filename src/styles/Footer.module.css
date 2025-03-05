@@ -146,6 +146,33 @@
   transition: all 0.3s ease;
 }
 
+
+.reclamacionesLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #e74c3c;
+  color: white !important;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.reclamacionesLink:hover {
+  background-color: #c0392b;
+}
+
+.reclamacionesLink i {
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .reclamacionesLink {
+    margin-top: 0.5rem;
+    justify-content: center;
+  }
+}
+
 .developerLink:hover {
   color: #e10600;
 }
@@ -187,7 +214,10 @@
 }
 
 @media (max-width: 480px) {
-  .developerLink{
+  .developerLink {
+    flex-direction: column;
+  }
+  .legalLinks{
     flex-direction: column;
   }
 }

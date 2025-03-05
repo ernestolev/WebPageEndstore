@@ -1,5 +1,4 @@
 .ordersPage {
-    padding: 1.5rem;
     background: #f9fafb;
 }
 
@@ -8,11 +7,13 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+    padding: 0 0.5rem;
 }
 
 .header h1 {
-    font-size: 1.875rem;
-    color: #111827;
+    font-size: 2rem;
+    color: #1a1a1a;
+    font-weight: 600;
     margin: 0;
 }
 
@@ -25,29 +26,34 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: #e10600;
+    padding: 0.75rem 1.25rem;
+    background: #008060;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
 }
 
 .exportButton:hover {
-    background: #cc0500;
+    background: #006e52;
+    transform: translateY(-1px);
 }
 
 .filters {
     display: flex;
     gap: 1rem;
     margin-bottom: 2rem;
-    flex-wrap: wrap;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .searchBar {
-    flex: 1;
-    min-width: 300px;
+    flex: 2;
     position: relative;
 }
 
@@ -56,112 +62,155 @@
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: #6b7280;
+    color: #637381;
 }
 
 .searchBar input {
     width: 100%;
-    padding: 0.75rem 1rem 0.75rem 2.5rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    font-size: 0.875rem;
+    padding: 0.875rem 1rem 0.875rem 2.75rem;
+    border: 1px solid #dfe3e8;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.searchBar input:focus {
+    outline: none;
+    border-color: #008060;
+    box-shadow: 0 0 0 1px #008060;
 }
 
 .filterGroup {
     display: flex;
     gap: 1rem;
+    flex: 1;
 }
 
 .filterGroup select {
-    padding: 0.75rem 2rem 0.75rem 1rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
+    padding: 0.875rem 2.5rem 0.875rem 1rem;
+    border: 1px solid #dfe3e8;
+    border-radius: 8px;
     background: white;
-    font-size: 0.875rem;
+    font-size: 0.95rem;
     cursor: pointer;
+    flex: 1;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23637381' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+}
+
+.filterGroup select:focus {
+    outline: none;
+    border-color: #008060;
+    box-shadow: 0 0 0 1px #008060;
 }
 
 .ordersTable {
     background: white;
-    border-radius: 8px;
+    border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
 .tableHeader {
     display: grid;
     grid-template-columns: 1fr 1.5fr 2fr 1fr 1fr 0.5fr;
-    padding: 1rem;
-    background: #f8fafc;
-    border-bottom: 1px solid #e5e7eb;
+    padding: 1rem 1.5rem;
+    background: #f9fafb;
+    border-bottom: 1px solid #dfe3e8;
     font-weight: 500;
-    color: #4b5563;
+    color: #637381;
 }
 
 .orderRow {
     display: grid;
     grid-template-columns: 1fr 1.5fr 2fr 1fr 1fr 0.5fr;
-    padding: 1rem;
-    border-bottom: 1px solid #e5e7eb;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #dfe3e8;
     align-items: center;
+    transition: background-color 0.2s;
 }
 
 .orderRow:hover {
-    background: #f9fafb;
+    background: #f4f6f8;
 }
 
 .customerInfo {
     display: flex;
     flex-direction: column;
+    gap: 0.25rem;
 }
 
 .customerName {
     font-weight: 500;
+    color: #1a1a1a;
 }
 
 .customerEmail {
-    color: #6b7280;
+    color: #637381;
     font-size: 0.875rem;
 }
 
 .statusBadge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
     font-weight: 500;
     text-transform: uppercase;
 }
 
 .statusPaid {
-    background: #dcfce7;
-    color: #15803d;
+    background: #ebf9f0;
+    color: #0c6b58;
 }
 
 .statusPending {
-    background: #fef9c3;
-    color: #854d0e;
+    background: #fff4e5;
+    color: #c05717;
 }
 
 .statusShipped {
-    background: #dbeafe;
-    color: #1d4ed8;
+    background: #e5f0ff;
+    color: #006fbb;
 }
 
 .statusCancelled {
-    background: #fee2e2;
-    color: #b91c1c;
+    background: #fbe9e9;
+    color: #d72c0d;
+}
+
+
+.column {
+    display: flex;
+    align-items: center;
+}
+
+.column:first-child {
+    color: #008060;
+    font-weight: 500;
 }
 
 .actionButton {
     padding: 0.5rem;
     background: none;
     border: none;
-    color: #6b7280;
+    color: #637381;
     cursor: pointer;
-    transition: color 0.2s;
+    transition: all 0.2s;
+    border-radius: 6px;
+    margin: 0 0.25rem;
 }
 
 .actionButton:hover {
-    color: #111827;
+    color: #008060;
+    background: #f4f6f8;
+}
+
+.actionButton i {
+    font-size: 1.1rem;
 }
 
 @media (max-width: 1024px) {
@@ -172,21 +221,23 @@
 }
 
 @media (max-width: 768px) {
+    .ordersPage {
+        padding: 1rem;
+    }
+
     .filters {
         flex-direction: column;
+        padding: 1rem;
     }
 
     .filterGroup {
         width: 100%;
     }
 
-    .filterGroup select {
-        flex: 1;
-    }
-
     .tableHeader,
     .orderRow {
         font-size: 0.875rem;
+        padding: 1rem;
     }
 }
 
@@ -194,14 +245,11 @@
     .ordersTable {
         display: block;
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .tableHeader,
     .orderRow {
-        min-width: 800px;
-    }
-    .ordersPage {
-        padding: 0rem;
-        background: #f9fafb;
+        min-width: 900px;
     }
 }

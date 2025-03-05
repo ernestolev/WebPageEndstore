@@ -441,10 +441,10 @@ const Home = () => {
                 estándares de calidad, y garantizamos tu satisfacción. Para calidad confiable y estilo
                 racing auténtico, elígenos.
               </p>
-              <button className={styles.exploreButton}>
+              <Link to="/catalogo" className={styles.exploreButton}>
                 Explorar EndStore
                 <i className="fas fa-arrow-right"></i>
-              </button>
+              </Link>
             </div>
           </div>
         </section>

@@ -8,6 +8,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../Firebase';
 import HamburgerMenu from './HamburgerMenu';
 import { useCart } from '../context/CartContext';
+import MobileMenu from './MobileMenu';
 
 const Navbar = () => {
   const [currency, setCurrency] = useState('PEN');
@@ -29,6 +30,11 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+
+  useEffect(() => {
+    console.log('User Data:', userData);
+  }, [userData]);
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -85,32 +91,36 @@ const Navbar = () => {
 
           <div className={styles.rightSection}>
             {user ? (
-              <div className={styles.userMenu}>
-                <button
-                  className={styles.userButton}
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                >
-                  <i className="far fa-user"></i>
-                  <span className={styles.userName}>{user.displayName || user.email}</span>
-                </button>
-                {isUserMenuOpen && (
-                  <div className={styles.userDropdown}>
-                    <Link to="/profile" className={styles.dropdownItem}>Mi Perfil</Link>
-                    <Link to="/orders" className={styles.dropdownItem}>Mis Pedidos</Link>
-                    {(userData?.admin === true || userData?.admin === "true") && (
-                      <Link to="/admin" className={styles.dropdownItem}>
-                        Panel Admin
-                      </Link>
-                    )}
-                    <button
-                      onClick={handleLogout}
-                      className={styles.dropdownItem}
-                    >
-                      Cerrar Sesión
-                    </button>
-                  </div>
+              <>
+                <div className={styles.userMenu}>
+                  <button
+                    className={styles.userButton}
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  >
+                    <i className="far fa-user"></i>
+                    <span className={styles.userName}>{user.displayName || user.email}</span>
+                  </button>
+                  {isUserMenuOpen && (
+                    <div className={styles.userDropdown}>
+                      <Link to="/profile" className={styles.dropdownItem}>Mi Perfil</Link>
+                      <Link to="/orders" className={styles.dropdownItem}>Mis Pedidos</Link>
+                      <button
+                        onClick={handleLogout}
+                        className={styles.dropdownItem}
+                      >
+                        Cerrar Sesión
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {user.email === 'ermarlevh04@gmail.com' && (
+                  <Link to="/admin" className={styles.adminButton}>
+                    <i className="fas fa-cog"></i>
+                  </Link>
                 )}
-              </div>
+
+              </>
             ) : (
               <button
                 className={styles.userButton}
@@ -126,9 +136,17 @@ const Navbar = () => {
                 <span className={styles.cartCount}>{cartItemCount}</span>
               )}
             </div>
+            <button
+              className={styles.hamburgerButton}
+              onClick={toggleMobileMenu}
+            >
+              <i className="fas fa-bars"></i>
+            </button>
           </div>
         </div>
       </nav>
+      <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
+
       <LogReg isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
     </>
   );

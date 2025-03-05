@@ -23,7 +23,14 @@ import Checkout from './pages/Checkout';
 import Profile from './pages/Profile';
 import PrivateRoute from './components/PrivateRoute';
 import Orders from './pages/admin/Orders';
-
+import OrderSuccess from './pages/OrderSuccess';
+import LibroReclamaciones from './pages/LibroReclamaciones';
+import PoliticasCambios from './pages/PoliticasCambios';
+import PoliticasPriv from './pages/PoliticasPriv';
+import TerminosCondiciones from './pages/T&C';
+import Cookies from './pages/Cookies';
+import PaymentResponse from './pages/PaymentResponse';
+import MisPedidos from './pages/MisPedidos';
 const Layout = ({ children }) => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
@@ -66,6 +73,14 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/checkout" element={<Checkout />} />
+              <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+              <Route path="/payment-response" element={<PaymentResponse />} />
+              <Route path="/libro-reclamaciones" element={<LibroReclamaciones />} />
+              <Route path="/politicas-cambios" element={<PoliticasCambios />} />
+              <Route path="/orders" element={<MisPedidos />} />
+              <Route path="/privacy" element={<PoliticasPriv />} />
+              <Route path="/terms" element={<TerminosCondiciones />} />
+              <Route path="/cookies" element={<Cookies />} />
               <Route
                 path="/profile"
                 element={

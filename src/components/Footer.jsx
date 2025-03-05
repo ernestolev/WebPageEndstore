@@ -59,11 +59,11 @@ const Footer = () => {
             <ul className={styles.contactInfo}>
               <li>
                 <i className="fas fa-phone"></i>
-                <span>+51 999 888 777</span>
+                <span>+51 981 410 745</span>
               </li>
               <li>
                 <i className="fas fa-envelope"></i>
-                <span>contacto@endstore.com</span>
+                <span>ermarlevh04@gmail.com</span>
               </li>
               <li>
                 <i className="fas fa-map-marker-alt"></i>
@@ -112,6 +112,11 @@ const Footer = () => {
               <Link to="/privacy">Privacidad</Link>
               <Link to="/terms">Términos</Link>
               <Link to="/cookies">Cookies</Link>
+              <Link to="/politicas-cambios">Cambios y Devoluciones</Link>
+              <Link to="/libro-reclamaciones" className={styles.reclamacionesLink}>
+                <i className="fas fa-book"></i>
+                Libro de Reclamaciones
+              </Link>
             </div>
           </div>
         </div>
