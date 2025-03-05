@@ -10,7 +10,8 @@ import { useState } from 'react';
 
 const MobileMenu = ({ isOpen, onClose }) => {
     const { user, userData } = useAuth();
-    const [isAuthOpen, setIsAuthOpen] = useState(false); // Add this line
+    const [isAuthOpen, setIsAuthOpen] = useState(false);
+    const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false); // Add this line
 
     const handleLogout = async () => {
         try {
@@ -49,34 +50,38 @@ const MobileMenu = ({ isOpen, onClose }) => {
                         </button>
                     )}
 
+
+
                     {user && (
-                        <div className={styles.userInfo}>
-                            <span>{user.displayName || user.email}</span>
-                        </div>
-                    )}
+                        <div className={styles.userInfoContainer}>
+                            <button
+                                className={`${styles.userInfo} ${isUserDropdownOpen ? styles.active : ''}`}
+                                onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                            >
+                                <span>{user.displayName || user.email}</span>
+                                <i className={`fas fa-chevron-down ${isUserDropdownOpen ? styles.rotate : ''}`}></i>
+                            </button>
 
-
-                    <nav className={styles.navigation}>
-
-                        {user && (
-                            <>
-                                <button className={styles.logoutButton} onClick={handleLogout}>
-                                    <i className="fas fa-sign-out-alt"></i> Cerrar Sesión
-                                </button>
-                                <Link to="/profile" className={styles.link} onClick={onClose}>
+                            <div className={`${styles.userDropdown} ${isUserDropdownOpen ? styles.show : ''}`}>
+                                <Link to="/profile" className={styles.dropdownItem} onClick={onClose}>
                                     <i className="fas fa-user-circle"></i> Mi Perfil
                                 </Link>
-                                <Link to="/orders" className={styles.link} onClick={onClose}>
+                                <Link to="/orders" className={styles.dropdownItem} onClick={onClose}>
                                     <i className="fas fa-box"></i> Mis Pedidos
                                 </Link>
                                 {user.email === 'ermarlevh04@gmail.com' && (
-                                    <Link to="/admin" className={styles.link} onClick={onClose}>
+                                    <Link to="/admin" className={styles.dropdownItem} onClick={onClose}>
                                         <i className="fas fa-cog"></i> Admin Panel
                                     </Link>
                                 )}
+                                <button className={styles.dropdownItem} onClick={handleLogout}>
+                                    <i className="fas fa-sign-out-alt"></i> Cerrar Sesión
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
-                            </>
-                        )}
+                    <nav className={styles.navigation}>
 
                         <Link to="/" className={styles.link} onClick={onClose}>
                             Home

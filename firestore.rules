@@ -34,10 +34,19 @@ service cloud.firestore {
              request.resource.data.status in ['PENDING', 'PAID', 'COMPLETED', 'CANCELLED'];
     }
 
-    // User rules
+    // User rules - Updated for password reset
     match /Users/{userId} {
-      allow read: if isAuth();
-      allow write: if isAuth() && (isOwner(userId) || resource == null);
+      allow read: if true;
+      
+      // Allow email verification query without authentication
+      allow list: if 
+        request.query.limit <= 1 && 
+        request.query.filters.size() == 1 && 
+        'email' in request.query.filters[0];
+      
+      allow create: if isAuth();
+      allow update: if isAuth() && (isOwner(userId) || isAdmin());
+      allow delete: if isAdmin();
     }
     
     // Product rules
@@ -90,10 +99,15 @@ service cloud.firestore {
 
       allow delete: if false;
     }
+
+    // Tracking rules
     match /tracking/{trackingId} {
       allow read: if isAuth() && (
-        resource.data.orderId in get(/databases/$(database)/documents/Orders/$(trackingId)).data.orderId ||
-        isAdmin()
+        exists(/databases/$(database)/documents/Orders/$(trackingId)) &&
+        (
+          get(/databases/$(database)/documents/Orders/$(trackingId)).data.userId == request.auth.uid ||
+          isAdmin()
+        )
       );
       allow write: if isAdmin();
     }

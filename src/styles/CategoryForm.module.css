@@ -111,7 +111,21 @@
 }
 
 @media (max-width: 468px) {
-    .modal{
+    .modal {
+        background: white;
+        border-radius: 12px;
         padding: 1rem;
+        width: 98%;
+        max-width: 600px;
+        height: auto;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+    }
+    .form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
     }
 }

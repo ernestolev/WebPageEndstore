@@ -18,6 +18,7 @@ const Catalog = () => {
     sizes: [],
     searchQuery: ''
   });
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   const productsPerPage = 18;
 
@@ -104,6 +105,13 @@ const Catalog = () => {
       <AnnouncementBar />
       <div className={styles.catalog}>
         <div className={styles.searchContainer}>
+          <button
+            className={styles.mobileFilterButton}
+            onClick={() => setIsMobileFiltersOpen(true)}
+          >
+            <i className="fas fa-filter"></i>
+            Filtros
+          </button>
           <div className={styles.searchWrapper}>
             <input
               type="search"
@@ -210,6 +218,83 @@ const Catalog = () => {
 
           {/* Products Section */}
           <main className={styles.productsSection}>
+            <div
+              className={`${styles.filterOverlay} ${isMobileFiltersOpen ? styles.active : ''}`}
+              onClick={() => setIsMobileFiltersOpen(false)}
+            />
+            <div className={`${styles.mobileFilters} ${isMobileFiltersOpen ? styles.active : ''}`}>
+              <div className={styles.mobileFiltersHeader}>
+                <h3>Filtros</h3>
+                <button
+                  className={styles.closeFiltersButton}
+                  onClick={() => setIsMobileFiltersOpen(false)}
+                >
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+              <div className={styles.filterSection}>
+                <h4>Categorías</h4>
+                {['Jacket', 'Hoodie', 'Polo'].map(category => (
+                  <label key={category} className={styles.filterCheckbox}>
+                    <input
+                      type="checkbox"
+                      checked={filters.category.includes(category)}
+                      onChange={(e) => {
+                        const newCategories = e.target.checked
+                          ? [...filters.category, category]
+                          : filters.category.filter(c => c !== category);
+                        handleFilterChange('category', newCategories);
+                      }}
+                    />
+                    {category}
+                  </label>
+                ))}
+              </div>
+              <div className={styles.filterSection}>
+                <h4>Rango de Precio</h4>
+                <div className={styles.priceInputs}>
+                  <input
+                    type="number"
+                    value={filters.priceRange.min}
+                    onChange={(e) => handleFilterChange('priceRange', {
+                      ...filters.priceRange,
+                      min: Number(e.target.value)
+                    })}
+                    placeholder="Min"
+                  />
+                  <span>-</span>
+                  <input
+                    type="number"
+                    value={filters.priceRange.max}
+                    onChange={(e) => handleFilterChange('priceRange', {
+                      ...filters.priceRange,
+                      max: Number(e.target.value)
+                    })}
+                    placeholder="Max"
+                  />
+                </div>
+
+              </div>
+
+              <div className={styles.filterSection}>
+                <h4>Tallas</h4>
+                {['S', 'M', 'L', 'XL', 'XXL'].map(size => (
+                  <label key={size} className={styles.filterCheckbox}>
+                    <input
+                      type="checkbox"
+                      checked={filters.sizes.includes(size)}
+                      onChange={(e) => {
+                        const newSizes = e.target.checked
+                          ? [...filters.sizes, size]
+                          : filters.sizes.filter(s => s !== size);
+                        handleFilterChange('sizes', newSizes);
+                      }}
+                    />
+                    {size}
+                  </label>
+                ))}
+              </div>
+            </div>
             <div className={styles.productsHeader}>
               <div className={styles.productCount}>
                 Total: {products.length} productos

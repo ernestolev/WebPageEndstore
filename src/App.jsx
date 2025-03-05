@@ -31,6 +31,9 @@ import TerminosCondiciones from './pages/T&C';
 import Cookies from './pages/Cookies';
 import PaymentResponse from './pages/PaymentResponse';
 import MisPedidos from './pages/MisPedidos';
+import Users from './pages/admin/Users';
+import ResetPassword from './pages/ResetPassword';
+
 const Layout = ({ children }) => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
@@ -81,6 +84,7 @@ function App() {
               <Route path="/privacy" element={<PoliticasPriv />} />
               <Route path="/terms" element={<TerminosCondiciones />} />
               <Route path="/cookies" element={<Cookies />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route
                 path="/profile"
                 element={
@@ -102,7 +106,7 @@ function App() {
                 <Route path="products" element={<Products />} />
                 <Route path="categorias" element={<Categorias />} />
                 <Route path="orders" element={<Orders />} />
-                <Route path="users" element={<div>Users Page</div>} />
+                <Route path="users" element={<Users />} />
                 <Route path="settings" element={<div>Settings Page</div>} />
               </Route>
             </Routes>

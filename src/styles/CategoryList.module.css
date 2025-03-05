@@ -81,6 +81,8 @@
     .categoryGrid {
         gap: 1rem;
         padding: 0rem;
+        height:75vh;
+        overflow-y: auto;
     }
 
     .categoryCard {

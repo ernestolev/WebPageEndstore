@@ -252,4 +252,10 @@
     .orderRow {
         min-width: 900px;
     }
+    .header{
+        margin-bottom: 1rem
+    }
+    .ordersPage{
+        padding: 0px;
+    }
 }

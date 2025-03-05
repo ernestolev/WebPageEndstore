@@ -126,3 +126,11 @@
     border-radius: 8px;
     color: #666;
 }
+
+@media (max-width: 468px) {
+    .productList{
+        padding: 0px;
+        height: 50vh;
+        overflow-y: auto;
+    }
+}

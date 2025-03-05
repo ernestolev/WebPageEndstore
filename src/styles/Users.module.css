@@ -1,0 +1,158 @@
+.usersPage {
+    padding: 1.5rem;
+}
+
+.filters {
+    margin-bottom: 2rem;
+}
+
+.searchBar {
+    position: relative;
+    max-width: 400px;
+}
+
+.searchBar i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+}
+
+.searchBar input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.searchBar input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.usersTable {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tableHeader {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr 0.5fr;
+    padding: 1rem;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    font-weight: 600;
+    color: #374151;
+}
+
+.userRow {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr 0.5fr;
+    padding: 1rem;
+    border-bottom: 1px solid #f3f4f6;
+    align-items: center;
+}
+
+.userRow:hover {
+    background: #f9fafb;
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.userAvatar {
+    width: 40px;
+    height: 40px;
+    background: #e5e7eb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.userDetails {
+    display: flex;
+    flex-direction: column;
+}
+
+.userName {
+    font-weight: 500;
+    color: #111827;
+}
+
+.userEmail {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.contactInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    color: #4b5563;
+}
+
+.orderCount {
+    font-weight: 600;
+    color: #2563eb;
+}
+
+.statusBadge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.active {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.inactive {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.loading {
+    padding: 2rem;
+    text-align: center;
+    color: #6b7280;
+}
+
+@media (max-width: 1024px) {
+    .tableHeader,
+    .userRow {
+        grid-template-columns: 2fr 1fr 1fr 0.5fr;
+    }
+
+    .column:nth-child(4) {
+        display: none;
+    }
+    
+    .column:nth-child(5) {
+        display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .tableHeader,
+    .userRow {
+        grid-template-columns: 2fr 1fr;
+    }
+
+    .column:nth-child(3) {
+        display: none;
+    }
+}

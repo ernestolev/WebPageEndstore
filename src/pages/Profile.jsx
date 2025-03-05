@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
-import { updatePassword } from 'firebase/auth';
+import {
+    updatePassword,
+    EmailAuthProvider,
+    reauthenticateWithCredential
+} from 'firebase/auth';
 import { db } from '../Firebase';
 import styles from '../styles/Profile.module.css';
 import AnnouncementBar from '../components/AnnouncementBar';
@@ -58,39 +62,71 @@ const Profile = () => {
     }, [user]);
 
     const handleUpdateProfile = async () => {
+        if (!formData.name.trim()) {
+            setError('El nombre es requerido');
+            return;
+        }
+
         try {
+            setError('');
             const docRef = doc(db, 'Users', user.uid);
             await updateDoc(docRef, formData);
             setUserData({ ...userData, ...formData });
             setIsEditing(false);
             setSuccess('Perfil actualizado exitosamente');
+            setTimeout(() => setSuccess(''), 3000);
         } catch (error) {
             setError('Error al actualizar el perfil');
         }
     };
 
     const handleAddAddress = async () => {
-        try {
-            const docRef = doc(db, 'Users', user.uid);
-            const address = { ...newAddress, id: Date.now().toString() };
+        // Validate address fields
+        if (!newAddress.street.trim() || !newAddress.city.trim() ||
+            !newAddress.state.trim() || !newAddress.zipCode.trim()) {
+            setError('Todos los campos de la dirección son requeridos');
+            return;
+        }
 
-            if (newAddress.isDefault) {
-                // Update all other addresses to non-default
+        try {
+            setError('');
+            const docRef = doc(db, 'Users', user.uid);
+            const address = {
+                ...newAddress,
+                id: Date.now().toString(),
+                createdAt: new Date().toISOString()
+            };
+
+            // If this is the first address, make it default
+            const shouldBeDefault = newAddress.isDefault || !userData.addresses?.length;
+
+            if (shouldBeDefault) {
                 const updatedAddresses = userData.addresses?.map(addr => ({
                     ...addr,
                     isDefault: false
                 })) || [];
-                await updateDoc(docRef, { addresses: [...updatedAddresses, address] });
+                await updateDoc(docRef, {
+                    addresses: [...updatedAddresses, { ...address, isDefault: true }]
+                });
             } else {
                 await updateDoc(docRef, {
                     addresses: arrayUnion(address)
                 });
             }
 
+            // Update local state
             setUserData({
                 ...userData,
-                addresses: [...(userData.addresses || []), address]
+                addresses: [
+                    ...(userData.addresses || []).map(addr => ({
+                        ...addr,
+                        isDefault: shouldBeDefault ? false : addr.isDefault
+                    })),
+                    { ...address, isDefault: shouldBeDefault }
+                ]
             });
+
+            // Reset form
             setNewAddress({
                 street: '',
                 city: '',
@@ -99,6 +135,7 @@ const Profile = () => {
                 isDefault: false
             });
             setSuccess('Dirección agregada exitosamente');
+            setTimeout(() => setSuccess(''), 3000);
         } catch (error) {
             setError('Error al agregar la dirección');
         }
@@ -106,16 +143,22 @@ const Profile = () => {
 
     const handleRemoveAddress = async (addressId) => {
         try {
+            setError('');
             const address = userData.addresses.find(addr => addr.id === addressId);
+            if (!address) return;
+
             const docRef = doc(db, 'Users', user.uid);
-            await updateDoc(docRef, {
-                addresses: arrayRemove(address)
-            });
-            setUserData({
-                ...userData,
-                addresses: userData.addresses.filter(addr => addr.id !== addressId)
-            });
+            const updatedAddresses = userData.addresses.filter(addr => addr.id !== addressId);
+
+            // If we're removing the default address, make the first remaining address default
+            if (address.isDefault && updatedAddresses.length > 0) {
+                updatedAddresses[0].isDefault = true;
+            }
+
+            await updateDoc(docRef, { addresses: updatedAddresses });
+            setUserData({ ...userData, addresses: updatedAddresses });
             setSuccess('Dirección eliminada exitosamente');
+            setTimeout(() => setSuccess(''), 3000);
         } catch (error) {
             setError('Error al eliminar la dirección');
         }
@@ -137,21 +180,48 @@ const Profile = () => {
     };
 
     const handleChangePassword = async () => {
+        // Validate password fields
+        if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+            setError('Todos los campos son requeridos');
+            return;
+        }
+
         if (passwordData.newPassword !== passwordData.confirmPassword) {
-            setError('Las contraseñas no coinciden');
+            setError('Las contraseñas nuevas no coinciden');
+            return;
+        }
+
+        if (passwordData.newPassword.length < 6) {
+            setError('La contraseña debe tener al menos 6 caracteres');
             return;
         }
 
         try {
+            setError('');
+            // Reauthenticate user
+            const credential = EmailAuthProvider.credential(
+                user.email,
+                passwordData.currentPassword
+            );
+            await reauthenticateWithCredential(user, credential);
+
+            // Update password
             await updatePassword(user, passwordData.newPassword);
+
+            // Reset form
             setPasswordData({
                 currentPassword: '',
                 newPassword: '',
                 confirmPassword: ''
             });
             setSuccess('Contraseña actualizada exitosamente');
+            setTimeout(() => setSuccess(''), 3000);
         } catch (error) {
-            setError('Error al actualizar la contraseña');
+            if (error.code === 'auth/wrong-password') {
+                setError('La contraseña actual es incorrecta');
+            } else {
+                setError('Error al actualizar la contraseña');
+            }
         }
     };
 

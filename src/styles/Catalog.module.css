@@ -8,41 +8,46 @@
 }
 
 .searchContainer {
-    background-color: #f8f8f8;
     padding: 0rem;
-    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
 }
 
 .searchWrapper {
-    max-width: 1380px;
-    margin: 0 auto;
     position: relative;
+    flex: 1;
 }
 
 .searchInput {
     width: 100%;
-    padding: 1rem 1.5rem;
-    border: 2px solid #e5e5e5;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    font-family: 'Montserrat', sans-serif;
+    padding: 0.875rem 2.5rem 0.875rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    background: #f9fafb;
 }
 
 .searchInput:focus {
     outline: none;
-    border-color: #e10600;
+    border-color: #2563eb;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
 .searchButton {
     position: absolute;
-    right: 1rem;
+    right: 0.75rem;
     top: 50%;
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: #666666;
+    color: #6b7280;
     cursor: pointer;
+    padding: 0.5rem;
 }
 
 .breadcrumb {
@@ -133,7 +138,8 @@
     transition: all 0.3s ease;
 }
 
-.pageButton:hover:not(:disabled), .pageButton:hover {
+.pageButton:hover:not(:disabled),
+.pageButton:hover {
     background: none;
     color: black;
     border-color: #e10600;
@@ -156,43 +162,43 @@
     margin-bottom: 2rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid #e5e7eb;
-  }
-  
-  .filterSection h4 {
+}
+
+.filterSection h4 {
     margin-bottom: 1rem;
     font-size: 1rem;
     color: #374151;
-  }
-  
-  .filterCheckbox {
+}
+
+.filterCheckbox {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 0.5rem;
     cursor: pointer;
     color: #4b5563;
-  }
-  
-  .filterCheckbox input[type="checkbox"] {
+}
+
+.filterCheckbox input[type="checkbox"] {
     width: 16px;
     height: 16px;
     cursor: pointer;
-  }
-  
-  .priceInputs {
+}
+
+.priceInputs {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-  }
-  
-  .priceInputs input {
+}
+
+.priceInputs input {
     width: 80px;
     padding: 0.5rem;
     border: 1px solid #e5e7eb;
     border-radius: 4px;
-  }
-  
-  .clearFiltersButton {
+}
+
+.clearFiltersButton {
     width: 100%;
     padding: 0.75rem;
     background-color: #f3f4f6;
@@ -202,12 +208,97 @@
     cursor: pointer;
     transition: all 0.2s;
     margin-top: 1rem;
-  }
-  
-  .clearFiltersButton:hover {
+}
+
+.clearFiltersButton:hover {
     background-color: #e5e7eb;
     color: #1f2937;
-  }
+}
+
+.mobileFilterButton {
+    padding: 0.875rem 1.25rem;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 12px;
+    color: #374151;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    min-width: fit-content;
+}
+
+.mobileFilterButton:hover {
+    background: #e5e7eb;
+}
+
+.mobileFilterButton i {
+    font-size: 1rem;
+}
+
+
+.filterOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.filterOverlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobileFilters {
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 20px 20px 0 0;
+    z-index: 999;
+    transition: all 0.3s ease;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.mobileFilters.active {
+    bottom: 0;
+}
+
+.mobileFiltersHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.mobileFiltersHeader h3 {
+    font-size: 1.1rem;
+    color: #111827;
+    margin: 0;
+}
+
+.closeFiltersButton {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    color: #6b7280;
+    cursor: pointer;
+}
 
 @media (max-width: 1024px) {
     .catalogContent {
@@ -236,5 +327,29 @@
 @media (max-width: 480px) {
     .productsGrid {
         grid-template-columns: 1fr;
+    }
+    .mobileFilterButton {
+        display: flex;
+    }
+
+    .filterOverlay {
+        display: block;
+    }
+
+    .filters {
+        display: none;
+    }
+
+    /* Update existing media query */
+    .catalogContent {
+        grid-template-columns: 1fr;
+    }
+
+    .productsHeader {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .breadcrumb{
+        margin : 0 auto 1.5rem;
     }
 }

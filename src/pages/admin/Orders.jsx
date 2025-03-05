@@ -96,7 +96,6 @@ const Orders = () => {
 
             <div className={styles.filters}>
                 <div className={styles.searchBar}>
-                    <i className="fas fa-search"></i>
                     <input
                         type="text"
                         placeholder="Buscar por ID de pedido o cliente..."
