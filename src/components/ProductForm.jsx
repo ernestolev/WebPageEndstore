@@ -6,7 +6,6 @@ import ImagePreview from './ImagePreview';
 import { compressImage } from '../utils/imageCompressor'; // Update this import path
 
 const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
-const CATEGORIES = ['Jacket', 'Hoodie', 'Polo'];
 
 const ProductForm = ({ isOpen, onClose, editProduct = null, onRefresh }) => {
     const [formData, setFormData] = useState({
@@ -19,6 +18,7 @@ const ProductForm = ({ isOpen, onClose, editProduct = null, onRefresh }) => {
         sizes: {},
         images: []
     });
+    const [hasSizes, setHasSizes] = useState(true);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [imageFiles, setImageFiles] = useState([]);
@@ -69,35 +69,43 @@ const ProductForm = ({ isOpen, onClose, editProduct = null, onRefresh }) => {
         const files = Array.from(e.target.files);
         if (files.length === 0) return;
 
-        // Check total images limit
-        if (existingImages.length + files.length > 5) {
-            setError('No puedes subir más de 5 imágenes en total');
-            return;
-        }
-
-        setLoading(true);
         try {
-            for (const file of files) {
-                // Compress image
-                const compressedFile = await compressImage(file);
-
-                // Convert to base64
-                const base64 = await new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result);
-                    reader.readAsDataURL(compressedFile);
-                });
-
-                setExistingImages(prev => [...prev, base64]);
-            }
+            setLoading(true);
             setError('');
+
+            // Check total images limit
+            if (existingImages.length + files.length > 5) {
+                throw new Error('No puedes subir más de 5 imágenes en total');
+            }
+
+            const processFiles = files.map(async (file) => {
+                try {
+                    // Always compress images, regardless of type
+                    const compressedFile = await compressImage(file);
+
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.onerror = () => reject(new Error('Error al leer el archivo'));
+                        reader.readAsDataURL(compressedFile);
+                    });
+                } catch (error) {
+                    console.error('Error processing file:', error);
+                    throw new Error(`Error al procesar ${file.name}`);
+                }
+            });
+
+            const base64Results = await Promise.all(processFiles);
+            setExistingImages(prev => [...prev, ...base64Results]);
+
         } catch (error) {
-            setError('Error al procesar las imágenes');
-            console.error('Error:', error);
+            setError(error.message);
+            console.error('Error handling images:', error);
         } finally {
             setLoading(false);
         }
     };
+
     const convertImagesToBase64 = async (files) => {
         const base64Promises = files.map(file => {
             return new Promise((resolve, reject) => {
@@ -138,26 +146,40 @@ const ProductForm = ({ isOpen, onClose, editProduct = null, onRefresh }) => {
             setFormData(editProduct);
             setSizesStock(editProduct.sizes || {});
             setExistingImages(editProduct.images || []);
+            setHasSizes(editProduct.hasSizes ?? true);
         } else {
-            // Reset form for new product
-            setFormData({
-                name: '',
-                category: '',
-                stock: 0,
-                description: '',
-                price: 0,
-                sizes: {},
-                images: []
-            });
-            setSizesStock({
-                S: 0, M: 0, L: 0, XL: 0, XXL: 0
-            });
-            setExistingImages([]);
+            resetForm();
         }
-    }, [editProduct]);
+    }, [editProduct, isOpen]);
 
     const handleRemoveImage = (index) => {
-        setExistingImages(prev => prev.filter((_, i) => i !== index));
+        setExistingImages(prev => {
+            const newImages = [...prev];
+            newImages.splice(index, 1);
+            return newImages;
+        });
+        setError(''); // Clear any existing errors
+    };
+
+    const resetForm = () => {
+        setFormData({
+            name: '',
+            category: '',
+            stock: 0,
+            description: '',
+            price: 0,
+            discount: 0,
+            sizes: {},
+            images: [],
+            hasSizes: true
+        });
+        setSizesStock({
+            S: 0, M: 0, L: 0, XL: 0, XXL: 0
+        });
+        setExistingImages([]);
+        setHasSizes(true);
+        setImageFiles([]);
+        setError('');
     };
 
     const handleSubmit = async (e) => {
@@ -166,42 +188,21 @@ const ProductForm = ({ isOpen, onClose, editProduct = null, onRefresh }) => {
         setError('');
 
         try {
-            const totalSizeStock = Object.values(sizesStock).reduce((a, b) => a + b, 0);
-            if (totalSizeStock !== parseInt(formData.stock)) {
-                throw new Error('La distribución de tallas debe igual al stock total');
+            // Validate images
+            if (existingImages.length < 2) {
+                throw new Error('Debes incluir al menos 2 imágenes');
             }
-
-            // Handle new images if any were added
-            let finalImages = [...existingImages];
-            if (imageFiles.length > 0) {
-                const newImages = await convertImagesToBase64(imageFiles);
-                finalImages = [...finalImages, ...newImages];
-            }
-
-            // Validate final image count
-            if (finalImages.length < 2 || finalImages.length > 5) {
-                throw new Error('Debe haber entre 2 y 5 imágenes');
-            }
-
-            if (formData.stock > 0) {
-                const totalSizeStock = Object.values(sizesStock).reduce((a, b) => a + b, 0);
-                if (totalSizeStock !== parseInt(formData.stock)) {
-                    throw new Error('La distribución de tallas debe igual al stock total');
-                }
-            } else {
-                // If stock is 0, ensure all sizes are 0
-                const hasNonZeroSizes = Object.values(sizesStock).some(value => value > 0);
-                if (hasNonZeroSizes) {
-                    throw new Error('Con stock 0, todas las tallas deben estar en 0');
-                }
+            if (existingImages.length > 5) {
+                throw new Error('No puedes tener más de 5 imágenes');
             }
 
             const productData = {
                 ...formData,
-                images: finalImages,
+                images: existingImages, // Use existing images directly
                 price: parseFloat(formData.price),
                 stock: parseInt(formData.stock),
-                sizes: sizesStock,
+                sizes: hasSizes ? sizesStock : null,
+                hasSizes,
                 updatedAt: new Date()
             };
 
@@ -211,8 +212,9 @@ const ProductForm = ({ isOpen, onClose, editProduct = null, onRefresh }) => {
                 await addDoc(collection(db, 'Productos'), productData);
             }
 
+            onRefresh?.();
             onClose();
-            if (onRefresh) onRefresh();
+            resetForm();
         } catch (error) {
             console.error('Error saving product:', error);
             setError(error.message);
@@ -284,22 +286,43 @@ const ProductForm = ({ isOpen, onClose, editProduct = null, onRefresh }) => {
                             />
                         </div>
 
-                        <div className={styles.sizesGrid}>
-                            <h3>Distribución por Tallas</h3>
-                            {SIZES.map(size => (
-                                <div key={size} className={styles.sizeInput}>
-                                    <label>{size}</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        value={sizesStock[size]}
-                                        onChange={(e) => handleSizeChange(size, e.target.value)}
-                                        disabled={formData.stock === 0} // Disable if stock is 0
-                                        className={formData.stock === 0 ? styles.inputDisabled : ''}
-                                    />
-                                </div>
-                            ))}
+                        <div className={styles.formGroup}>
+                            <label className={styles.checkboxLabel}>
+                                <input
+                                    type="checkbox"
+                                    checked={hasSizes}
+                                    onChange={(e) => {
+                                        setHasSizes(e.target.checked);
+                                        if (!e.target.checked) {
+                                            setSizesStock({
+                                                S: 0, M: 0, L: 0, XL: 0, XXL: 0
+                                            });
+                                        }
+                                    }}
+                                />
+                                Producto con tallas
+                            </label>
                         </div>
+                        {hasSizes && (
+                            <div className={styles.sizesGrid}>
+                                <h3>Distribución por Tallas</h3>
+                                {SIZES.map(size => (
+                                    <div key={size} className={styles.sizeInput}>
+                                        <label>{size}</label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            value={sizesStock[size]}
+                                            onChange={(e) => handleSizeChange(size, e.target.value)}
+                                            disabled={formData.stock === 0} // Disable if stock is 0
+                                            className={formData.stock === 0 ? styles.inputDisabled : ''}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+
 
                         <div className={styles.formGroup}>
                             <label>Precio (S/.)</label>

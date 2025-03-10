@@ -1,6 +1,6 @@
 .checkoutPage {
     padding: 10rem 0 3rem;
-    background: #f9fafb;
+    background: var(--background-color);
     min-height: calc(100vh - 64px);
 }
 
@@ -17,10 +17,15 @@
 }
 
 .shippingSection {
-    background: white;
+    background: var(--card-bg);
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.shippingSection h2 {
+    margin: 0 0 1rem;
+    color: var(--text-color);
 }
 
 .formGrid {
@@ -127,7 +132,7 @@
 }
 
 .orderSummary {
-    background: white;
+    background: var(--card-bg);
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -208,7 +213,7 @@
     color: #6b7280;
     text-align: center;
     padding: 0.5rem;
-    background: #f9fafb;
+    background: var(--card-bg);
     border-radius: 6px;
     margin: 0.5rem 0;
     border: 1px dashed #e5e7eb;
@@ -239,7 +244,7 @@
     border-radius: 0.375rem;
     font-size: 0.95rem;
     color: #374151;
-    background-color: white;
+    background-color: var(--background-color);
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
     background-position: right 0.5rem center;
@@ -252,7 +257,7 @@
     display: flex;
     gap: 1rem;
     padding: 1.25rem;
-    background-color: #f8fafc;
+    background-color: var(--card-bg);
     border: 1px solid #e2e8f0;
     border-radius: 0.5rem;
     margin-bottom: 1.5rem;
@@ -270,7 +275,7 @@
 .noticeContent p {
     margin: 0 0 0.5rem 0;
     font-weight: 500;
-    color: #1e293b;
+    color: var(--text-color);
 }
 
 .noticeContent ul {
@@ -309,7 +314,11 @@
     }
 
     .checkoutPage {
-        padding: 1rem 0;
+        padding: 7rem 0;
+    }
+
+    .shippingSection {
+        padding: 1rem;
     }
     .shippingNotice {
         padding: 1rem;

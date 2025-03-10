@@ -1,0 +1,254 @@
+.favoritosContainer {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+  }
+  
+  .favoritosContainer h1 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    font-weight: 800;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .favoritosContainer h1::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60%;
+    height: 4px;
+    background: linear-gradient(90deg, #e10600, #ff4d4d);
+    border-radius: 2px;
+  }
+  
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 1.5rem;
+  }
+  
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #e1e1e1;
+    border-radius: 50%;
+    border-top-color: #e10600;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .emptyState {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 3rem;
+    text-align: center;
+    margin: 2rem 0;
+    box-shadow: 0 4px 20px var(--shadow-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .emptyIcon {
+    font-size: 4rem;
+    color: #e10600;
+    margin-bottom: 1.5rem;
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  
+  .emptyState h2 {
+    font-size: 1.8rem;
+    color: var(--text-color);
+  }
+  
+  .emptyState p {
+    font-size: 1.1rem;
+    color: var(--text-gray);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  .exploreButton {
+    display: inline-block;
+    margin-top: 1.5rem;
+    background: linear-gradient(135deg, #e10600, #ff4d4d);
+    color: white;
+    text-decoration: none;
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(225, 6, 0, 0.3);
+  }
+  
+  .exploreButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(225, 6, 0, 0.4);
+  }
+  
+  .favoritesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+  
+  .favoriteCard {
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    transition: all 0.3s ease;
+  }
+  
+  .favoriteImage {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+  
+  .favoriteImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.5s ease;
+  }
+  
+  .favoriteCard:hover .favoriteImage img {
+    transform: scale(1.05);
+  }
+  
+  .removeButton {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #e10600;
+  }
+  
+  .removeButton:hover {
+    transform: translateY(-2px);
+    background: #e10600;
+    color: white;
+    box-shadow: 0 4px 12px rgba(225, 6, 0, 0.3);
+  }
+  
+  .favoriteInfo {
+    padding: 1.5rem;
+  }
+  
+  .favoriteInfo h3 {
+    margin: 0 0 1rem;
+    font-size: 1.1rem;
+    color: var(--text-color);
+    font-weight: 600;
+    line-height: 1.4;
+    transition: color 0.3s ease;
+  }
+  
+  .favoriteInfo h3:hover {
+    color: #e10600;
+  }
+  
+  .priceSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-color);
+  }
+  
+  .addToCartButton {
+    background: linear-gradient(135deg, #e10600, #ff4d4d);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+  }
+  
+  .addToCartButton:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(225, 6, 0, 0.3);
+  }
+  
+  .favoriteDate {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-gray);
+  }
+  
+  @media (max-width: 768px) {
+    .favoritesGrid {
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .favoriteInfo {
+      padding: 1rem;
+    }
+    
+    .emptyState {
+      padding: 2rem 1.5rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .favoritosContainer h1 {
+      font-size: 2rem;
+    }
+    
+    .favoritesGrid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+    
+    .favoriteInfo h3 {
+      font-size: 1rem;
+    }
+    
+    .price {
+      font-size: 1.1rem;
+    }
+    
+    .addToCartButton {
+      width: 36px;
+      height: 36px;
+    }
+  }

@@ -24,7 +24,8 @@
 }
 
 .payuButton.disabled {
-    background-color: #d1d5db;
+    background-color: #585858;
+    color: gray;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;

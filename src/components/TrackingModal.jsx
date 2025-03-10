@@ -11,31 +11,31 @@ const TrackingModal = ({ orderId, onClose }) => {
         {
             status: 'ACCEPTED',
             title: 'Pedido Aceptado',
-            icon: '✓',
+            icon: <i className="fas fa-check"></i>,
             description: 'Tu pedido ha sido confirmado y validado'
         },
         {
             status: 'PACKING',
             title: 'Preparando Pedido',
-            icon: '📦',
+            icon: <i className="fas fa-box"></i>,
             description: 'Tu pedido está siendo empacado'
         },
         {
             status: 'COURIER',
             title: 'En Courier',
-            icon: '🚚',
+            icon: <i className="fas fa-warehouse"></i>,
             description: 'Pedido entregado al servicio de mensajería'
         },
         {
             status: 'SHIPPING',
             title: 'En Camino',
-            icon: '🛵',
+            icon: <i className="fas fa-truck"></i>,
             description: 'Tu pedido está en ruta de entrega'
         },
         {
             status: 'DELIVERED',
             title: 'Entregado',
-            icon: '🏠',
+            icon: <i className="fas fa-home"></i>,
             description: 'Pedido entregado con éxito'
         }
     ];

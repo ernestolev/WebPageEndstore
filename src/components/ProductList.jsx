@@ -3,7 +3,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../Firebase';
 import styles from '../styles/ProductList.module.css';
 
-const ProductList = ({ onEdit, searchTerm = '', selectedCategory = '', showDiscounted = false }) => {
+const ProductList = ({ onEdit, searchTerm = '', selectedCategory = '', showDiscounted = false, refreshKey }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -11,6 +11,7 @@ const ProductList = ({ onEdit, searchTerm = '', selectedCategory = '', showDisco
     useEffect(() => {
         const fetchProducts = async () => {
             try {
+                setLoading(true);
                 const querySnapshot = await getDocs(collection(db, 'Productos'));
                 const productsData = querySnapshot.docs.map(doc => ({
                     id: doc.id,
@@ -26,7 +27,7 @@ const ProductList = ({ onEdit, searchTerm = '', selectedCategory = '', showDisco
         };
 
         fetchProducts();
-    }, []);
+    }, [refreshKey]);
 
     const filteredProducts = products.filter(product => {
         const matchesSearch = 

@@ -1,0 +1,277 @@
+.trackingSection {
+    padding: 6rem 2rem;
+    background: linear-gradient(
+        135deg,
+        var(--tracking-gradient-start) 0%,
+        var(--tracking-gradient-end) 100%
+    );
+    overflow: hidden;
+    transition: background 0.3s ease;
+}
+
+.trackingContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.trackingContent {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.trackingInfo {
+    padding-right: 2rem;
+}
+
+.tagline {
+    display: inline-block;
+    background: #e10600;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.trackingTitle {
+    text-align: left;
+    font-size: 2.5rem;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+    font-family: 'Montserrat', sans-serif;
+}
+
+.highlight {
+    color: #e10600;
+}
+
+.trackingDescription {
+    color: #666;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.trackingFeatures {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-color);
+}
+
+.feature span{
+    color: var(--text-color);
+}
+
+.feature i {
+    color: #e10600;
+    font-size: 1.25rem;
+}
+
+.trackingButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #1a1a1a;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.trackingButton:hover {
+    background: #e10600;
+    transform: translateY(-2px);
+}
+
+
+.phoneFrame {
+    background: var(--background-color);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 20px 40px var(--background-color);
+    position: relative;
+    transition: all 0.3s ease;
+    border: 12px solid var(--text-color);
+    max-width: 380px;
+    margin: 0 auto;
+    transform: perspective(1000px) rotateY(-10deg) translateZ(0);
+}
+
+.phoneFrame:hover {
+    transform: perspective(1000px) rotateY(-5deg) translateZ(20px);
+    box-shadow: 0 30px 50px rgba(0, 0, 0, 0.15);
+}
+
+.phoneFrame::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 12px;
+    background: var(--text-color);
+    border-radius: 0 0 10px 10px;
+}
+
+.trackingSteps {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 0.5rem;
+}
+
+.step {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    padding: 0.75rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    transform: translateX(0);
+}
+
+.step:hover {
+    transform: translateX(10px);
+    background: var(--button-disabled-bg);
+}
+
+.step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 1.5rem;
+    width: 2px;
+    height: 1.5rem;
+    background: #e5e7eb;
+}
+
+.stepIcon {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e10600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.stepInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.stepStatus {
+    font-weight: 600;
+    color: var(  --text-color);
+    font-size: 0.95rem;
+}
+
+.stepTime {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.stepDot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: #e5e7eb;
+}
+
+.stepDot.active {
+    background: #e10600;
+    box-shadow: 0 0 0 4px rgba(225, 6, 0, 0.1);
+}
+
+@media (max-width: 968px) {
+    .trackingContent {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .trackingInfo {
+        padding-right: 0;
+    }
+
+    .phoneFrame {
+        transform: none;
+        margin: 2rem auto 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .trackingSection {
+        padding: 4rem 1rem;
+    }
+
+    .trackingTitle {
+        font-size: 2rem;
+        text-align: left;
+    }
+
+    .trackingDescription {
+        text-align: left;
+    }
+
+    .trackingFeatures {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        text-align: left;
+    }
+
+    .feature {
+        justify-content: center;
+    }
+
+    .trackingButton {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .phoneFrame {
+        border-width: 8px;
+        padding: 1.5rem;
+    }
+
+    .phoneFrame::before {
+        width: 80px;
+        height: 8px;
+    }
+
+    .trackingSteps {
+        gap: 1.5rem;
+    }
+
+    .step {
+        padding: 0.75rem;
+    }
+
+    .stepIcon {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.9rem;
+    }
+}

@@ -1,6 +1,6 @@
 .slideBar {
     height: 100px;
-    background-color: #ffffff;
+    background-color: var(--background-color);
     overflow: hidden;
     width: 100%;
     margin-bottom: 30px;
@@ -24,8 +24,13 @@
     font-size: 0.90rem;
     font-weight: 800;
     font-family: 'Montserrat', sans-serif;
-    color: #121212;
+    color: var(--text-color) !important;
 }
+
+.slide span{
+    color: var(--text-color) ;
+}
+
 
 .divider {
     color: #e10600;

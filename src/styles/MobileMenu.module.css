@@ -24,7 +24,7 @@
     width: 85%;
     max-width: 400px;
     height: 100vh;
-    background: #ffffff;
+    background: var(--background-color);
     z-index: 1001;
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: -10px 0 40px rgba(0, 0, 0, 0.2);
@@ -42,7 +42,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid #b1b1b1;
 }
 
 .closeButton {
@@ -50,7 +50,7 @@
     height: 36px;
     border: none;
     background: transparent;
-    color: #6b7280;
+    color: var(--text-color);
     cursor: pointer;
     transition: all 0.2s ease;
     border-radius: 50%;
@@ -69,17 +69,15 @@
 }
 
 .userInfo {
-    padding: 1.5rem;
-    background: linear-gradient(145deg, #f9fafb, #f3f4f6);
+    padding: 1rem;
+    background: var(--background-color);
     border-radius: 16px;
     font-weight: 500;
-    color: #111827;
+    color: var(--text-color);
     font-size: 1.1rem;
 }
 
-.userInfo span{
-    margin-left: 0.5rem;
-}
+
 
 .navigation {
     display: flex;
@@ -109,7 +107,7 @@
 
 .link {
     padding: 1rem;
-    color: #374151;
+    color: var(--text-color);
     text-decoration: none;
     font-weight: 500;
     transition: all 0.2s ease;
@@ -192,8 +190,8 @@
 
 .userInfo {
     width: 100%;
-    padding: 1.25rem;
-    background: #f8fafc;
+    padding: 1rem;
+    background: var(--card-bg);
     border: none;
     border-radius: 12px;
     display: flex;
@@ -201,12 +199,17 @@
     justify-content: space-between;
     cursor: pointer;
     font-weight: 500;
-    color: #1e293b;
+    color: var(--text-color);
     transition: all 0.2s ease;
 }
 
+.userInfo span {
+    color: var(--text-color);
+    margin: 0;
+}
+
 .userInfo.active {
-    background: #f1f5f9;
+    background: var(--card-bg);
     border-radius: 12px 12px 0 0;
 }
 
@@ -223,7 +226,7 @@
     top: 100%;
     left: 0;
     right: 0;
-    background: #f8fafc;
+    background: var(--card-bg);
     border-radius: 0 0 12px 12px;
     overflow: hidden;
     max-height: 0;
@@ -241,7 +244,7 @@
     align-items: center;
     gap: 0.75rem;
     padding: 1rem 1.25rem;
-    color: #475569;
+    color: var(--text-color);
     text-decoration: none;
     font-weight: 500;
     transition: all 0.2s ease;
@@ -253,10 +256,7 @@
     font-size: 1rem;
 }
 
-.dropdownItem:hover {
-    background: #f1f5f9;
-    color: #1e293b;
-}
+
 
 .dropdownItem i {
     font-size: 1.1rem;

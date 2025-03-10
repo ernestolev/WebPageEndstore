@@ -5,7 +5,7 @@ import AnnouncementBar from '../components/AnnouncementBar';
 import SlideBar from '../components/SlideBar';
 import styles from '../styles/Home.module.css';
 import { Link } from 'react-router-dom';
-import modelimg from '../assets/imgs/img-1.png';
+import modelimg from '../assets/imgs/img-wa1.png';
 import imgejemplo1 from '../assets/imgs/img-ejemplo1.png';
 import TestimonialSlider from '../components/TestimonialSlider';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -13,7 +13,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore'; import {
 import sumercol from '../assets/imgs/Summercollect.png';
 import racingcol from '../assets/imgs/racingcollection.png';
 import streetcol from '../assets/imgs/streetcolect.png';
-
+import TrackingSection from '../components/TrackingSection';
 import videoq from '../assets/video/vid-quiality.mov';
 import imgq from '../assets/imgs/qualityimg.png';
 
@@ -27,6 +27,7 @@ const Home = () => {
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
   const [saleProducts, setSaleProducts] = useState([]);
+  const MAX_SALE_PRODUCTS = 8; // This will show 2 rows of 4 products
 
   useEffect(() => {
     const fetchSaleProducts = async () => {
@@ -39,9 +40,16 @@ const Home = () => {
         );
         const products = querySnapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
+          images: Array.isArray(doc.data().images) ? doc.data().images : []
         }));
-        setSaleProducts(products);
+
+        // Sort by discount percentage and limit to MAX_SALE_PRODUCTS (8)
+        const sortedAndLimitedProducts = products
+          .sort((a, b) => b.discount - a.discount)
+          .slice(0, MAX_SALE_PRODUCTS);
+
+        setSaleProducts(sortedAndLimitedProducts);
       } catch (error) {
         console.error('Error fetching sale products:', error);
       }
@@ -58,33 +66,7 @@ const Home = () => {
   }, [categories]);
 
 
-  useEffect(() => {
-    const fetchSaleProducts = async () => {
-      try {
-        const querySnapshot = await getDocs(
-          query(
-            collection(db, 'Productos'),
-            where('discount', '>', 0)
-          )
-        );
-        const products = querySnapshot.docs.map(doc => {
-          const data = doc.data();
-          console.log('Product data:', data); // Add this log
-          return {
-            id: doc.id,
-            ...data,
-            images: Array.isArray(data.images) ? data.images : [] // Add this validation
-          };
-        });
-        setSaleProducts(products);
-        console.log('Sale products:', products); // Add this log
-      } catch (error) {
-        console.error('Error fetching sale products:', error);
-      }
-    };
 
-    fetchSaleProducts();
-  }, []);
 
   useEffect(() => {
     if (activeCategory && categories.length > 0) {
@@ -269,7 +251,7 @@ const Home = () => {
             <div className={styles.categoriesGrid}>
               {categories.map(category => (
                 <Link
-                  to={`/shop/${category.name.toLowerCase()}`}
+                  to={`/catalogo`}
                   key={category.id}
                   className={styles.categoryCard}
                   onMouseEnter={() => setHoveredCategory(category.id)}
@@ -303,7 +285,7 @@ const Home = () => {
                 <img src={racingcol} alt="Racing Collection" />
                 <div className={styles.overlay}>
                   <h3>Racing Collection</h3>
-                  <Link to="/shop/racing" className={styles.linkButton}>Ver más</Link>
+                  <Link to="/catalolgo" className={styles.linkButton}>Ver más</Link>
                 </div>
               </div>
               <div className={styles.secondaryImages}>
@@ -311,19 +293,22 @@ const Home = () => {
                   <img src={sumercol} alt="Summer Collection" />
                   <div className={styles.overlay}>
                     <h3>Summer Collection</h3>
-                    <Link to="/shop/summer" className={styles.linkButton}>Ver más</Link>
+                    <Link to="/catalolgo" className={styles.linkButton}>Ver más</Link>
                   </div>
                 </div>
                 <div className={styles.bottomImage}>
                   <img src={streetcol} alt="Street Collection" />
                   <div className={styles.overlay}>
                     <h3>Street Collection</h3>
-                    <Link to="/shop/street" className={styles.linkButton}>Ver más</Link>
+                    <Link to="/catalolgo" className={styles.linkButton}>Ver más</Link>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </section>
+        <section id="tracking-section" name="tracking">
+          <TrackingSection />
         </section>
         <section className={styles.flashSaleSection}>
           <div className={styles.container}>
@@ -557,19 +542,20 @@ const Home = () => {
                 </p>
               </div>
               <div className={styles.supportButtons}>
-                <Link to="/ayuda" className={styles.supportButton}>
-                  <i className="fas fa-book"></i>
-                  Centro de Ayuda
-                </Link>
-                <Link to="/contacto" className={styles.supportButton}>
-                  <i className="fas fa-headset"></i>
+                <a
+                  href="https://wa.me/51981410745?text=Hola,%20necesito%20soporte%20con%20mi%20pedido"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.supportButton}
+                >
+                  <i className="fab fa-whatsapp"></i>
                   Contactar Soporte
-                </Link>
+                </a>
               </div>
             </div>
           </div>
         </section>
-      </div>
+      </div >
     </>
   );
 };

@@ -1,65 +1,66 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from '../styles/ImageMagnifier.module.css';
 
 const ImageMagnifier = ({ src, alt }) => {
-    const [showMagnifier, setShowMagnifier] = useState(false);
-    const [magnifierPosition, setMagnifierPosition] = useState({ x: 0, y: 0 });
-    const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-    const magnifierSize = 200;
-    const zoomLevel = 5;
-    const imageRef = useRef(null);
+  const [showMagnifier, setShowMagnifier] = useState(false);
+  const [magnifierPosition, setMagnifierPosition] = useState({ x: 0, y: 0 });
+  const imgRef = useRef(null);
 
-    const handleMouseMove = (e) => {
-        const { left, top, width, height } = imageRef.current.getBoundingClientRect();
-        
-        // Calculate cursor position relative to the image
-        const x = ((e.pageX - left) / width) * 100;
-        const y = ((e.pageY - top) / height) * 100;
-        setCursorPosition({ x, y });
+  const handleMouseMove = (e) => {
+    if (!imgRef.current) return;
 
-        // Calculate magnifier position
-        const magnifierOffset = magnifierSize / 2;
-        setMagnifierPosition({
-            x: e.pageX - magnifierOffset,
-            y: e.pageY - magnifierOffset
-        });
+    const elem = imgRef.current;
+    const { top, left, width, height } = elem.getBoundingClientRect();
+    const x = ((e.pageX - left) / width) * 100;
+    const y = ((e.pageY - top) / height) * 100;
+
+    // Only update if within bounds
+    if (x >= 0 && x <= 100 && y >= 0 && y <= 100) {
+      setMagnifierPosition({ x, y });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setShowMagnifier(false);
+    // Remove any inline styles that might affect scrolling
+    document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('position');
+  };
+
+  const handleMouseEnter = () => {
+    setShowMagnifier(true);
+  };
+
+  // Cleanup any scroll locks when component unmounts
+  useEffect(() => {
+    return () => {
+      document.body.style.removeProperty('overflow');
+      document.body.style.removeProperty('position');
     };
+  }, []);
 
-    return (
-        <div className={styles.magnifierWrapper}>
-            <div
-                className={styles.imageContainer}
-                onMouseEnter={() => setShowMagnifier(true)}
-                onMouseLeave={() => setShowMagnifier(false)}
-                onMouseMove={handleMouseMove}
-                ref={imageRef}
-            >
-                <img 
-                    src={src} 
-                    alt={alt} 
-                    className={styles.mainImage}
-                />
-                {showMagnifier && (
-                    <div 
-                        className={styles.magnifier}
-                        style={{
-                            left: `${magnifierPosition.x}px`,
-                            top: `${magnifierPosition.y}px`,
-                            width: `${magnifierSize}px`,
-                            height: `${magnifierSize}px`,
-                            backgroundImage: `url(${src})`,
-                            backgroundPosition: `${cursorPosition.x}% ${cursorPosition.y}%`,
-                            backgroundSize: `${zoomLevel * 100}%`
-                        }}
-                    >
-                        <div className={styles.zoomIcon}>
-                            <i className="fas fa-search-plus"></i>
-                        </div>
-                    </div>
-                )}
-            </div>
-        </div>
-    );
+  return (
+    <div className={styles.magnifierWrapper}>
+      <img
+        ref={imgRef}
+        src={src}
+        alt={alt}
+        className={styles.mainImage}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onMouseMove={handleMouseMove}
+      />
+      {showMagnifier && (
+        <div
+          className={styles.magnifier}
+          style={{
+            backgroundImage: `url(${src})`,
+            backgroundPosition: `${magnifierPosition.x}% ${magnifierPosition.y}%`
+          }}
+        />
+      )}
+    </div>
+  );
 };
 
 export default ImageMagnifier;

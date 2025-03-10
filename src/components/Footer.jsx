@@ -2,8 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from '../styles/Footer.module.css';
 import logo from '../assets/imgs/end-largo2.png';
+import logo2 from '../assets/imgs/end-largo.png';
+import { useTheme } from '../context/ThemeContext';
 
 const Footer = () => {
+
+  const { theme, toggleTheme } = useTheme();
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
@@ -11,7 +15,11 @@ const Footer = () => {
           {/* Logo and Description Column */}
           <div className={styles.footerBrand}>
             <Link to="/" className={styles.footerLogo}>
-              <img src={logo} alt="EndStore Logo" />
+              <img
+                src={theme === 'light' ? logo : logo2}
+                alt="EndStore Logo"
+                className={styles.logoImg}
+              />
             </Link>
             <p className={styles.footerDesc}>
               Tu destino premium para moda inspirada en la F1. Calidad, estilo y pasión por el racing.

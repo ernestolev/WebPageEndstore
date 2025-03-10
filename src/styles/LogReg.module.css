@@ -13,7 +13,7 @@
 }
 
 .modal {
-    background: white;
+    background: var(--card-bg);
     border-radius: 12px;
     width: 100%;
     max-width: 550px;
@@ -89,13 +89,15 @@
 
 .formGroup label {
     font-size: 0.9rem;
-    color: #666666;
+    color: var(--text-color);
 }
 
 .formGroup input {
     padding: 0.8rem;
+    background-color: var(--background-color);
     border: 1px solid #e5e5e5;
     border-radius: 6px;
+    color: var(--text-color);
     font-size: 1rem;
     transition: border-color 0.3s ease;
 }
@@ -121,12 +123,13 @@
 
 .submitButton {
     background: #121212;
-    color: white;
-    border: none;
+    color: var(--text-color);
+    border: 1px solid var(--text-color);
     padding: 1rem;
     border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
+    background-color: var(--background-color);
     transition: background-color 0.3s ease;
 }
 

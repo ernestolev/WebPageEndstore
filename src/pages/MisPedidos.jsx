@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
-    collection, 
-    query, 
-    where, 
-    orderBy, 
-    getDocs, 
-    doc as firestoreDoc, 
-    getDoc 
+import {
+    collection,
+    query,
+    where,
+    orderBy,
+    getDocs,
+    doc as firestoreDoc,
+    getDoc
 } from 'firebase/firestore';
 import { db } from '../Firebase';
 import { useAuth } from '../context/AuthContext';
@@ -14,6 +14,8 @@ import styles from '../styles/MisPedidos.module.css';
 import AnnouncementBar from '../components/AnnouncementBar';
 import TrackingModal from '../components/TrackingModal';
 import EditShippingModal from '../components/EditShippingModal';
+import ComentariosModal from '../components/ComentariosModal';
+import { Link } from 'react-router-dom';
 
 const MisPedidos = () => {
     const [orders, setOrders] = useState([]);
@@ -21,15 +23,15 @@ const MisPedidos = () => {
     const { user } = useAuth();
     const [selectedOrderId, setSelectedOrderId] = useState(null);
     const [editingOrderId, setEditingOrderId] = useState(null);
+    const [reviewingItem, setReviewingItem] = useState(null);
+    const [userComments, setUserComments] = useState({});
 
     const fetchProductDetails = async (productId) => {
         try {
-            console.log('Fetching product:', productId);
             const productDocRef = await getDoc(firestoreDoc(db, 'Productos', productId));
             if (productDocRef.exists()) {
                 return productDocRef.data();
             }
-            console.warn('Product not found:', productId);
             return null;
         } catch (error) {
             console.error('Error fetching product:', productId, error);
@@ -37,67 +39,76 @@ const MisPedidos = () => {
         }
     };
 
+    const fetchUserComments = async () => {
+        try {
+            const commentsQuery = query(
+                collection(db, 'comentarios'),
+                where('userId', '==', user.uid)
+            );
+            const snapshot = await getDocs(commentsQuery);
+            const comments = {};
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                comments[`${data.orderId}-${data.productId}`] = true;
+            });
+            setUserComments(comments);
+        } catch (error) {
+            console.error('Error fetching user comments:', error);
+        }
+    };
 
-    useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const ordersQuery = query(
-                    collection(db, 'Orders'),
-                    where('userId', '==', user.uid),
-                    where('status', '==', 'PAID'),
-                    orderBy('orderDate', 'desc')
+    const fetchOrders = async () => {
+        try {
+            const ordersQuery = query(
+                collection(db, 'Orders'),
+                where('userId', '==', user.uid),
+                where('status', '==', 'PAID'),
+                orderBy('orderDate', 'desc')
+            );
+
+            const ordersSnapshot = await getDocs(ordersQuery);
+            const ordersPromises = ordersSnapshot.docs.map(async (docSnapshot) => {
+                const orderData = docSnapshot.data();
+                const trackingDocRef = await getDoc(firestoreDoc(db, 'tracking', docSnapshot.id));
+                const trackingStatus = trackingDocRef.exists() ?
+                    trackingDocRef.data().currentStatus : 'ACCEPTED';
+
+                const itemsWithDetails = await Promise.all(
+                    (orderData.items || []).map(async (item) => {
+                        const productDetails = await fetchProductDetails(item.id);
+                        return {
+                            ...productDetails,
+                            id: item.id,
+                            size: item.size,
+                            quantity: item.quantity,
+                            price: productDetails?.price || item.price,
+                            image: productDetails?.images?.[0]
+                        };
+                    })
                 );
 
-                const ordersSnapshot = await getDocs(ordersQuery);
-                const ordersPromises = ordersSnapshot.docs.map(async (docSnapshot) => {
-                    const orderData = docSnapshot.data();
-                    const trackingDocRef = await getDoc(firestoreDoc(db, 'tracking', docSnapshot.id));
-                    const trackingStatus = trackingDocRef.exists() ?
-                        trackingDocRef.data().currentStatus : 'ACCEPTED';
+                return {
+                    id: docSnapshot.id,
+                    ...orderData,
+                    items: itemsWithDetails,
+                    orderDate: orderData.orderDate?.toDate(),
+                    trackingStatus
+                };
+            });
 
-                    console.log('Processing order:', docSnapshot.id, orderData);
+            const processedOrders = await Promise.all(ordersPromises);
+            setOrders(processedOrders);
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-                    // Process items in the order
-                    const itemsWithDetails = await Promise.all(
-                        (orderData.items || []).map(async (item) => {
-                            const productDetails = await fetchProductDetails(item.id);
-                            
-                            if (!productDetails) {
-                                console.warn('No product details found for:', item.id);
-                                return item;
-                            }
-
-                            return {
-                                ...productDetails,
-                                id: item.id,
-                                size: item.size,
-                                quantity: item.quantity,
-                                price: productDetails.price,
-                                image: productDetails.images?.[0]
-                            };
-                        })
-                    );
-
-                    return {
-                        id: docSnapshot.id,
-                        ...orderData,
-                        items: itemsWithDetails,
-                        orderDate: orderData.orderDate?.toDate(),
-                        trackingStatus
-                    };
-                });
-
-                const processedOrders = await Promise.all(ordersPromises);
-                setOrders(processedOrders);
-            } catch (error) {
-                console.error('Error fetching orders:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
+    useEffect(() => {
         if (user) {
             fetchOrders();
+            fetchUserComments();
         }
     }, [user]);
 
@@ -145,6 +156,9 @@ const MisPedidos = () => {
                         <i className="fas fa-shopping-bag"></i>
                         <h2>No tienes pedidos aún</h2>
                         <p>¡Explora nuestro catálogo y realiza tu primera compra!</p>
+                        <Link to="/" className={styles.exploreButton}>
+                            Ver Catálogo
+                        </Link>
                     </div>
                 ) : (
                     <div className={styles.ordersList}>
@@ -187,7 +201,7 @@ const MisPedidos = () => {
                                                 <h4>{item.name}</h4>
                                                 <p>Talla: {item.size}</p>
                                                 <p>Cantidad: {item.quantity}</p>
-                                                <p className={styles.price}>S/. {item.price.toFixed(2)}</p>
+                                                <p className={styles.price}>S/. {item.price?.toFixed(2)}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -200,13 +214,15 @@ const MisPedidos = () => {
                                     >
                                         <i className="fas fa-truck"></i> Ver Seguimiento
                                     </button>
+                                    
                                     {order.status === 'PAID' && (
                                         <button
-                                            className={`${styles.editButton} ${(order.shippingEditCount >= 2 ||
-                                                    ['PACKING', 'COURIER', 'SHIPPING', 'DELIVERED'].includes(order.trackingStatus))
-                                                    ? styles.disabled
-                                                    : ''
-                                                }`}
+                                            className={`${styles.editButton} ${
+                                                (order.shippingEditCount >= 2 ||
+                                                ['PACKING', 'COURIER', 'SHIPPING', 'DELIVERED'].includes(order.trackingStatus))
+                                                ? styles.disabled
+                                                : ''
+                                            }`}
                                             onClick={() => setEditingOrderId(order.id)}
                                             disabled={
                                                 order.shippingEditCount >= 2 ||
@@ -216,22 +232,33 @@ const MisPedidos = () => {
                                             <i className="fas fa-edit"></i> Editar Envío
                                         </button>
                                     )}
+
+                                    {order.trackingStatus === 'DELIVERED' && order.items.map(item => {
+                                        const hasCommented = userComments[`${order.id}-${item.id}`];
+                                        
+                                        return hasCommented ? (
+                                            <Link
+                                                key={`review-${item.id}`}
+                                                to={`/product/${item.id}#comentarios`}
+                                                className={`${styles.reviewButton} ${styles.viewComment}`}
+                                            >
+                                                <i className="fas fa-comment"></i> Ver mi comentario
+                                            </Link>
+                                        ) : (
+                                            <button
+                                                key={`review-${item.id}`}
+                                                className={styles.reviewButton}
+                                                onClick={() => setReviewingItem({
+                                                    orderId: order.id,
+                                                    productId: item.id,
+                                                    productName: item.name
+                                                })}
+                                            >
+                                                <i className="fas fa-star"></i> Calificar Producto
+                                            </button>
+                                        );
+                                    })}
                                 </div>
-
-                                {selectedOrderId && (
-                                    <TrackingModal
-                                        orderId={selectedOrderId}
-                                        onClose={() => setSelectedOrderId(null)}
-                                    />
-                                )}
-
-                                {editingOrderId && (
-                                    <EditShippingModal
-                                        orderId={editingOrderId}
-                                        currentShipping={orders.find(o => o.id === editingOrderId)?.shipping}
-                                        onClose={() => setEditingOrderId(null)}
-                                    />
-                                )}
 
                                 <div className={styles.orderFooter}>
                                     <div className={styles.shipping}>
@@ -256,6 +283,33 @@ const MisPedidos = () => {
                             </div>
                         ))}
                     </div>
+                )}
+
+                {reviewingItem && (
+                    <ComentariosModal
+                        orderId={reviewingItem.orderId}
+                        productId={reviewingItem.productId}
+                        productName={reviewingItem.productName}
+                        onClose={() => {
+                            setReviewingItem(null);
+                            fetchUserComments(); // Refresh comments after closing modal
+                        }}
+                    />
+                )}
+
+                {selectedOrderId && (
+                    <TrackingModal
+                        orderId={selectedOrderId}
+                        onClose={() => setSelectedOrderId(null)}
+                    />
+                )}
+
+                {editingOrderId && (
+                    <EditShippingModal
+                        orderId={editingOrderId}
+                        currentShipping={orders.find(o => o.id === editingOrderId)?.shipping}
+                        onClose={() => setEditingOrderId(null)}
+                    />
                 )}
             </div>
         </>

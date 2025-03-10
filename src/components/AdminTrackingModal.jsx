@@ -14,31 +14,31 @@ const AdminTrackingModal = ({ orderId, onClose }) => {
         {
             status: 'ACCEPTED',
             title: 'Pedido Aceptado',
-            icon: '✓',
+            icon: <i className="fas fa-check"></i>,
             description: 'Pedido confirmado y validado'
         },
         {
             status: 'PACKING',
             title: 'Preparando Pedido',
-            icon: '📦',
+            icon: <i className="fas fa-box"></i>,
             description: 'Pedido siendo empacado'
         },
         {
             status: 'COURIER',
             title: 'En Courier',
-            icon: '🚚',
+            icon: <i className="fas fa-warehouse"></i>,
             description: 'Entregado al servicio de mensajería'
         },
         {
             status: 'SHIPPING',
             title: 'En Camino',
-            icon: '🛵',
+            icon: <i className="fas fa-truck"></i>,
             description: 'En ruta de entrega'
         },
         {
             status: 'DELIVERED',
             title: 'Entregado',
-            icon: '🏠',
+            icon: <i className="fas fa-home"></i>,
             description: 'Entregado con éxito'
         }
     ];

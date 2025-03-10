@@ -33,16 +33,30 @@ import PaymentResponse from './pages/PaymentResponse';
 import MisPedidos from './pages/MisPedidos';
 import Users from './pages/admin/Users';
 import ResetPassword from './pages/ResetPassword';
+import SobreNosotros from './pages/SobreNosotros';
+import ScrollToTopButton from './components/ScrollToTopButton';
+import { ThemeProvider } from './context/ThemeContext';
+import { ToastContainer } from 'react-toastify';
+import Contacto from './pages/Contacto';
 
 const Layout = ({ children }) => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
   const { loading } = useAuth();
 
+  useEffect(() => {
+    // Reset scroll position when route changes
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTo(0, 0);
+    document.body.scrollTo(0, 0);
+  }, [location]);
+
   return (
     <div className={styles.app}>
       {!isAdminRoute && <Navbar />}
-      {children}
+      <main className={styles.mainContent}>
+        {children}
+      </main>
       {!isAdminRoute && <Footer />}
     </div>
   );
@@ -52,68 +66,113 @@ function App() {
   const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
+    // Set initial loading timer
     const timer = setTimeout(() => {
       setInitialLoading(false);
     }, 2000);
 
+    // Handle theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.body.setAttribute('data-theme', savedTheme);
+
+    // Cleanup function
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    // Reset any scroll locks when routes change
+    const resetScrollBehavior = () => {
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.height = '';
+    };
+
+    // Clean up any scroll behavior modifications
+    window.addEventListener('beforeunload', resetScrollBehavior);
+    return () => {
+      window.removeEventListener('beforeunload', resetScrollBehavior);
+      resetScrollBehavior();
+    };
+  }, []);
+
   if (initialLoading) {
-    return <LoadingSpinner />;
+    return (
+      <ThemeProvider>
+        <LoadingSpinner />
+      </ThemeProvider>
+    );
   }
 
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <CartProvider>
-          <SmoothScroll />
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/catalogo" element={<Catalogo />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/order-success/:orderId" element={<OrderSuccess />} />
-              <Route path="/payment-response" element={<PaymentResponse />} />
-              <Route path="/libro-reclamaciones" element={<LibroReclamaciones />} />
-              <Route path="/politicas-cambios" element={<PoliticasCambios />} />
-              <Route path="/orders" element={<MisPedidos />} />
-              <Route path="/privacy" element={<PoliticasPriv />} />
-              <Route path="/terms" element={<TerminosCondiciones />} />
-              <Route path="/cookies" element={<Cookies />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route
-                path="/profile"
-                element={
-                  <PrivateRoute>
-                    <Profile />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/admin"
-                element={
-                  <AdminRoute>
-                    <Admin />
-                  </AdminRoute>
-                }
-              >
-                <Route index element={<Navigate to="dashboard" replace />} />
-                <Route path="dashboard" element={<Dashboard />} />
-                <Route path="products" element={<Products />} />
-                <Route path="categorias" element={<Categorias />} />
-                <Route path="orders" element={<Orders />} />
-                <Route path="users" element={<Users />} />
-                <Route path="settings" element={<div>Settings Page</div>} />
-              </Route>
-            </Routes>
-          </Layout>
-          <CartSlideout />
-        </CartProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <CartProvider>
+            <SmoothScroll />
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              limit={3}
+              newestOnTop
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/catalogo" element={<Catalogo />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+                <Route path="/payment-response" element={<PaymentResponse />} />
+                <Route path="/libro-reclamaciones" element={<LibroReclamaciones />} />
+                <Route path="/politicas-cambios" element={<PoliticasCambios />} />
+                <Route path="/orders" element={<MisPedidos />} />
+                <Route path="/privacy" element={<PoliticasPriv />} />
+                <Route path="/terms" element={<TerminosCondiciones />} />
+                <Route path="/cookies" element={<Cookies />} />
+                <Route path="/sobre-nosotros" element={<SobreNosotros />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/contacto" element={<Contacto />} />
+                <Route
+                  path="/profile"
+                  element={
+                    <PrivateRoute>
+                      <Profile />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/admin"
+                  element={
+                    <AdminRoute>
+                      <Admin />
+                    </AdminRoute>
+                  }
+                >
+                  <Route index element={<Navigate to="dashboard" replace />} />
+                  <Route path="dashboard" element={<Dashboard />} />
+                  <Route path="products" element={<Products />} />
+                  <Route path="categorias" element={<Categorias />} />
+                  <Route path="orders" element={<Orders />} />
+                  <Route path="users" element={<Users />} />
+                  <Route path="settings" element={<div>Settings Page</div>} />
+                </Route>
+              </Routes>
+            </Layout>
+            <ScrollToTopButton />
+            <CartSlideout />
+          </CartProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

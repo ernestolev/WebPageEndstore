@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from '../styles/Navbar.module.css';
 import logo from '../assets/imgs/end-largo2.png';
+import logo2 from '../assets/imgs/end-largo.png';
 import LogReg from './LogReg';
 import { useAuth } from '../context/AuthContext'; // Update this line
 import { signOut } from 'firebase/auth';
@@ -9,6 +10,7 @@ import { auth } from '../Firebase';
 import HamburgerMenu from './HamburgerMenu';
 import { useCart } from '../context/CartContext';
 import MobileMenu from './MobileMenu';
+import { useTheme } from '../context/ThemeContext';
 
 const Navbar = () => {
   const [currency, setCurrency] = useState('PEN');
@@ -18,6 +20,7 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { cart, setIsCartOpen } = useCart();
+  const { theme, toggleTheme } = useTheme();
 
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
 
@@ -63,7 +66,11 @@ const Navbar = () => {
         <div className={styles.container}>
           <div className={styles.leftSection}>
             <Link to="/" className={styles.logo}>
-              <img src={logo} alt="EndStore Logo" className={styles.logoImg} />
+              <img
+                src={theme === 'light' ? logo : logo2}
+                alt="EndStore Logo"
+                className={styles.logoImg}
+              />
             </Link>
             <ul className={styles.navLinks}>
               <li>
@@ -73,18 +80,27 @@ const Navbar = () => {
                 <Link to="/catalogo" className={styles.navLink}>Catálogo</Link>
               </li>
               <li>
-                <Link to="/ofertas" className={styles.navLink}>Ofertas</Link>
-              </li>
-              <li className={styles.dropdown}>
-                <span className={styles.navLink}>Categorías <i className="fas fa-chevron-down"></i></span>
-                <div className={styles.dropdownContent}>
-                  <Link to="/category/jackets">Jackets</Link>
-                  <Link to="/category/hoodies">Hoodies</Link>
-                  <Link to="/category/polos">Polos</Link>
-                </div>
+                <Link
+                  to="/#tracking"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const element = document.getElementById('tracking-section');
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                      window.location.href = '/#tracking';
+                    }
+                  }}
+                  className={styles.navLink}
+                >
+                  Tracking
+                </Link>
               </li>
               <li>
-                <Link to="/recursos" className={styles.navLink}>Recursos</Link>
+                <Link to="/contacto" className={styles.navLink}>Contacto</Link>
+              </li>
+              <li>
+                <Link to="/sobre-nosotros" className={styles.navLink}>Sobre Nosotros</Link>
               </li>
             </ul>
           </div>
@@ -100,10 +116,14 @@ const Navbar = () => {
                     <i className="far fa-user"></i>
                     <span className={styles.userName}>{user.displayName || user.email}</span>
                   </button>
+
                   {isUserMenuOpen && (
                     <div className={styles.userDropdown}>
                       <Link to="/profile" className={styles.dropdownItem}>Mi Perfil</Link>
                       <Link to="/orders" className={styles.dropdownItem}>Mis Pedidos</Link>
+                      <Link to="/favoritos" className={styles.dropdownItem}>
+                        Mis Favoritos
+                      </Link>
                       <button
                         onClick={handleLogout}
                         className={styles.dropdownItem}
@@ -136,6 +156,17 @@ const Navbar = () => {
                 <span className={styles.cartCount}>{cartItemCount}</span>
               )}
             </div>
+            <button
+              onClick={toggleTheme}
+              className={styles.themeToggle}
+              aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            >
+              {theme === 'light' ? (
+                <i className="fas fa-moon"></i>
+              ) : (
+                <i className="fas fa-sun"></i>
+              )}
+            </button>
             <button
               className={styles.hamburgerButton}
               onClick={toggleMobileMenu}

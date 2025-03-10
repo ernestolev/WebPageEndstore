@@ -25,9 +25,11 @@
     min-width: 300px;
     padding: 1rem;
   }
+
+
   
   .testimonialContent {
-    background: white;
+    background: var(--card-bg) !important;
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -42,14 +44,14 @@
   .testimonialText {
     font-size: 1rem;
     line-height: 1.6;
-    color: #333;
+    color: var(--text-color);
     margin-bottom: 1.5rem;
   }
   
   .authorName {
     font-size: 1.1rem;
-    color: #111;
-    margin-bottom: 0.5rem;
+    color: var(--text-color);
+        margin-bottom: 0.5rem;
   }
   
   .stars {

@@ -17,33 +17,16 @@ service cloud.firestore {
       return request.auth.uid == userId;
     }
 
-    function isValidPayuTransaction() {
-      return request.resource.data.keys().hasAll(['orderId', 'amount', 'userId', 'shipping', 'status', 'cartItems']) &&
-             request.resource.data.amount is number &&
-             request.resource.data.amount > 0 &&
-             request.resource.data.userId == request.auth.uid &&
-             request.resource.data.shipping.keys().hasAll(['email', 'fullName', 'address']) &&
-             request.resource.data.cartItems is list;
+    function hasValidOrder(productId, orderId) {
+      let order = get(/databases/$(database)/documents/Orders/$(orderId));
+      return order != null &&
+             order.data.userId == request.auth.uid &&
+             order.data.trackingStatus == 'DELIVERED';
     }
 
-    function isValidOrder() {
-      return request.resource.data.keys().hasAll(['userId', 'total', 'items', 'status']) &&
-             request.resource.data.total is number &&
-             request.resource.data.total > 0 &&
-             request.resource.data.items is list &&
-             request.resource.data.status in ['PENDING', 'PAID', 'COMPLETED', 'CANCELLED'];
-    }
-
-    // User rules - Updated for password reset
+    // User rules
     match /Users/{userId} {
       allow read: if true;
-      
-      // Allow email verification query without authentication
-      allow list: if 
-        request.query.limit <= 1 && 
-        request.query.filters.size() == 1 && 
-        'email' in request.query.filters[0];
-      
       allow create: if isAuth();
       allow update: if isAuth() && (isOwner(userId) || isAdmin());
       allow delete: if isAdmin();
@@ -55,10 +38,21 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    // Comments rules
+    match /comentarios/{commentId} {
+      allow read: if true;
+      allow create: if isAuth();
+      allow update: if false;
+      allow delete: if isAuth() && (
+        isOwner(resource.data.userId) || 
+        isAdmin()
+      );
+    }
+
     // Category rules
     match /Categorias/{categoryId} {
       allow read: if true;
-      allow create, update, delete: if isAdmin();
+      allow write: if isAdmin();
     }
 
     // Cart rules
@@ -68,48 +62,39 @@ service cloud.firestore {
 
     // Order rules
     match /Orders/{orderId} {
-      allow read: if isAuth() && 
-        (resource == null || resource.data.userId == request.auth.uid || isAdmin());
-      allow create: if isAuth() && isValidOrder() && 
-        request.resource.data.userId == request.auth.uid;
+      allow read: if isAuth() && (
+        resource.data.userId == request.auth.uid || 
+        isAdmin()
+      );
+      allow create: if isAuth();
       allow update: if isAuth() && (
         isAdmin() || 
-        (isOwner(resource.data.userId) && 
-         request.resource.data.diff(resource.data).affectedKeys()
-           .hasOnly(['status', 'updatedAt']))
+        isOwner(resource.data.userId)
       );
       allow delete: if isAdmin();
     }
 
     // PayU Transaction rules
     match /PayuTransactions/{transactionId} {
-      allow read: if isAuth() && 
-        (resource == null || 
-         resource.data.userId == request.auth.uid || 
-         isAdmin());
-      
-      allow create: if isAuth() && isValidPayuTransaction();
-      
-      allow update: if isAuth() && (
-        isOwner(resource.data.userId) || 
-        isAdmin() || 
-        request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['status', 'payuResponse', 'updatedAt', 'confirmationData'])
+      allow read: if isAuth() && (
+        resource.data.userId == request.auth.uid || 
+        isAdmin()
       );
-
+      allow create: if isAuth();
+      allow update: if isAdmin();
       allow delete: if false;
     }
 
     // Tracking rules
     match /tracking/{trackingId} {
-      allow read: if isAuth() && (
-        exists(/databases/$(database)/documents/Orders/$(trackingId)) &&
-        (
-          get(/databases/$(database)/documents/Orders/$(trackingId)).data.userId == request.auth.uid ||
-          isAdmin()
-        )
-      );
+      allow read: if isAuth();
       allow write: if isAdmin();
     }
+
+    match /favorites/{favoriteId} {
+  allow read: if true;
+  allow create, delete: if request.auth != null && 
+    favoriteId.matches(request.auth.uid + '_.*');
+}
   }
 }

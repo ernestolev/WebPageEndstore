@@ -1,6 +1,6 @@
 .adminContainer {
     min-height: 100vh;
-    background-color: #f8f9fa;
+    background-color: var(--background-color);
     position: relative;
 }
 
@@ -15,7 +15,7 @@
     border: none;
     border-radius: 8px;
     background: #e10600;
-    color: white;
+    color: var(--text-color);
     cursor: pointer;
     align-items: center;
     justify-content: center;
@@ -26,7 +26,7 @@
     width: 260px;
     height: 100vh;
     position: fixed;
-    background: white;
+    background: var(--background-color);
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
     z-index: 1000;
 }
@@ -39,7 +39,7 @@
 .sidebarHeader h2 {
     margin: 0;
     font-size: 1.25rem;
-    color: #111827;
+    color: var(--text-color);
 }
 
 .sidebarNav {
@@ -51,17 +51,20 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
-    color: #4b5563;
+    color: var(--text-color);
     text-decoration: none;
     border-radius: 6px;
     transition: all 0.2s;
     margin-bottom: 0.5rem;
 }
 
+.navItem span{
+    color: var(--text-color);
+}
 
 
 .navItem:hover {
-    background: #f3f4f6;
+    background: var(--card-bg);
     color: #e10600;
 }
 
@@ -86,7 +89,7 @@
 .contentHeader h1 {
     font-size: 1.875rem;
     font-weight: 600;
-    color: #111827;
+    color: var(--text-color);
 }
 
 .headerActions {
@@ -149,7 +152,7 @@
 
 .filterSection {
     padding: 1rem 2rem;
-    background: white;
+    background: var(--background-color);
     border-radius: 8px;
     margin: 1rem 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -241,16 +244,21 @@
     gap: 0.5rem;
     padding: 0.75rem 1rem;
     margin-top: 1rem;
-    color: #4b5563;
+    color: var(--text-color);
     text-decoration: none;
     border-radius: 6px;
+    background: var(--card-bg);
     transition: all 0.2s ease;
     font-size: 0.875rem;
     border: 1px solid #e5e7eb;
 }
 
+.homeButton span{
+    color: var(--text-color);
+}
+
 .homeButton:hover {
-    background: #f3f4f6;
+    background: var(--background-color);
     color: #e10600;
     border-color: #e10600;
 }
@@ -268,7 +276,7 @@
     margin: 0;
     margin-bottom: 1rem;
     font-size: 1.25rem;
-    color: #111827;
+    color: var(--text-color);
 }
 
 @keyframes fadeIn {

@@ -12,7 +12,7 @@
 }
 
 .modal {
-    background: white;
+    background: var(--background-color);
     border-radius: 12px;
     padding: 2rem;
     width: 90%;
@@ -21,6 +21,10 @@
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
+}
+
+.modal h2{
+    color : var(--text-color);
 }
 
 .closeButton {
@@ -61,7 +65,7 @@
 
 .formGroup label {
     font-weight: 500;
-    color: #374151;
+    color: var(--text-color);
 }
 
 .formGroup input,
@@ -83,7 +87,7 @@
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: 1rem;
     padding: 1rem;
-    background: #f9fafb;
+    background: var(--background-color);
     border-radius: 8px;
 }
 
@@ -106,7 +110,7 @@
 }
 
 .error {
-    background-color: #fee2e2;
+    background-color: var(--background-color);
     color: #dc2626;
     padding: 1rem;
     border-radius: 6px;
@@ -163,21 +167,34 @@
 }
 
 .inputDisabled {
-    background-color: #f5f5f5;
+    background-color: var(--card-bg);
     cursor: not-allowed;
     opacity: 0.7;
 }
 
 .sizeInput input:disabled {
-    background-color: #f5f5f5;
+    background-color: var(--background-color);
     border-color: #ddd;
     cursor: not-allowed;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.checkboxLabel input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
 }
 
 @media (max-width: 468px) {
 
     .modal {
-        background: white;
+        background: var(--background-color);
         border-radius: 12px;
         padding: 1rem;
         width: 98%;

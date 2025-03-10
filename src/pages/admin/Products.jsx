@@ -12,6 +12,11 @@ const Products = () => {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [showDiscounted, setShowDiscounted] = useState(false);
     const [categories, setCategories] = useState([]);
+    const [refreshKey, setRefreshKey] = useState(0); // Add this line
+
+    const handleRefresh = () => {
+        setRefreshKey(prev => prev + 1);
+    };
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -49,7 +54,6 @@ const Products = () => {
 
             <div className={styles.filterSection}>
                 <div className={styles.searchBar}>
-                    <i className="fas fa-search"></i>
                     <input
                         type="text"
                         placeholder="Buscar productos..."
@@ -88,6 +92,7 @@ const Products = () => {
                 searchTerm={searchTerm}
                 selectedCategory={selectedCategory}
                 showDiscounted={showDiscounted}
+                refreshKey={refreshKey} // Add this prop
             />
 
             <ProductForm
@@ -97,6 +102,7 @@ const Products = () => {
                     setEditProduct(null);
                 }}
                 editProduct={editProduct}
+                onRefresh={handleRefresh} // Add this prop
             />
         </>
     );

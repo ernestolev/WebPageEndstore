@@ -1,14 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
-import { collection, query, where, limit } from 'firebase/firestore';
+import {
+    doc,
+    getDoc,
+    collection,
+    query,
+    where,
+    getDocs,
+    setDoc,
+    deleteDoc,
+    updateDoc,
+    increment,
+    limit as firestoreLimit
+} from 'firebase/firestore';
 import { db } from '../Firebase';
 import styles from '../styles/ProductDetail.module.css';
 import LoadingSpinner from '../components/LoadingSpinner';
 import AnnouncementBar from '../components/AnnouncementBar';
 import ImageMagnifier from '../components/ImageMagnifier';
 import { useCart } from '../context/CartContext';
-
+import Comentarios from '../components/Comentarios';
+import { useAuth } from '../context/AuthContext';
+import LogReg from '../components/LogReg';
 
 
 const ProductDetail = () => {
@@ -20,21 +33,96 @@ const ProductDetail = () => {
     const [selectedSize, setSelectedSize] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [relatedProducts, setRelatedProducts] = useState([]);
+    const { user } = useAuth();
+    const [isLiked, setIsLiked] = useState(false);
+    const [likeCount, setLikeCount] = useState(0);
+    const [showLoginModal, setShowLoginModal] = useState(false); // Add this state
 
     const { addToCart } = useCart();
 
     const handleAddToCart = () => {
-        if (!selectedSize) {
+        if (product.hasSizes && !selectedSize) {
             setShowSizes(true);
             return;
         }
 
-        addToCart(product, quantity, selectedSize);
+        addToCart(product, quantity, product.hasSizes ? selectedSize : null);
 
         // Clear selection after adding to cart
-        setSelectedSize('');
+        if (product.hasSizes) {
+            setSelectedSize('');
+        }
         setQuantity(1);
         setShowSizes(false);
+    };
+
+    useEffect(() => {
+        // Check if there's a hash in the URL
+        if (window.location.hash === '#comentarios') {
+            // Wait for the component to render
+            setTimeout(() => {
+                const comentariosSection = document.getElementById('comentarios');
+                if (comentariosSection) {
+                    comentariosSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 500);
+        }
+    }, []);
+
+    useEffect(() => {
+        const checkIfLiked = async () => {
+            if (user && id) {
+                try {
+                    const favoriteRef = doc(db, 'favorites', `${user.uid}_${id}`);
+                    const docSnap = await getDoc(favoriteRef);
+                    setIsLiked(docSnap.exists());
+                } catch (error) {
+                    console.error('Error checking like status:', error);
+                }
+            }
+        };
+
+        checkIfLiked();
+    }, [user, id]);
+
+    const handleLike = async () => {
+        if (!user) {
+            setShowLoginModal(true); // Show login modal if user is not authenticated
+            return;
+        }
+
+        
+
+        const favoriteRef = doc(db, 'favorites', `${user.uid}_${id}`);
+        const productRef = doc(db, 'Productos', id);
+
+        try {
+            if (isLiked) {
+                await deleteDoc(favoriteRef);
+                await updateDoc(productRef, {
+                    likes: increment(-1)
+                });
+                setLikeCount(prev => Math.max(0, prev - 1)); // <-- Prevent negative values
+            } else {
+                await setDoc(favoriteRef, {
+                    userId: user.uid,
+                    productId: id,
+                    createdAt: new Date(),
+                    productData: {
+                        name: product.name,
+                        price: product.price,
+                        image: product.images[0]
+                    }
+                });
+                await updateDoc(productRef, {
+                    likes: increment(1)
+                });
+                setLikeCount(prev => prev + 1);
+            }
+            setIsLiked(!isLiked);
+        } catch (error) {
+            console.error('Error updating favorite:', error);
+        }
     };
 
     useEffect(() => {
@@ -42,51 +130,71 @@ const ProductDetail = () => {
             if (!product) return;
 
             try {
-                // First try to get products from the same category
-                let q = query(
+                // First, try to get products from the same category
+                const categoryQuery = query(
                     collection(db, 'Productos'),
                     where('category', '==', product.category),
-                    where('id', '!=', product.id),
-                    limit(4)
+                    where('__name__', '!=', id), // Exclude current product
+                    firestoreLimit(4) // Use firestoreLimit instead of limit
                 );
 
-                let querySnapshot = await getDocs(q);
-                let products = querySnapshot.docs.map(doc => ({
+                let querySnapshot = await getDocs(categoryQuery);
+                let relatedProducts = querySnapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data()
                 }));
 
-                // If we don't have enough products from the same category, get others
-                if (products.length < 4) {
-                    q = query(
+                // If we don't have enough products from the same category
+                if (relatedProducts.length < 4) {
+                    // Get random products from other categories
+                    const otherProductsQuery = query(
                         collection(db, 'Productos'),
-                        where('id', '!=', product.id),
-                        limit(4 - products.length)
+                        where('__name__', '!=', id), // Exclude current product
+                        firestoreLimit(4 - relatedProducts.length) // Use firestoreLimit
                     );
-                    querySnapshot = await getDocs(q);
-                    const otherProducts = querySnapshot.docs.map(doc => ({
+
+                    const otherSnapshot = await getDocs(otherProductsQuery);
+                    const otherProducts = otherSnapshot.docs.map(doc => ({
                         id: doc.id,
                         ...doc.data()
                     }));
-                    products = [...products, ...otherProducts];
+
+                    relatedProducts = [...relatedProducts, ...otherProducts];
                 }
 
-                setRelatedProducts(products);
+                // Shuffle the array to randomize the order
+                const shuffled = relatedProducts.sort(() => Math.random() - 0.5);
+
+                setRelatedProducts(shuffled.slice(0, 4));
             } catch (error) {
                 console.error('Error fetching related products:', error);
+                setRelatedProducts([]);
             }
         };
 
-        fetchRelatedProducts();
-    }, [product]);
+        if (product) {
+            fetchRelatedProducts();
+        }
+    }, [product, id]);
 
     useEffect(() => {
         const fetchProduct = async () => {
             try {
+                setLoading(true);
                 const docRef = doc(db, 'Productos', id);
                 const docSnap = await getDoc(docRef);
+
                 if (docSnap.exists()) {
-                    setProduct({ id: docSnap.id, ...docSnap.data() });
+                    const productData = docSnap.data();
+                    setProduct({
+                        id: docSnap.id,
+                        ...productData,
+                        likes: productData.likes || 0  // <-- Make sure likes has a default value
+                    });
+                    setLikeCount(productData.likes || 0);  // <-- Set like count here
+                    setMainImage(0); // Use setMainImage instead of setCurrentImageIndex
+                } else {
+                    console.error('Producto no encontrado');
                 }
             } catch (error) {
                 console.error('Error fetching product:', error);
@@ -95,7 +203,9 @@ const ProductDetail = () => {
             }
         };
 
-        fetchProduct();
+        if (id) {
+            fetchProduct();
+        }
     }, [id]);
 
     if (loading) return <LoadingSpinner />;
@@ -115,6 +225,8 @@ const ProductDetail = () => {
             <div className={styles.productDetail}>
                 <div className={styles.breadcrumb}>
                     <Link to="/">Inicio</Link>
+                    <span>/</span>
+                    <Link to="/catalogo">Catalogo</Link>
                     <span>/</span>
                     <span>{product.name}</span>
                 </div>
@@ -146,8 +258,18 @@ const ProductDetail = () => {
                     </div>
 
                     <div className={styles.productInfo}>
-                        <span className={styles.category}>{product.category}</span>
-                        <h1>{product.name}</h1>
+                        <div className={styles.productHeader}>
+                            <h1>{product.name}</h1>
+                            <button
+                                className={`${styles.likeButton} ${isLiked ? styles.liked : ''}`}
+                                onClick={handleLike}
+                            >
+                                <i className="fas fa-heart"></i>
+                                <span className={styles.likeCount}>
+                                    {likeCount > 0 ? likeCount : 0} {likeCount === 1 ? 'Me gusta' : 'Me gusta'}
+                                </span>
+                            </button>
+                        </div>
                         <p className={styles.description}>{product.description}</p>
                         <div className={`${styles.stock} ${isOutOfStock ? styles.outOfStock : ''}`}>
                             {isOutOfStock ? (
@@ -156,6 +278,7 @@ const ProductDetail = () => {
                                 <>¡Excelente! {product.stock} artículo(s) en stock</>
                             )}
                         </div>
+
                         <div className={styles.priceSection}>
                             {product.discount > 0 ? (
                                 <>
@@ -178,34 +301,37 @@ const ProductDetail = () => {
                             )}
                         </div>
 
-                        <div className={styles.sizesSection}>
-                            <h3 className={styles.sizesTitle}>
-                                Selecciona tu talla
-                                <button
-                                    className={styles.sizesToggle}
-                                    onClick={() => setShowSizes(!showSizes)}
-                                >
-                                    <i className={`fas fa-chevron-${showSizes ? 'up' : 'down'}`}></i>
-                                </button>
-                            </h3>
-
-                            <div className={`${styles.sizesGrid} ${showSizes ? styles.show : ''}`}>
-                                {Object.entries(product.sizes).map(([size, stock]) => (
+                        {product.hasSizes && (
+                            <div className={styles.sizesSection}>
+                                <h3 className={styles.sizesTitle}>
+                                    Selecciona tu talla
                                     <button
-                                        key={size}
-                                        className={`${styles.sizeButton} ${selectedSize === size ? styles.selected : ''
-                                            } ${stock === 0 ? styles.disabled : ''}`}
-                                        onClick={() => setSelectedSize(size)}
-                                        disabled={stock === 0}
+                                        className={styles.sizesToggle}
+                                        onClick={() => setShowSizes(!showSizes)}
                                     >
-                                        <span className={styles.sizeLabel}>{size}</span>
-                                        <span className={styles.stockLabel}>
-                                            {stock === 0 ? 'Agotado' : `${stock} disponibles`}
-                                        </span>
+                                        <i className={`fas fa-chevron-${showSizes ? 'up' : 'down'}`}></i>
                                     </button>
-                                ))}
+                                </h3>
+
+                                <div className={`${styles.sizesGrid} ${showSizes ? styles.show : ''}`}>
+                                    {Object.entries(product.sizes).map(([size, stock]) => (
+                                        <button
+                                            key={size}
+                                            className={`${styles.sizeButton} ${selectedSize === size ? styles.selected : ''
+                                                } ${stock === 0 ? styles.disabled : ''}`}
+                                            onClick={() => setSelectedSize(size)}
+                                            disabled={stock === 0}
+                                        >
+                                            <span className={styles.sizeLabel}>{size}</span>
+                                            <span className={styles.stockLabel}>
+                                                {stock === 0 ? 'Agotado' : `${stock} disponibles`}
+                                            </span>
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        )}
+
 
                         <div className={styles.addToCart}>
                             {isOutOfStock ? (
@@ -217,7 +343,7 @@ const ProductDetail = () => {
                                     <div className={styles.quantitySelector}>
                                         <button
                                             onClick={() => quantity > 1 && setQuantity(q => q - 1)}
-                                            disabled={!selectedSize}
+                                            disabled={product.hasSizes && !selectedSize}
                                         >
                                             -
                                         </button>
@@ -226,21 +352,22 @@ const ProductDetail = () => {
                                             value={quantity}
                                             onChange={e => setQuantity(Math.max(1, parseInt(e.target.value)))}
                                             min="1"
-                                            disabled={!selectedSize}
+                                            disabled={product.hasSizes && !selectedSize}
                                         />
                                         <button
                                             onClick={() => setQuantity(q => q + 1)}
-                                            disabled={!selectedSize}
+                                            disabled={product.hasSizes && !selectedSize}
                                         >
                                             +
                                         </button>
                                     </div>
                                     <button
-                                        className={`${styles.addToCartButton} ${!selectedSize ? styles.disabled : ''}`}
+                                        className={`${styles.addToCartButton} ${product.hasSizes && !selectedSize ? styles.disabled : ''
+                                            }`}
                                         onClick={handleAddToCart}
-                                        disabled={!selectedSize}
+                                        disabled={product.hasSizes && !selectedSize}
                                     >
-                                        {selectedSize ? 'Añadir al Carrito' : 'Seleccionar Talla'}
+                                        {product.hasSizes && !selectedSize ? 'Seleccionar Talla' : 'Añadir al Carrito'}
                                     </button>
                                 </>
                             )}
@@ -263,6 +390,9 @@ const ProductDetail = () => {
                             </div>
                         </div>
                     </div>
+                </div>
+                <div id="comentarios" className={styles.reviewsSection}>
+                    <Comentarios productId={id} />
                 </div>
                 <div className={styles.relatedProducts}>
                     <h2>Productos Relacionados</h2>
@@ -318,7 +448,12 @@ const ProductDetail = () => {
                     )}
                 </div>
             </div>
-
+            {showLoginModal && (
+                <LogReg
+                    isOpen={showLoginModal}
+                    onClose={() => setShowLoginModal(false)}
+                />
+            )}
         </>
     );
 };

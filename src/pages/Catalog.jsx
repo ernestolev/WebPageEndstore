@@ -19,26 +19,33 @@ const Catalog = () => {
     searchQuery: ''
   });
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
 
-  const productsPerPage = 18;
+  const productsPerPage = 15;
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'Productos'));
-        const productsData = querySnapshot.docs.map(doc => ({
+        // Fetch products
+        const productsSnapshot = await getDocs(collection(db, 'Productos'));
+        const productsData = productsSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
         setProducts(productsData);
+
+        // Fetch categories
+        const categoriesSnapshot = await getDocs(collection(db, 'Categorias'));
+        const categoriesData = categoriesSnapshot.docs.map(doc => doc.data().name);
+        setCategories(categoriesData);
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProducts();
+    fetchData();
   }, []);
 
   const handleFilterChange = (type, value) => {
@@ -48,6 +55,7 @@ const Catalog = () => {
     }));
     setCurrentPage(1);
   };
+
 
   const filteredProducts = products.filter(product => {
     // Category filter
@@ -60,9 +68,18 @@ const Catalog = () => {
       return false;
     }
 
-    // Size filter
-    if (filters.sizes.length > 0 && !filters.sizes.some(size => product.sizes[size] > 0)) {
-      return false;
+    // Size filter - Updated logic
+    if (filters.sizes.length > 0) {
+      // Skip products that don't manage sizes
+      if (!product.sizes || product.hasSizes === false) {
+        return false;
+      }
+
+      // Check if the product has stock in ANY of the selected sizes
+      return filters.sizes.some(selectedSize => {
+        const sizeStock = product.sizes[selectedSize];
+        return typeof sizeStock === 'number' && sizeStock > 0;
+      });
     }
 
     // Search query
@@ -74,6 +91,23 @@ const Catalog = () => {
 
     return true;
   });
+
+
+  const getAvailableSizesCount = (size) => {
+    return products.reduce((count, product) => {
+      // Check if product has sizes and the specific size exists with stock
+      if (
+        product.hasSizes !== false && // Product manages sizes
+        product.sizes && // Sizes object exists
+        typeof product.sizes[size] === 'number' && // Size exists and is a number
+        product.sizes[size] > 0 // Size has stock
+      ) {
+        return count + 1;
+      }
+      return count;
+    }, 0);
+  };
+
 
   // Sort products
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -139,7 +173,7 @@ const Catalog = () => {
             {/* Category Filter */}
             <div className={styles.filterSection}>
               <h4>Categorías</h4>
-              {['Jacket', 'Hoodie', 'Polo'].map(category => (
+              {categories.map(category => (
                 <label key={category} className={styles.filterCheckbox}>
                   <input
                     type="checkbox"
@@ -185,21 +219,30 @@ const Catalog = () => {
             {/* Size Filter */}
             <div className={styles.filterSection}>
               <h4>Tallas</h4>
-              {['S', 'M', 'L', 'XL', 'XXL'].map(size => (
-                <label key={size} className={styles.filterCheckbox}>
-                  <input
-                    type="checkbox"
-                    checked={filters.sizes.includes(size)}
-                    onChange={(e) => {
-                      const newSizes = e.target.checked
-                        ? [...filters.sizes, size]
-                        : filters.sizes.filter(s => s !== size);
-                      handleFilterChange('sizes', newSizes);
-                    }}
-                  />
-                  {size}
-                </label>
-              ))}
+              {['S', 'M', 'L', 'XL', 'XXL'].map(size => {
+                const count = getAvailableSizesCount(size);
+                return (
+                  <label key={size} className={`${styles.filterCheckbox} ${count === 0 ? styles.disabled : ''}`}>
+                    <input
+                      type="checkbox"
+                      checked={filters.sizes.includes(size)}
+                      onChange={(e) => {
+                        const newSizes = e.target.checked
+                          ? [...filters.sizes, size]
+                          : filters.sizes.filter(s => s !== size);
+                        handleFilterChange('sizes', newSizes);
+                      }}
+                      disabled={count === 0}
+                    />
+                    <span className={styles.sizeLabel}>
+                      {size}
+                      <span className={styles.sizeCount}>
+                        ({count})
+                      </span>
+                    </span>
+                  </label>
+                );
+              })}
             </div>
 
             {/* Clear Filters Button */}
@@ -234,7 +277,7 @@ const Catalog = () => {
               </div>
               <div className={styles.filterSection}>
                 <h4>Categorías</h4>
-                {['Jacket', 'Hoodie', 'Polo'].map(category => (
+                {categories.map(category => (
                   <label key={category} className={styles.filterCheckbox}>
                     <input
                       type="checkbox"
@@ -278,21 +321,30 @@ const Catalog = () => {
 
               <div className={styles.filterSection}>
                 <h4>Tallas</h4>
-                {['S', 'M', 'L', 'XL', 'XXL'].map(size => (
-                  <label key={size} className={styles.filterCheckbox}>
-                    <input
-                      type="checkbox"
-                      checked={filters.sizes.includes(size)}
-                      onChange={(e) => {
-                        const newSizes = e.target.checked
-                          ? [...filters.sizes, size]
-                          : filters.sizes.filter(s => s !== size);
-                        handleFilterChange('sizes', newSizes);
-                      }}
-                    />
-                    {size}
-                  </label>
-                ))}
+                {['S', 'M', 'L', 'XL', 'XXL'].map(size => {
+                  const count = getAvailableSizesCount(size);
+                  return (
+                    <label key={size} className={`${styles.filterCheckbox} ${count === 0 ? styles.disabled : ''}`}>
+                      <input
+                        type="checkbox"
+                        checked={filters.sizes.includes(size)}
+                        onChange={(e) => {
+                          const newSizes = e.target.checked
+                            ? [...filters.sizes, size]
+                            : filters.sizes.filter(s => s !== size);
+                          handleFilterChange('sizes', newSizes);
+                        }}
+                        disabled={count === 0}
+                      />
+                      <span className={styles.sizeLabel}>
+                        {size}
+                        <span className={styles.sizeCount}>
+                          ({count})
+                        </span>
+                      </span>
+                    </label>
+                  );
+                })}
               </div>
             </div>
             <div className={styles.productsHeader}>
@@ -312,9 +364,15 @@ const Catalog = () => {
             </div>
 
             <div className={styles.productsGrid}>
-              {currentProducts.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+              {currentProducts.length > 0 ? (
+                currentProducts.map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))
+              ) : (
+                <div className={styles.noProducts}>
+                  No se encontraron productos con los filtros seleccionados
+                </div>
+              )}
             </div>
 
             {/* Pagination */}
