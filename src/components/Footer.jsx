@@ -25,13 +25,13 @@ const Footer = () => {
               Tu destino premium para moda inspirada en la F1. Calidad, estilo y pasión por el racing.
             </p>
             <div className={styles.socialLinks}>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.instagram.com/end.store.pe?igsh=MWFuaTNnZGE1bGt0bw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">
                 <i className="fab fa-instagram"></i>
               </a>
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-                <i className="fab fa-facebook"></i>
+              <a href="https://wa.me/51981410745" target="_blank" rel="noopener noreferrer">
+                <i className="fab fa-whatsapp"></i>
               </a>
-              <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.tiktok.com/@end.store.pe?_t=ZM-8uRByss2Uyd&_r=1" target="_blank" rel="noopener noreferrer">
                 <i className="fab fa-tiktok"></i>
               </a>
             </div>
@@ -42,10 +42,9 @@ const Footer = () => {
             <h3 className={styles.columnTitle}>Quick Links</h3>
             <ul className={styles.columnLinks}>
               <li><Link to="/">Inicio</Link></li>
-              <li><Link to="/about">Sobre Nosotros</Link></li>
-              <li><Link to="/blog">Blog</Link></li>
+              <li><Link to="/sobre-nosotros">Sobre Nosotros</Link></li>
               <li><Link to="/faqs">FAQs</Link></li>
-              <li><Link to="/contact">Contacto</Link></li>
+              <li><Link to="/contacto">Contacto</Link></li>
             </ul>
           </div>
 
@@ -53,11 +52,11 @@ const Footer = () => {
           <div className={styles.footerColumn}>
             <h3 className={styles.columnTitle}>Colecciones</h3>
             <ul className={styles.columnLinks}>
-              <li><Link to="/collection/jackets">Racing Jackets</Link></li>
-              <li><Link to="/collection/hoodies">F1 Hoodies</Link></li>
-              <li><Link to="/collection/polos">Sport Polos</Link></li>
-              <li><Link to="/collection/new">Nuevos Ingresos</Link></li>
-              <li><Link to="/collection/sale">Ofertas</Link></li>
+              <li><Link to="/catalogo">Racing Jackets</Link></li>
+              <li><Link to="/catalogo">F1 Hoodies</Link></li>
+              <li><Link to="/catalogo">Sport Polos</Link></li>
+              <li><Link to="/catalogo">Nuevos Ingresos</Link></li>
+              <li><Link to="/catalogo">Ofertas</Link></li>
             </ul>
           </div>
 

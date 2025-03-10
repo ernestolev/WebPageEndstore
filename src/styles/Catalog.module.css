@@ -102,6 +102,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
 }
 
 .productCount {
@@ -111,10 +112,11 @@
 .sortSelect {
     padding: 0.5rem 1rem;
     border: 1px solid #e5e5e5;
-    border-radius: 4px;
+    border-radius: 13px;
     background: var(--background-color);
     cursor: pointer;
     color: var(--text-color);
+    font-size: 0.8rem;
     font-family: 'Montserrat', sans-serif;
 }
 
@@ -256,7 +258,7 @@
     bottom: -100%;
     left: 0;
     right: 0;
-    background: white;
+    background: var(--card-bg);
     padding: 1.5rem;
     border-radius: 20px 20px 0 0;
     z-index: 999;
@@ -280,7 +282,7 @@
 
 .mobileFiltersHeader h3 {
     font-size: 1.1rem;
-    color: #111827;
+    color: var(--text-color);
     margin: 0;
 }
 
@@ -346,6 +348,38 @@
     cursor: pointer;
 }
 
+.viewControls {
+    
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.viewToggleButton {
+    display: none !important;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    color: var(--text-color);
+}
+
+.viewToggleButton.active {
+    background-color: var(--button-bg);
+    color: var(--text-color);
+}
+
+.viewToggleButton:hover {
+    background-color: var(--card-hover-bg);
+}
+
 @media (max-width: 1024px) {
     .catalogContent {
         grid-template-columns: 25% 75%;
@@ -368,11 +402,27 @@
     .productsGrid {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .viewToggleButton {
+        display: flex !important;
+        width: 55px;
+        height: 37px;
+    }
+
+    .productsGrid {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 1rem;
+    }
+
+    .productsGrid.compactGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
 }
 
 @media (max-width: 480px) {
     .catalog {
-        margin: 90px auto;
+        margin: 90px auto 0px;
     }
 
     .productsGrid {
@@ -403,5 +453,9 @@
 
     .breadcrumb {
         margin: 0 auto 1.5rem;
+    }
+
+    .searchInput, .mobileFilterButton{
+        padding: 0.375rem 1rem 0.375rem 1rem;
     }
 }

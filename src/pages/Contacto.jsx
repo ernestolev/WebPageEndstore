@@ -306,7 +306,7 @@ const Contacto = () => {
                         </div>
                         <div className={styles.faqItem}>
                             <h3>¿Puedo cambiar o devolver mi compra?</h3>
-                            <p>Sí, aceptamos cambios y devoluciones dentro de los 7 días posteriores a la recepción del producto.</p>
+                            <p>No, una vez que el producto ha sido comprado y entregado no hay derecho a devolución salvo sea por problemas comprensibles.</p>
                         </div>
                         <div className={styles.faqItem}>
                             <h3>¿Tienen tienda física?</h3>

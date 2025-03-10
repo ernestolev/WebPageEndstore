@@ -6,6 +6,7 @@ import ImagePreview from './ImagePreview';
 import { compressImage } from '../utils/imageCompressor'; // Update this import path
 
 const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
+const FIT_TYPES = ['Normal', 'Oversize', 'Ambos'];
 
 const ProductForm = ({ isOpen, onClose, editProduct = null, onRefresh }) => {
     const [formData, setFormData] = useState({
@@ -14,9 +15,11 @@ const ProductForm = ({ isOpen, onClose, editProduct = null, onRefresh }) => {
         stock: 0,
         description: '',
         price: 0,
-        discount: 0, // Add this line
+        discount: 0,
         sizes: {},
-        images: []
+        images: [],
+        // Add fitType field
+        fitType: 'Normal'
     });
     const [hasSizes, setHasSizes] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -143,7 +146,11 @@ const ProductForm = ({ isOpen, onClose, editProduct = null, onRefresh }) => {
 
     useEffect(() => {
         if (editProduct) {
-            setFormData(editProduct);
+            setFormData({
+                ...editProduct,
+                // Ensure fitType has a default value if it doesn't exist
+                fitType: editProduct.fitType || 'Normal'
+            });
             setSizesStock(editProduct.sizes || {});
             setExistingImages(editProduct.images || []);
             setHasSizes(editProduct.hasSizes ?? true);
@@ -161,6 +168,7 @@ const ProductForm = ({ isOpen, onClose, editProduct = null, onRefresh }) => {
         setError(''); // Clear any existing errors
     };
 
+    // Update resetForm function
     const resetForm = () => {
         setFormData({
             name: '',
@@ -171,7 +179,8 @@ const ProductForm = ({ isOpen, onClose, editProduct = null, onRefresh }) => {
             discount: 0,
             sizes: {},
             images: [],
-            hasSizes: true
+            hasSizes: true,
+            fitType: 'Normal'  // Add default value
         });
         setSizesStock({
             S: 0, M: 0, L: 0, XL: 0, XXL: 0
@@ -263,6 +272,23 @@ const ProductForm = ({ isOpen, onClose, editProduct = null, onRefresh }) => {
                                 ))}
                             </select>
                         </div>
+
+                        {formData.category === 'Polo' && (
+                            <div className={styles.formGroup}>
+                                <label>Tipo de Fit</label>
+                                <select
+                                    value={formData.fitType}
+                                    onChange={(e) => setFormData({ ...formData, fitType: e.target.value })}
+                                    required
+                                >
+                                    {FIT_TYPES.map(type => (
+                                        <option key={type} value={type}>
+                                            {type}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
 
                         <div className={styles.formGroup}>
                             <label>Stock Total</label>

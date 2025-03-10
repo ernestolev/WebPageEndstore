@@ -193,12 +193,6 @@ const MisFavoritos = () => {
                     <p className={styles.price}>
                       S/. {favorite.productData.price?.toFixed(2)}
                     </p>
-                    <button 
-                      className={styles.addToCartButton}
-                      onClick={() => handleAddToCart(favorite)}
-                    >
-                      <i className="fas fa-shopping-cart"></i>
-                    </button>
                   </div>
                   <span className={styles.favoriteDate}>
                     Añadido el {new Date(favorite.createdAt.toDate()).toLocaleDateString('es-PE', {

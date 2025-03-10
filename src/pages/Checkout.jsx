@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom'; // Add Navigate import
+import { useNavigate, Navigate } from 'react-router-dom';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../Firebase';
 import { useCart } from '../context/CartContext';
@@ -7,7 +7,6 @@ import PayuButton from '../components/PayuButton';
 import styles from '../styles/Checkout.module.css';
 import AnnouncementBar from '../components/AnnouncementBar';
 import { useAuth } from '../context/AuthContext';
-
 
 const Checkout = () => {
     const {
@@ -28,7 +27,7 @@ const Checkout = () => {
         fullName: user?.displayName || '',
         email: user?.email || '',
         phone: '',
-        shippingType: 'lima', // Add default shipping type
+        shippingType: 'lima',
         // Lima fields
         district: '',
         address: '',
@@ -52,7 +51,6 @@ const Checkout = () => {
         navigate('/cart');
         return null;
     }
-
 
     const validateForm = () => {
         const commonFields = {
@@ -84,15 +82,6 @@ const Checkout = () => {
         );
     };
 
-    if (!user) {
-        return <Navigate to="/login" state={{ returnUrl: '/checkout' }} />;
-    }
-
-    if (cart.length === 0) {
-        navigate('/cart');
-        return null;
-    }
-
     const total = getCartTotal();
     const orderId = `ORD-${Date.now()}`;
 
@@ -118,26 +107,30 @@ const Checkout = () => {
     const isFormValid = validateForm();
 
     const handleSubmit = (e) => {
-        e.preventDefault(); // Prevent form submission
-        // No need for additional logic here as PayU button handles payment
+        e.preventDefault();
     };
 
     const handlePaymentSuccess = async (paymentResult) => {
         setLoading(true);
         try {
-            const orderId = `ORD-${Date.now()}`;
+            // Include full cart data with fit types in the order
             const orderData = {
                 id: orderId,
                 userId: user.uid,
-                items: cart,
+                items: cart.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    size: item.size,
+                    fitType: item.fitType, // Include fit type in the order data
+                    image: item.image,
+                })),
                 total: getCartTotal(),
+                subtotal: getSubtotal(),
                 shipping: {
-                    fullName: formData.fullName,
-                    email: formData.email,
-                    phone: formData.phone,
-                    address: formData.address,
-                    city: formData.city,
-                    zipCode: formData.zipCode
+                    cost: getShippingCost(),
+                    ...shippingDetails
                 },
                 status: 'paid',
                 paymentId: paymentResult.transactionResponse?.transactionId,
@@ -403,12 +396,28 @@ const Checkout = () => {
                             <h2>Resumen del Pedido</h2>
                             <div className={styles.items}>
                                 {cart.map((item) => (
-                                    <div key={`${item.productId}-${item.size}`} className={styles.item}>
+                                    <div key={`${item.id}-${item.size}-${item.fitType}`} className={styles.item}>
                                         <img src={item.image} alt={item.name} />
                                         <div className={styles.itemInfo}>
                                             <h4>{item.name}</h4>
-                                            <p>Talla: {item.size}</p>
-                                            <p>Cantidad: {item.quantity}</p>
+                                            <div className={styles.itemAttributes}>
+                                                {item.size && (
+                                                    <span className={styles.attribute}>
+                                                        <i className="fas fa-ruler"></i>
+                                                        Talla: {item.size}
+                                                    </span>
+                                                )}
+                                                {item.fitType && (
+                                                    <span className={styles.attribute}>
+                                                        <i className="fas fa-tshirt"></i>
+                                                        Fit: {item.fitType}
+                                                    </span>
+                                                )}
+                                                <span className={styles.attribute}>
+                                                    <i className="fas fa-times"></i>
+                                                    {item.quantity}
+                                                </span>
+                                            </div>
                                             <p className={styles.itemPrice}>
                                                 S/. {(item.price * item.quantity).toFixed(2)}
                                             </p>

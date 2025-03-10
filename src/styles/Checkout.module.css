@@ -20,7 +20,7 @@
     background: var(--card-bg);
     padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .shippingSection h2 {
@@ -81,6 +81,31 @@
     transition: all 0.2s;
 }
 
+.itemAttributes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+
+.attribute {
+    display: inline-flex;
+    align-items: center;
+    background: var(--card-bg);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.attribute i {
+    margin-right: 5px;
+    font-size: 0.75rem;
+    color: #e10600;
+}
+
 .paymentOption:hover {
     border-color: #e10600;
 }
@@ -97,7 +122,7 @@
     position: relative;
 }
 
-.paymentOption input[type="radio"]:checked + .radioButton::after {
+.paymentOption input[type="radio"]:checked+.radioButton::after {
     content: '';
     position: absolute;
     width: 12px;
@@ -135,7 +160,7 @@
     background: var(--card-bg);
     padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     align-self: start;
     position: sticky;
     top: 2rem;
@@ -151,34 +176,40 @@
 }
 
 .item {
-    display: grid;
-    grid-template-columns: 80px 1fr;
-    gap: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .item img {
-    width: 100%;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.itemInfo {
+    flex: 1;
+    padding-left: 1rem;
 }
 
 .itemInfo h4 {
-    margin: 0;
-    font-size: 1rem;
+    margin: 0 0 5px;
+    font-size: 0.95rem;
+    font-weight: 600;
 }
 
 .itemInfo p {
-    margin: 0.25rem 0;
-    color: #666;
-    font-size: 0.9rem;
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-gray);
 }
 
 .itemPrice {
-    color: #e10600 !important;
-    font-weight: 600;
+    font-weight: 600 !important;
+    color: var(--text-color) !important;
+    margin-top: 8px !important;
 }
 
 .summary {
@@ -262,6 +293,7 @@
     border-radius: 0.5rem;
     margin-bottom: 1.5rem;
 }
+
 .shippingNotice i {
     color: #ff0000;
     font-size: 1.25rem;
@@ -320,6 +352,7 @@
     .shippingSection {
         padding: 1rem;
     }
+
     .shippingNotice {
         padding: 1rem;
     }

@@ -1,6 +1,6 @@
 .favoritosContainer {
     max-width: 1200px;
-    margin: 2rem auto;
+    margin: 10rem auto;
     padding: 0 1.5rem;
   }
   
@@ -230,6 +230,10 @@
   }
   
   @media (max-width: 480px) {
+
+    .favoritosContainer {
+      margin: 8rem auto ;
+    }
     .favoritosContainer h1 {
       font-size: 2rem;
     }

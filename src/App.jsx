@@ -38,6 +38,8 @@ import ScrollToTopButton from './components/ScrollToTopButton';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastContainer } from 'react-toastify';
 import Contacto from './pages/Contacto';
+import MisFavoritos from './pages/MisFavoritos';
+import FAQs from './pages/FAQs';
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -142,6 +144,8 @@ function App() {
                 <Route path="/sobre-nosotros" element={<SobreNosotros />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/contacto" element={<Contacto />} />
+                <Route path="/favoritos" element={<MisFavoritos />} />
+                <Route path="/faqs" element={<FAQs />} />
                 <Route
                   path="/profile"
                   element={

@@ -22,6 +22,7 @@ import { useCart } from '../context/CartContext';
 import Comentarios from '../components/Comentarios';
 import { useAuth } from '../context/AuthContext';
 import LogReg from '../components/LogReg';
+import GuiaTallas from '../components/GuiaTallas';
 
 
 const ProductDetail = () => {
@@ -37,6 +38,9 @@ const ProductDetail = () => {
     const [isLiked, setIsLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
     const [showLoginModal, setShowLoginModal] = useState(false); // Add this state
+    const [selectedFitType, setSelectedFitType] = useState('');
+    const [showFitTypes, setShowFitTypes] = useState(false);
+    const [showSizeGuide, setShowSizeGuide] = useState(false);
 
     const { addToCart } = useCart();
 
@@ -46,11 +50,25 @@ const ProductDetail = () => {
             return;
         }
 
-        addToCart(product, quantity, product.hasSizes ? selectedSize : null);
+        // Validate fit type if category is Polo and fitType is Ambos
+        if (product.category === 'Polo' && product.fitType === 'Ambos' && !selectedFitType) {
+            setShowFitTypes(true);
+            return;
+        }
+
+        addToCart(
+            product,
+            quantity,
+            product.hasSizes ? selectedSize : null,
+            product.category === 'Polo' ? selectedFitType : null
+        );
 
         // Clear selection after adding to cart
         if (product.hasSizes) {
             setSelectedSize('');
+        }
+        if (product.fitType === 'Ambos') {
+            setSelectedFitType('Normal');
         }
         setQuantity(1);
         setShowSizes(false);
@@ -91,7 +109,7 @@ const ProductDetail = () => {
             return;
         }
 
-        
+
 
         const favoriteRef = doc(db, 'favorites', `${user.uid}_${id}`);
         const productRef = doc(db, 'Productos', id);
@@ -189,10 +207,18 @@ const ProductDetail = () => {
                     setProduct({
                         id: docSnap.id,
                         ...productData,
-                        likes: productData.likes || 0  // <-- Make sure likes has a default value
+                        likes: productData.likes || 0
                     });
-                    setLikeCount(productData.likes || 0);  // <-- Set like count here
-                    setMainImage(0); // Use setMainImage instead of setCurrentImageIndex
+                    setLikeCount(productData.likes || 0);
+                    setMainImage(0);
+
+                    // Initialize fit type if product has one
+                    if (productData.fitType && productData.fitType !== 'Ambos') {
+                        setSelectedFitType(productData.fitType);
+                    } else if (productData.fitType === 'Ambos') {
+                        setSelectedFitType('Normal'); // Default to Normal for "Ambos"
+                        setShowFitTypes(true);
+                    }
                 } else {
                     console.error('Producto no encontrado');
                 }
@@ -301,17 +327,30 @@ const ProductDetail = () => {
                             )}
                         </div>
 
+                        <GuiaTallas
+                            isOpen={showSizeGuide}
+                            onClose={() => setShowSizeGuide(false)}
+                        />
+
                         {product.hasSizes && (
                             <div className={styles.sizesSection}>
-                                <h3 className={styles.sizesTitle}>
-                                    Selecciona tu talla
+                                <div className={styles.sizesSectionHeader}>
+                                    <h3 className={styles.sizesTitle}>
+                                        Selecciona tu talla
+                                        <button
+                                            className={styles.sizesToggle}
+                                            onClick={() => setShowSizes(!showSizes)}
+                                        >
+                                            <i className={`fas fa-chevron-${showSizes ? 'up' : 'down'}`}></i>
+                                        </button>
+                                    </h3>
                                     <button
-                                        className={styles.sizesToggle}
-                                        onClick={() => setShowSizes(!showSizes)}
+                                        className={styles.sizeGuideButton}
+                                        onClick={() => setShowSizeGuide(true)}
                                     >
-                                        <i className={`fas fa-chevron-${showSizes ? 'up' : 'down'}`}></i>
+                                        <i className="fas fa-ruler"></i> Guía de tallas
                                     </button>
-                                </h3>
+                                </div>
 
                                 <div className={`${styles.sizesGrid} ${showSizes ? styles.show : ''}`}>
                                     {Object.entries(product.sizes).map(([size, stock]) => (
@@ -329,6 +368,40 @@ const ProductDetail = () => {
                                         </button>
                                     ))}
                                 </div>
+                            </div>
+                        )}
+
+                        {product.category === 'Polo' && (
+                            <div className={styles.fitTypeSection}>
+                                <h3 className={styles.fitTypeTitle}>
+                                    {product.fitType === 'Ambos' ? 'Selecciona el fit' : 'Tipo de Fit'}
+                                    {product.fitType === 'Ambos' && (
+                                        <button
+                                            className={styles.sizesToggle}
+                                            onClick={() => setShowFitTypes(!showFitTypes)}
+                                        >
+                                            <i className={`fas fa-chevron-${showFitTypes ? 'up' : 'down'}`}></i>
+                                        </button>
+                                    )}
+                                </h3>
+
+                                {product.fitType === 'Ambos' ? (
+                                    <div className={`${styles.fitTypeGrid} ${showFitTypes ? styles.show : ''}`}>
+                                        {['Normal', 'Oversize'].map((fit) => (
+                                            <button
+                                                key={fit}
+                                                className={`${styles.fitTypeButton} ${selectedFitType === fit ? styles.selected : ''}`}
+                                                onClick={() => setSelectedFitType(fit)}
+                                            >
+                                                {fit}
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className={styles.fitTypeBadge}>
+                                        {product.fitType}
+                                    </div>
+                                )}
                             </div>
                         )}
 

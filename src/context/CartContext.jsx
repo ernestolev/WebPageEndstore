@@ -45,74 +45,69 @@ export const CartProvider = ({ children }) => {
         }
     }, [cart, user]);
 
-    const addToCart = (product, quantity, size) => {
+    const addToCart = (product, quantity = 1, size = null, fitType = null) => {
         if (!user) {
             alert('Por favor, inicia sesión para agregar productos al carrito');
             return;
         }
 
-        setCart(currentCart => {
-            const existingItem = currentCart.find(
-                item => item.productId === product.id && item.size === size
+        setCart(prevCart => {
+            // Create a unique identifier for the cart item that includes both size and fitType
+            const cartItemId = `${product.id}${size ? `-${size}` : ''}${fitType ? `-${fitType}` : ''}`;
+
+            // Check if this exact item is already in the cart
+            const existingItem = prevCart.find(item =>
+                item.id === product.id &&
+                item.size === size &&
+                item.fitType === fitType
             );
 
             if (existingItem) {
-                return currentCart.map(item =>
-                    item.productId === product.id && item.size === size
+                // Update existing item quantity
+                return prevCart.map(item =>
+                    item.id === product.id &&
+                        item.size === size &&
+                        item.fitType === fitType
                         ? { ...item, quantity: item.quantity + quantity }
                         : item
                 );
+            } else {
+                // Add new item with all properties
+                return [...prevCart, {
+                    id: product.id,
+                    name: product.name,
+                    price: product.discount ? product.price * (1 - product.discount / 100) : product.price,
+                    image: product.images[0],
+                    quantity,
+                    size,
+                    fitType,
+                    cartItemId
+                }];
             }
-
-            return [...currentCart, {
-                productId: product.id,
-                name: product.name,
-                price: product.discount ?
-                    product.price * (1 - product.discount / 100) :
-                    product.price,
-                image: product.images[0],
-                quantity,
-                size,
-                originalPrice: product.price,
-                discount: product.discount || 0
-            }];
         });
 
         setIsCartOpen(true);
     };
 
-    const removeFromCart = async (productId, size) => {
-        try {
-            const newCart = cart.filter(item =>
-                !(item.productId === productId && item.size === size)
-            );
-
-            setCart(newCart);
-
-            // Update Firestore
-            if (user) {
-                const cartRef = doc(db, 'Carts', user.uid);
-                if (newCart.length === 0) {
-                    // If cart is empty, delete the document
-                    await setDoc(cartRef, { items: [] });
-                } else {
-                    // Update with new cart items
-                    await setDoc(cartRef, { items: newCart }, { merge: true });
-                }
-            }
-        } catch (error) {
-            console.error('Error removing item from cart:', error);
-        }
+    const removeFromCart = (productId, size = null, fitType = null) => {
+        setCart(prevCart => prevCart.filter(item =>
+            !(item.id === productId && item.size === size && item.fitType === fitType)
+        ));
     };
 
-    const updateQuantity = (productId, size, newQuantity) => {
-        setCart(currentCart =>
-            currentCart.map(item =>
-                item.productId === productId && item.size === size
-                    ? { ...item, quantity: Math.max(1, newQuantity) }
-                    : item
-            )
-        );
+    const updateQuantity = (productId, size = null, fitType = null, newQuantity) => {
+        if (newQuantity <= 0) {
+            removeFromCart(productId, size, fitType);
+            return;
+        }
+
+        setCart(prevCart => prevCart.map(item =>
+            item.id === productId &&
+                item.size === size &&
+                item.fitType === fitType
+                ? { ...item, quantity: newQuantity }
+                : item
+        ));
     };
 
     const clearCart = async () => {

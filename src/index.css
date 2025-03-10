@@ -34,6 +34,12 @@
   --button-secondary-border: #e5e7eb;
   --button-secondary-hover-bg: #f3f4f6;
   --button-secondary-hover-text: #e10600;
+
+  --scrollbar-width: 8px;
+  --scrollbar-track: rgba(0, 0, 0, 0.05);
+  --scrollbar-thumb: rgba(225, 6, 0, 0.5);
+  --scrollbar-thumb-hover: #e10600;
+  --scrollbar-radius: 4px;
 }
 
 [data-theme='dark'] {
@@ -65,6 +71,10 @@
   --button-secondary-border: #3d3d3d;
   --button-secondary-hover-bg: #3d3d3d;
   --button-secondary-hover-text: #e10600;
+
+  --scrollbar-track: rgba(255, 255, 255, 0.05);
+  --scrollbar-thumb: rgba(225, 6, 0, 0.6);
+  --scrollbar-thumb-hover: #ff4d4d;
 }
 
 
@@ -117,4 +127,98 @@ select, input,button, textarea {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
+}
+
+
+/* For WebKit browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+  height: var(--scrollbar-width);
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: var(--scrollbar-radius);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: var(--scrollbar-radius);
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Horizontal scrollbars for tables and code blocks */
+.tableWrapper::-webkit-scrollbar,
+pre::-webkit-scrollbar {
+  height: 6px;
+}
+
+/* Scrollbar corner */
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Special treatment for modal scrollbars */
+.modal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+
+/* Add a subtle indicator for scrollable elements */
+[data-scrollable] {
+  position: relative;
+}
+
+[data-scrollable]::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  background: linear-gradient(to top, var(--background-color), transparent);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+[data-scrollable].can-scroll::after {
+  opacity: 1;
+}
+
+/* Animation for scrollbar appearance - adds a nice effect when scrolling starts */
+@keyframes scrollbar-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+::-webkit-scrollbar-thumb {
+  animation: scrollbar-fade-in 0.3s ease;
+}
+
+/* Create a better scrolling experience for touch devices */
+@media (pointer: coarse) {
+  ::-webkit-scrollbar {
+    width: 10px; /* Slightly larger for touch */
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border: 2px solid var(--background-color);
+    border-radius: 10px;
+  }
 }

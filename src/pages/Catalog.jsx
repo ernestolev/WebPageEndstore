@@ -20,8 +20,24 @@ const Catalog = () => {
   });
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  // Add view type state
+  const [viewType, setViewType] = useState('normal'); // 'normal' or 'compact'
 
   const productsPerPage = 15;
+
+  useEffect(() => {
+    const savedViewType = localStorage.getItem('catalogViewType');
+    if (savedViewType && ['normal', 'compact'].includes(savedViewType)) {
+      setViewType(savedViewType);
+    }
+  }, []);
+
+  // Save view preference when changed
+  const toggleViewType = () => {
+    const newViewType = viewType === 'normal' ? 'compact' : 'normal';
+    setViewType(newViewType);
+    localStorage.setItem('catalogViewType', newViewType);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -261,8 +277,7 @@ const Catalog = () => {
 
           {/* Products Section */}
           <main className={styles.productsSection}>
-            <div
-              className={`${styles.filterOverlay} ${isMobileFiltersOpen ? styles.active : ''}`}
+            <div className={`${styles.filterOverlay} ${isMobileFiltersOpen ? styles.active : ''}`}
               onClick={() => setIsMobileFiltersOpen(false)}
             />
             <div className={`${styles.mobileFilters} ${isMobileFiltersOpen ? styles.active : ''}`}>
@@ -351,22 +366,44 @@ const Catalog = () => {
               <div className={styles.productCount}>
                 Total: {products.length} productos
               </div>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className={styles.sortSelect}
-              >
-                <option value="featured">Destacados</option>
-                <option value="price-low">Precio: Menor a Mayor</option>
-                <option value="price-high">Precio: Mayor a Menor</option>
-                <option value="newest">Más Nuevos</option>
-              </select>
+              
+              <div className={styles.viewControls}>
+                {/* Add view toggle button for mobile */}
+                <button
+                  className={`${styles.viewToggleButton} ${viewType === 'compact' ? styles.active : ''
+                    }`}
+                  onClick={toggleViewType}
+                  aria-label="Cambiar vista"
+                  title={viewType === 'normal' ? 'Cambiar a vista compacta' : 'Cambiar a vista normal'}
+                >
+                  {viewType === 'normal' ? (
+                    <i className="fas fa-th-large"></i>
+                  ) : (
+                    <i className="fas fa-th"></i>
+                  )}
+                </button>
+
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className={styles.sortSelect}
+                >
+                  <option value="featured">Destacados</option>
+                  <option value="price-low">Precio: Menor a Mayor</option>
+                  <option value="price-high">Precio: Mayor a Menor</option>
+                  <option value="newest">Más Nuevos</option>
+                </select>
+              </div>
             </div>
 
-            <div className={styles.productsGrid}>
+            <div className={`${styles.productsGrid} ${viewType === 'compact' ? styles.compactGrid : ''}`}>
               {currentProducts.length > 0 ? (
                 currentProducts.map(product => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    compact={viewType === 'compact'}
+                  />
                 ))
               ) : (
                 <div className={styles.noProducts}>
