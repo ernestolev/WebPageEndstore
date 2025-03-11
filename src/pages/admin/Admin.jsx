@@ -12,7 +12,7 @@ const Admin = () => {
         { id: 'categorias', label: 'Categorias', icon: 'fas fa-star', path: '/admin/categorias' },
         { id: 'orders', label: 'Pedidos', icon: 'fas fa-shopping-bag', path: '/admin/orders' },
         { id: 'users', label: 'Usuarios', icon: 'fas fa-users', path: '/admin/users' },
-        { id: 'settings', label: 'Configuración', icon: 'fas fa-cog', path: '/admin/settings' }
+        { id: 'codigos', label: 'Códigos Desc.', icon: 'fas fa-ticket-alt', path: '/admin/codigos' }
     ];
 
     const handleNavLinkClick = () => {

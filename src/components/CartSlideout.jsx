@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../Firebase';
 import styles from '../styles/CartSlideout.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext'; // Add this import
 
 const CartSlideout = () => {
     const {
@@ -19,11 +21,19 @@ const CartSlideout = () => {
         getSubtotal,
         getShippingCost,
         SHIPPING_THRESHOLD,
-        SHIPPING_COST
+        SHIPPING_COST,
+        discountCode,
+        applyDiscountCode,
+        removeDiscountCode,
+        discountAmount,
+        loading: cartLoading
     } = useCart();
     const { theme } = useTheme();
+    const { user } = useAuth(); // Add this line to get the user
     const [productsData, setProductsData] = useState({});
     const [loading, setLoading] = useState(true);
+    const [codeInput, setCodeInput] = useState('');
+    const [codeStatus, setCodeStatus] = useState({ loading: false, message: '', type: '' });
 
     // Fetch product data for each cart item
     useEffect(() => {
@@ -63,6 +73,110 @@ const CartSlideout = () => {
             fetchProductsData();
         }
     }, [cart, isCartOpen]);
+
+    useEffect(() => {
+        if (discountCode) {
+            setCodeInput(discountCode.code);
+        } else {
+            setCodeInput('');
+        }
+    }, [discountCode]);
+
+    const handleDiscountCode = async () => {
+        if (!user) {
+            setCodeStatus({ loading: false, message: 'Inicia sesión para usar códigos', type: 'error' });
+            return;
+        }
+
+        // Reset status
+        setCodeStatus({ loading: true, message: '', type: '' });
+
+        // If empty, clear discount
+        if (!codeInput.trim()) {
+            removeDiscountCode();
+            setCodeStatus({ loading: false, message: '', type: '' });
+            return;
+        }
+
+        // If already applied this code, do nothing
+        if (discountCode && discountCode.code === codeInput.trim()) {
+            setCodeStatus({ loading: false, message: 'Código ya aplicado', type: 'info' });
+            return;
+        }
+
+        // Format code (uppercase)
+        const formattedCode = codeInput.trim().toUpperCase();
+
+        try {
+            // Query for the code
+            const codesRef = collection(db, 'Codigos');
+            const q = query(codesRef, where('code', '==', formattedCode));
+            const querySnapshot = await getDocs(q);
+
+            // Code not found
+            if (querySnapshot.empty) {
+                setCodeStatus({
+                    loading: false,
+                    message: 'Código no válido',
+                    type: 'error'
+                });
+                return;
+            }
+
+            // Get code data
+            const codeData = querySnapshot.docs[0].data();
+            const codeId = querySnapshot.docs[0].id;
+
+            // Check if code is active
+            if (!codeData.isActive) {
+                setCodeStatus({
+                    loading: false,
+                    message: 'Código inactivo',
+                    type: 'error'
+                });
+                return;
+            }
+
+            // Check if code is expired
+            if (codeData.validUntil) {
+                const validUntil = codeData.validUntil.toDate ? codeData.validUntil.toDate() : new Date(codeData.validUntil);
+                if (validUntil < new Date()) {
+                    setCodeStatus({
+                        loading: false,
+                        message: 'Código expirado',
+                        type: 'error'
+                    });
+                    return;
+                }
+            }
+
+            // Apply discount
+            applyDiscountCode({
+                id: codeId,
+                code: codeData.code,
+                discount: codeData.discount
+            });
+
+            setCodeStatus({
+                loading: false,
+                message: `¡${codeData.discount}% de descuento aplicado!`,
+                type: 'success'
+            });
+        } catch (error) {
+            console.error('Error validating discount code:', error);
+            setCodeStatus({
+                loading: false,
+                message: 'Error al validar el código',
+                type: 'error'
+            });
+        }
+    };
+
+    const handleClearDiscountCode = () => {
+        removeDiscountCode();
+        setCodeInput('');
+        setCodeStatus({ loading: false, message: '', type: '' });
+    };
 
     // Handle size change
     const handleSizeChange = (item, newSize) => {
@@ -111,7 +225,6 @@ const CartSlideout = () => {
         exit: { opacity: 0, x: -20, transition: { duration: 0.2 } }
     };
 
-
     if (!isCartOpen) return null;
 
     return (
@@ -138,10 +251,14 @@ const CartSlideout = () => {
                     {cart.length > 0 ? (
                         <>
                             <div className={styles.items}>
-                                {loading ? (
+                                {cartLoading || loading ? (
                                     <div className={styles.loadingContainer}>
                                         <div className={styles.spinner}></div>
-                                        <p>Cargando productos...</p>
+                                        <p>Cargando tu carrito...</p>
+                                    </div>
+                                ) : cart.length === 0 ? (
+                                    <div className={styles.emptyCart}>
+                                        <p>No tienes productos en tu carrito</p>
                                     </div>
                                 ) : (
                                     <AnimatePresence>
@@ -149,7 +266,7 @@ const CartSlideout = () => {
                                             const product = productsData[item.id];
                                             return (
                                                 <motion.div
-                                                    key={`${item.id}-${item.size}-${item.fitType}`}
+                                                    key={`${item.id}-${item.size}-${item.fitType || 'default'}`}
                                                     className={styles.item}
                                                     variants={itemVariants}
                                                     initial="hidden"
@@ -283,6 +400,68 @@ const CartSlideout = () => {
                                             </p>
                                         </div>
                                     )}
+
+                                    {/* Add discount code section */}
+                                    <div className={styles.discountSection}>
+                                        <div className={styles.discountForm}>
+                                            <input
+                                                type="text"
+                                                className={styles.discountInput}
+                                                placeholder={discountCode ? "Cambiar código" : "Código de descuento"}
+                                                value={codeInput}
+                                                onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
+                                                maxLength={10}
+                                                disabled={codeStatus.loading}
+                                            />
+                                            {discountCode ? (
+                                                <button
+                                                    className={`${styles.discountButton} ${styles.removeButton}`}
+                                                    onClick={handleClearDiscountCode}
+                                                    disabled={codeStatus.loading}
+                                                    aria-label="Eliminar código"
+                                                    title="Eliminar código"
+                                                >
+                                                    <i className="fas fa-times"></i>
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    className={styles.discountButton}
+                                                    onClick={handleDiscountCode}
+                                                    disabled={codeStatus.loading || !codeInput.trim()}
+                                                    aria-label="Aplicar código"
+                                                    title="Aplicar código"
+                                                >
+                                                    {codeStatus.loading ? (
+                                                        <div className={styles.miniSpinner}></div>
+                                                    ) : (
+                                                        <i className="fas fa-check"></i>
+                                                    )}
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        {codeStatus.message && (
+                                            <div className={`${styles.codeMessage} ${styles[codeStatus.type]}`}>
+                                                {codeStatus.type === 'success' && <i className="fas fa-check-circle"></i>}
+                                                {codeStatus.type === 'error' && <i className="fas fa-exclamation-circle"></i>}
+                                                {codeStatus.type === 'info' && <i className="fas fa-info-circle"></i>}
+                                                {codeStatus.message}
+                                            </div>
+                                        )}
+
+                                        {discountCode && (
+                                            <div className={`${styles.summaryRow} ${styles.discountRow}`}>
+                                                <span>
+                                                    Descuento {discountCode.discount}%
+                                                    <span className={styles.discountCode}>{discountCode.code}</span>
+                                                </span>
+                                                <span className={styles.discountAmount}>
+                                                    -S/. {discountAmount.toFixed(2)}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+
                                     <div className={`${styles.summaryRow} ${styles.total}`}>
                                         <span>Total</span>
                                         <span>S/. {getCartTotal().toFixed(2)}</span>

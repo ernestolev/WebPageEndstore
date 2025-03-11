@@ -16,7 +16,9 @@ const Checkout = () => {
         getSubtotal,
         getShippingCost,
         SHIPPING_THRESHOLD,
-        SHIPPING_COST
+        SHIPPING_COST,
+        discountCode,
+        discountAmount
     } = useCart();
 
     const { user } = useAuth();
@@ -123,11 +125,13 @@ const Checkout = () => {
                     price: item.price,
                     quantity: item.quantity,
                     size: item.size,
-                    fitType: item.fitType, // Include fit type in the order data
+                    fitType: item.fitType,
                     image: item.image,
                 })),
                 total: getCartTotal(),
                 subtotal: getSubtotal(),
+                discountCode: discountCode, // Add discount code to order data
+                discountAmount: discountAmount, // Add discount amount to order data
                 shipping: {
                     cost: getShippingCost(),
                     ...shippingDetails
@@ -430,6 +434,20 @@ const Checkout = () => {
                                     <span>Subtotal</span>
                                     <span>S/. {getSubtotal().toFixed(2)}</span>
                                 </div>
+
+                                {/* Añadir la fila de descuento si hay un código aplicado */}
+                                {discountCode && (
+                                    <div className={`${styles.summaryRow} ${styles.discountRow}`}>
+                                        <span>
+                                            Descuento
+                                            <span className={styles.discountCode}>{discountCode.code}</span>
+                                        </span>
+                                        <span className={styles.discountAmount}>
+                                            -S/. {discountAmount.toFixed(2)}
+                                        </span>
+                                    </div>
+                                )}
+
                                 <div className={styles.summaryRow}>
                                     <span>Envío</span>
                                     {getShippingCost() === 0 ? (

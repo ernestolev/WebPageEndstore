@@ -53,6 +53,9 @@
     position: relative;
     background: var(--background-color);
 }
+.outOfStockOverlay {
+    z-index: 10;
+  }
 
 .mainImage img {
     width: 100%;
@@ -456,18 +459,21 @@
     margin: 1.5rem 0;
     border: 1px solid #ddd;
     border-radius: 8px;
-    overflow: hidden;
+    padding: 1rem;
+    background-color: var(--background-color);
 }
 
 .sizesTitle {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 1rem;
+    gap: 10px;
     margin: 0;
-    background: var(--background-color);
-    border-bottom: 1px solid #ddd;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
 }
+
+
 
 .sizesToggle {
     background: none;
@@ -476,19 +482,20 @@
     cursor: pointer;
     color: #666;
 }
-
 .sizesGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     gap: 0.5rem;
-    padding: 1rem;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
+    opacity: 0;
 }
 
 .sizesGrid.show {
     max-height: 500px;
+    opacity: 1;
+    margin-bottom: 0.75rem;
 }
 
 .sizeButton {
@@ -674,29 +681,30 @@
     margin-bottom: 0.75rem;
 }
 
-
 .sizeGuideButton {
     background: transparent;
     border: none;
     color: #e10600;
     font-size: 0.9rem;
-    font-weight: 600;
+    font-weight: 500;
     display: flex;
     align-items: center;
     gap: 0.5rem;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.5rem 0;
+    margin-top: 0.75rem;
+    text-align: left;
     border-radius: 6px;
     transition: all 0.2s ease;
 }
 
 .sizeGuideButton i {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
 }
 
 .sizeGuideButton:hover {
-    background-color: rgba(225, 6, 0, 0.1);
-    transform: translateY(-1px);
+    color: #a30400;
+    text-decoration: underline;
 }
 
 @keyframes heartBeat {

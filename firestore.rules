@@ -91,10 +91,17 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Favorites rules
     match /favorites/{favoriteId} {
-  allow read: if true;
-  allow create, delete: if request.auth != null && 
-    favoriteId.matches(request.auth.uid + '_.*');
-}
+      allow read: if true;
+      allow create, delete: if request.auth != null && 
+        favoriteId.matches(request.auth.uid + '_.*');
+    }
+
+    // Discount codes rules - Add this new section
+    match /Codigos/{codeId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
   }
 }

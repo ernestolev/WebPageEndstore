@@ -1,0 +1,1597 @@
+.dashboardContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 100%;
+    animation: fadeIn 0.5s ease;
+    padding: 1rem;
+    overflow-x: hidden;
+}
+
+.dashboardContent {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+    transition: all 0.3s ease;
+}
+
+.dashboardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.dashboardHeader h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.dateInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-gray);
+    font-size: 0.9rem;
+}
+
+.dateInfo i {
+    color: #e10600;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.statCard {
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.statCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.statCard::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    transition: all 0.5s ease;
+    z-index: 0;
+}
+
+.statCard:hover::before {
+    transform: scale(10);
+}
+
+.statIconWrapper {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
+.statIconWrapper i {
+    font-size: 1.6rem;
+}
+
+/* Colores para diferentes tipos de tarjetas */
+.salesIcon {
+    background: linear-gradient(135deg, rgba(225, 6, 0, 0.2), rgba(255, 77, 77, 0.2));
+    color: #e10600;
+}
+
+.ordersIcon {
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.2), rgba(39, 174, 96, 0.2));
+    color: #2ecc71;
+}
+
+.usersIcon {
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.2), rgba(41, 128, 185, 0.2));
+    color: #3498db;
+}
+
+.productsIcon {
+    background: linear-gradient(135deg, rgba(155, 89, 182, 0.2), rgba(142, 68, 173, 0.2));
+    color: #9b59b6;
+}
+
+.statInfo {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+}
+
+.statInfo h3 {
+    margin: 0 0 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-gray);
+    font-weight: 600;
+}
+
+.statInfo p {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.percentChange {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.85rem;
+    margin-left: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+}
+
+.positive {
+    background-color: rgba(46, 204, 113, 0.1);
+    color: #2ecc71;
+}
+
+.negative {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+}
+
+.statLink {
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+}
+
+.statLink a {
+    color: #e10600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.statLink a::after {
+    content: '→';
+    font-size: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.statLink a:hover::after {
+    transform: translateX(3px);
+}
+
+.quickActions,
+.recentOrders,
+.lowStock {
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.quickActions, .recentOrders, .lowStock{
+    max-width: 85%;
+}
+
+
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.sectionHeader h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.timeRangeSelector {
+    display: flex;
+    background-color: var(--input-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 0.2rem;
+}
+
+.timeRangeSelector button {
+    border: none;
+    background: transparent;
+    color: var(--text-gray);
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.timeRangeSelector button:hover {
+    color: var(--text-color);
+}
+
+.timeRangeSelector button.active {
+    background: linear-gradient(135deg, #e10600, #ff4d4d);
+    color: white;
+}
+
+.chartContainer,
+.actionButtons,
+.ordersList,
+.productsList {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--text-color-rgb), 0.2) transparent;
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    gap: 1rem;
+}
+
+
+.errorContainer i {
+    font-size: 3rem;
+    color: #e74c3c;
+}
+
+.errorContainer button {
+    background-color: #e10600;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.errorContainer button:hover {
+    background-color: #c10500;
+    transform: translateY(-2px);
+}
+
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    gap: 1rem;
+    text-align: center;
+}
+
+
+.chartLoading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--background-color-rgb), 0.7);
+    border-radius: 12px;
+    z-index: 10;
+}
+
+.chartSpinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(225, 6, 0, 0.3);
+    border-top-color: #e10600;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.insightRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    /* Más adaptable */
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.insightCard {
+    background-color: var(--background-color);
+    border-radius: 12px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+    min-width: 0;
+    /* Evitar desbordamiento */
+}
+
+.insightCard:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+.insightHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.insightHeader h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.insightHeader i {
+    color: var(--text-gray);
+}
+
+.insightValue {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 1rem;
+}
+
+.insightChart {
+    height: 100px;
+    margin-top: auto;
+}
+
+.doughnutContainer {
+    height: 180px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.chartLegend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: center;
+}
+
+.legendItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.legendColor {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+.dashboardSidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: fit-content;
+    max-width: 100%;
+}
+
+
+.recentOrders {
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.quickActions,
+.lowStock {
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+.productsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Prevenir scroll horizontal */
+}
+
+.quickActions h3,
+.lowStock h3 {
+    margin: 0 0 1.2rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.recentOrders:hover {
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    border-color: rgba(225, 6, 0, 0.3);
+}
+
+.recentOrders h3 {
+    margin: 0 0 1.2rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+
+
+.recentOrders h3 i {
+    color: #e10600;
+}
+
+.sectionTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sectionTitle i {
+    color: #e10600;
+    font-size: 0.9rem;
+}
+
+.viewAllLink {
+    margin-left: auto;
+    font-size: 0.85rem;
+    color: #e10600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.viewAllLink:hover {
+    opacity: 0.8;
+}
+
+.viewAllLink i {
+    margin-left: 0.3rem;
+    transition: transform 0.2s ease;
+}
+
+.viewAllLink:hover i {
+    transform: translateX(3px);
+}
+
+.actionButtons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.actionButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 1rem;
+    background-color: var(--background-color);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.actionButton:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    border-color: #e10600;
+}
+
+.actionButton i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #e10600;
+}
+
+.actionButton span {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+
+.ordersHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+
+.ordersHeader .filterButtons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filterButton {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.75rem;
+    color: var(--text-gray);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filterButton:hover {
+    background-color: var(--card-hover-bg);
+    color: var(--text-color);
+}
+
+.filterButton.active {
+    background: linear-gradient(135deg, #e10600, #ff4d4d);
+    color: white;
+    border-color: transparent;
+}
+
+.ordersList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    max-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 0.5rem;
+}
+
+.ordersList::-webkit-scrollbar {
+    width: 4px;
+}
+
+.ordersList::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--text-color-rgb), 0.15);
+    border-radius: 10px;
+}
+
+.ordersList::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(var(--text-color-rgb), 0.25);
+}
+
+.orderItem {
+    background-color: var(--background-color);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.orderItem:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.07);
+}
+
+.orderItem::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 0 12px 12px 0;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.orderItem:hover::after {
+    opacity: 1;
+}
+
+.orderItem.paid::after {
+    background-color: #2ecc71;
+}
+
+.orderItem.processing::after {
+    background-color: #f39c12;
+}
+
+.orderItem.delivered::after {
+    background-color: #3498db;
+}
+
+.orderItem.cancelled::after {
+    background-color: #e74c3c;
+}
+
+.orderStatus {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.orderStatus::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 50%;
+    animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+    opacity: 0;
+}
+
+.paid::before {
+    border: 2px solid rgba(46, 204, 113, 0.3);
+}
+
+.processing::before {
+    border: 2px solid rgba(243, 156, 18, 0.3);
+    animation-duration: 1s;
+}
+
+.delivered::before {
+    border: 2px solid rgba(52, 152, 219, 0.3);
+}
+
+@keyframes ping {
+
+    75%,
+    100% {
+        transform: scale(1.8);
+        opacity: 0;
+    }
+}
+
+.orderInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.orderTopRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.3rem;
+}
+
+.orderId {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+}
+
+.orderDate {
+    font-size: 0.75rem;
+    color: var(--text-gray);
+    white-space: nowrap;
+}
+
+.orderBottomRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.orderCustomer {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.orderCustomer i {
+    color: var(--text-gray);
+    font-size: 0.8rem;
+}
+
+.orderItems {
+    font-size: 0.75rem;
+    color: var(--text-gray);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.orderItems i {
+    font-size: 0.7rem;
+}
+
+.orderPrice {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    white-space: nowrap;
+}
+
+.orderStatusBadge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-left: 0.5rem;
+    min-width: 80px;
+    text-align: center;
+}
+
+.statusBadgePaid {
+    background-color: rgba(46, 204, 113, 0.15);
+    color: #27ae60;
+}
+
+.statusBadgeProcessing {
+    background-color: rgba(243, 156, 18, 0.15);
+    color: #f39c12;
+}
+
+.statusBadgeShipped {
+    background-color: rgba(52, 152, 219, 0.15);
+    color: #2980b9;
+}
+
+.statusBadgeDelivered {
+    background-color: rgba(52, 152, 219, 0.15);
+    color: #3498db;
+}
+
+.statusBadgeCancelled {
+    background-color: rgba(231, 76, 60, 0.15);
+    color: #e74c3c;
+}
+
+.orderActions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.viewOrder {
+    min-width: 34px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-color);
+    color: var(--text-gray);
+    transition: all 0.25s ease;
+    border: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+
+.viewOrder:hover {
+    background-color: #e10600;
+    color: white;
+    border-color: #e10600;
+    transform: scale(1.1) rotate(5deg);
+}
+
+.viewOrder:active {
+    transform: scale(0.95);
+}
+
+.noOrdersMessage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: var(--text-gray);
+}
+
+.noOrdersMessage i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.4;
+}
+
+.noOrdersMessage p {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+}
+
+.noOrdersMessage button {
+    background: linear-gradient(135deg, #e10600, #ff4d4d);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.noOrdersMessage button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(225, 6, 0, 0.3);
+}
+
+/* Mejora para la visualización de fechas recientes */
+.recentDate {
+    font-weight: 500;
+    color: #2ecc71;
+}
+
+/* Mejora para hover effect */
+.orderItem:hover .orderId {
+    color: #e10600;
+}
+
+/* Mejora para pantallas pequeñas */
+@media (max-width: 480px) {
+
+    .orderTopRow,
+    .orderBottomRow {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .orderId {
+        max-width: 100%;
+        margin-bottom: 0.2rem;
+    }
+
+    .orderPrice {
+        margin-top: 0.3rem;
+    }
+
+    .orderStatusBadge {
+        margin-left: 0;
+        margin-top: 0.3rem;
+    }
+
+    .orderCustomer {
+        max-width: 100%;
+    }
+}
+
+.ordersList::-webkit-scrollbar,
+.productsList::-webkit-scrollbar {
+    width: 5px;
+}
+
+.ordersList::-webkit-scrollbar-thumb,
+.productsList::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--text-color-rgb), 0.2);
+    border-radius: 10px;
+}
+
+.orderItem,
+.productItem {
+    background-color: var(--background-color);
+    border-radius: 10px;
+    padding: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+    width: 100%;
+    min-width: 0;
+    /* Prevenir desbordamiento */
+}
+
+.productItem {
+    position: relative;
+}
+
+.orderItem:hover,
+.productItem:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+
+.productThumb {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    /* Evitar compresión */
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+}
+
+.productThumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+.noImage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(var(--text-color-rgb), 0.05);
+    color: var(--text-gray);
+}
+
+.orderStatus {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.paid {
+    background-color: #2ecc71;
+}
+
+.processing {
+    background-color: #f39c12;
+}
+
+.delivered {
+    background-color: #3498db;
+}
+
+.cancelled {
+    background-color: #e74c3c;
+}
+
+.orderInfo {
+    flex: 1;
+    min-width: 0;
+    /* Prevenir desbordamiento */
+    overflow: hidden;
+    /* Controlar texto largo */
+}
+
+.orderInfo h4,
+.productName {
+    margin: 0 0 0.2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.orderMeta {
+    display: flex;
+    font-size: 0.8rem;
+    color: var(--text-gray);
+}
+
+.orderMeta span {
+    margin-right: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.orderMeta i {
+    font-size: 0.75rem;
+}
+
+.orderPrice {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.productImage {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+}
+
+.productInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.productName {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.productStock {
+    font-size: 0.8rem;
+    color: #e74c3c;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.productStock i {
+    font-size: 0.75rem;
+}
+
+
+.sizeStock {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.sizeTag {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 1rem;
+    background-color: rgba(var(--text-color-rgb), 0.1);
+}
+
+.critical {
+    color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.1);
+    font-weight: 600;
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+    color: var(--text-gray);
+    text-align: center;
+}
+
+.emptyState i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.emptyState p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.editProduct,
+.viewOrder {
+    min-width: 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-color);
+    color: var(--text-gray);
+    transition: all 0.2s ease;
+    border: 1px solid var(--border-color);
+}
+
+.editProduct:hover,
+.viewOrder:hover {
+    background-color: #e10600;
+    color: white;
+    border-color: #e10600;
+    transform: scale(1.1);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+    .statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .dashboardContent {
+        grid-template-columns: 1fr;
+    }
+
+    .insightRow {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboardHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .insightRow {
+        grid-template-columns: 1fr;
+    }
+
+    .actionButtons {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .statsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .orderMeta {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .orderMeta span {
+        margin-right: 0;
+    }
+}
+
+/* Dark mode enhancements */
+[data-theme='dark'] .chartContainer canvas {
+    filter: brightness(0.9);
+}
+
+[data-theme='dark'] .statCard::before {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Tooltips personalizados para gráficos */
+.customTooltip {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.8rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-size: 0.85rem;
+    color: var(--text-color);
+}
+
+.tooltipLabel {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    color: #e10600;
+}
+
+.tooltipValue {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+/* Badges de estado */
+.statusBadge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.statusPaid {
+    background-color: rgba(46, 204, 113, 0.15);
+    color: #27ae60;
+}
+
+.statusProcessing {
+    background-color: rgba(243, 156, 18, 0.15);
+    color: #f39c12;
+}
+
+.statusShipped {
+    background-color: rgba(52, 152, 219, 0.15);
+    color: #2980b9;
+}
+
+.statusDelivered {
+    background-color: rgba(52, 152, 219, 0.15);
+    color: #3498db;
+}
+
+.statusCancelled {
+    background-color: rgba(231, 76, 60, 0.15);
+    color: #e74c3c;
+}
+
+/* Sección de resumen del día */
+.dailySummary {
+    background: linear-gradient(135deg, rgba(225, 6, 0, 0.8), rgba(255, 77, 77, 0.8));
+    color: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 6px 16px rgba(225, 6, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.dailySummary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="rgba(255,255,255,0.05)" d="M0 0L100 100H0z"/></svg>');
+    background-size: 20px 20px;
+    opacity: 0.2;
+}
+
+.welcomeMessage h3 {
+    font-size: 1.8rem;
+    margin: 0 0 0.5rem;
+    font-weight: 700;
+}
+
+.welcomeMessage p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+.todayStats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.todayStat {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    backdrop-filter: blur(5px);
+}
+
+.todayStat p {
+    margin: 0 0 0.3rem;
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.todayStat h4 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* Indicadores de tendencia para gráficos */
+.trendIndicator {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.trendUp {
+    color: #2ecc71;
+}
+
+.trendUp::before {
+    content: '↑';
+    margin-right: 0.2rem;
+}
+
+.trendDown {
+    color: #e74c3c;
+}
+
+.trendDown::before {
+    content: '↓';
+    margin-right: 0.2rem;
+}
+
+@media (max-width: 1200px) {
+    .statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .dashboardContent {
+        grid-template-columns: 1fr;
+    }
+    
+    /* En pantallas medianas, hacemos que la barra lateral tenga una mejor distribución */
+    .dashboardSidebar {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboardHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .dashboardContainer {
+        padding: 0.75rem;
+    }
+    
+    /* Mejoramos la visualización de las tarjetas de stats */
+    .statCard {
+        padding: 1.25rem;
+    }
+    
+    .statIconWrapper {
+        width: 50px;
+        height: 50px;
+    }
+    
+    /* Reducir tamaño del encabezado en móviles */
+    .dashboardHeader h2 {
+        font-size: 1.5rem;
+    }
+    
+    /* Ajustar el selector de rangos de tiempo */
+    .timeRangeSelector {
+        flex-wrap: wrap;
+    }
+    
+    .timeRangeSelector button {
+        flex: 1;
+        min-width: 70px;
+        text-align: center;
+        padding: 0.4rem 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .statsGrid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Ajustes para visibilidad en teléfonos pequeños */
+    .dashboardContainer {
+        padding: 0.5rem;
+    }
+    
+    /* Altura adaptativa para gráficos en teléfonos */
+    .chartContainer {
+        height: 240px;
+    }
+    
+    /* Simplificar la fila de insights */
+    .insightRow {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Adaptación para tarjetas de acciones rápidas */
+    .actionButtons {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Mejorar visualización del doughnut */
+    .doughnutContainer {
+        height: 150px;
+    }
+}
+
+/* Mejoras específicas para las tarjetas en la sección de dashboard */
+.graphSection {
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+}
+
+/* Ajustes móviles específicos para la sección de gráficos */
+@media (max-width: 768px) {
+    .graphSection,
+    .quickActions,
+    .recentOrders,
+    .lowStock {
+        padding: 1.25rem;
+    }
+    
+    .sectionHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    
+    .timeRangeSelector {
+        width: 100%;
+    }
+    
+    /* Ajustes para órdenes recientes en móvil */
+    .orderItem {
+        flex-wrap: wrap;
+    }
+    
+    .orderTopRow, .orderBottomRow {
+        width: 100%;
+    }
+    
+    .orderId {
+        max-width: 100%;
+    }
+    
+    /* Mejorar visualización de productos con stock bajo en móvil */
+    .productItem {
+        gap: 0.75rem;
+    }
+    
+    .sizeStock {
+        margin-top: 0.3rem;
+    }
+}
+
+/* Arreglos específicos para teléfonos más pequeños */
+@media (max-width: 400px) {
+    .orderItem, .productItem {
+        padding: 0.75rem;
+    }
+    
+    .viewOrder, .editProduct {
+        min-width: 28px;
+        width: 28px;
+        height: 28px;
+    }
+    
+    .actionButton {
+        padding: 1.2rem 0.75rem;
+    }
+    
+    .insightValue {
+        font-size: 1.3rem;
+    }
+    
+    .chartContainer {
+        height: 220px;
+    }
+
+    .graphSection{
+        max-width: 85%;
+    }
+}
+
+/* Arreglo para cuando el usuario rota el dispositivo */
+@media (orientation: landscape) and (max-height: 600px) {
+    .chartContainer {
+        height: 200px;
+    }
+    
+    .ordersList, .productsList {
+        max-height: 250px;
+    }
+}
+
+/* Aseguramos que el sidebar tenga buena visualización */
+.dashboardSidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: fit-content;
+    max-width: 100%;
+    transition: all 0.3s ease;
+}
+
+/* Mejoras para la usabilidad en dispositivos táctiles */
+@media (pointer: coarse) {
+    .ordersList::-webkit-scrollbar,
+    .productsList::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .actionButton, .viewOrder, .editProduct {
+        cursor: default; /* Eliminar cursor pointer en dispositivos táctiles */
+    }
+    
+    .actionButton {
+        padding: 1.8rem 1rem; /* Área táctil más grande */
+    }
+    
+    .timeRangeSelector button {
+        padding: 0.5rem 1rem; /* Botones más grandes para tocar */
+    }
+    
+    /* Añadir más espacio entre elementos para mejor toque */
+    .orderItem, .productItem {
+        margin-bottom: 0.3rem;
+        padding: 1rem;
+    }
+}

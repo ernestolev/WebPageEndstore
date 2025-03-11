@@ -38,5 +38,8 @@
       "host": "localhost",
       "port": 4007
     }
+  },
+  "storage": {
+    "rules": "storage.rules"
   }
 }

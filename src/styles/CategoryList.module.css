@@ -6,7 +6,7 @@
 }
 
 .categoryCard {
-    background: white;
+    background: var(--card-bg);
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -31,7 +31,7 @@
 
 .categoryInfo h3 {
     margin: 0 0 0.5rem;
-    color: #111;
+    color: var(--text-color);
 }
 
 .categoryInfo p {

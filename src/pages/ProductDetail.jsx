@@ -13,7 +13,8 @@ import {
     increment,
     limit as firestoreLimit
 } from 'firebase/firestore';
-import { db } from '../Firebase';
+import { ref, getDownloadURL } from 'firebase/storage'; // Añadir importaciones de Storage
+import { db, storage } from '../Firebase'; // Añadir storage
 import styles from '../styles/ProductDetail.module.css';
 import LoadingSpinner from '../components/LoadingSpinner';
 import AnnouncementBar from '../components/AnnouncementBar';
@@ -23,7 +24,6 @@ import Comentarios from '../components/Comentarios';
 import { useAuth } from '../context/AuthContext';
 import LogReg from '../components/LogReg';
 import GuiaTallas from '../components/GuiaTallas';
-
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -37,12 +37,62 @@ const ProductDetail = () => {
     const { user } = useAuth();
     const [isLiked, setIsLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
-    const [showLoginModal, setShowLoginModal] = useState(false); // Add this state
+    const [showLoginModal, setShowLoginModal] = useState(false);
     const [selectedFitType, setSelectedFitType] = useState('');
     const [showFitTypes, setShowFitTypes] = useState(false);
     const [showSizeGuide, setShowSizeGuide] = useState(false);
+    const [productImages, setProductImages] = useState([]); // Nuevo estado para las imágenes cargadas desde Storage
+    const [relatedProductImagesMap, setRelatedProductImagesMap] = useState({}); // Mapa para las imágenes de productos relacionados
 
     const { addToCart } = useCart();
+
+    // Función para cargar imágenes desde Storage o usar URLs de Firestore
+    const loadImagesFromStorage = async (imageRefs) => {
+        try {
+            // Si no hay referencias o son URLs completas, devolverlas directamente
+            if (!imageRefs || imageRefs.length === 0) {
+                return [];
+            }
+
+            // Si la primera imagen ya es una URL completa, asumimos que todas lo son
+            if (typeof imageRefs[0] === 'string' && imageRefs[0].startsWith('http')) {
+                return imageRefs;
+            }
+
+            // Si son referencias a Storage, cargarlas
+            const loadedImages = await Promise.all(
+                imageRefs.map(async (imagePath, index) => {
+                    try {
+                        // Si es una URL completa, devolverla directamente
+                        if (typeof imagePath === 'string' && imagePath.startsWith('http')) {
+                            return imagePath;
+                        }
+
+                        // Si es base64, devolverlo directamente
+                        if (typeof imagePath === 'string' && imagePath.startsWith('data:')) {
+                            return imagePath;
+                        }
+
+                        // Construir la referencia a Storage
+                        const storageRef = ref(storage, imagePath);
+
+                        // Obtener la URL
+                        const url = await getDownloadURL(storageRef);
+                        return url;
+                    } catch (error) {
+                        console.error(`Error cargando imagen ${index}:`, error);
+                        // Fallback: si falla, usar la referencia original
+                        return imagePath;
+                    }
+                })
+            );
+
+            return loadedImages;
+        } catch (error) {
+            console.error('Error cargando imágenes desde Storage:', error);
+            return imageRefs; // Fallback: devolver las referencias originales
+        }
+    };
 
     const handleAddToCart = () => {
         if (product.hasSizes && !selectedSize) {
@@ -56,8 +106,14 @@ const ProductDetail = () => {
             return;
         }
 
+        // Usar el producto con las imágenes ya cargadas
+        const productWithImages = {
+            ...product,
+            images: productImages
+        };
+
         addToCart(
-            product,
+            productWithImages,
             quantity,
             product.hasSizes ? selectedSize : null,
             product.category === 'Polo' ? selectedFitType : null
@@ -105,11 +161,9 @@ const ProductDetail = () => {
 
     const handleLike = async () => {
         if (!user) {
-            setShowLoginModal(true); // Show login modal if user is not authenticated
+            setShowLoginModal(true);
             return;
         }
-
-
 
         const favoriteRef = doc(db, 'favorites', `${user.uid}_${id}`);
         const productRef = doc(db, 'Productos', id);
@@ -120,8 +174,9 @@ const ProductDetail = () => {
                 await updateDoc(productRef, {
                     likes: increment(-1)
                 });
-                setLikeCount(prev => Math.max(0, prev - 1)); // <-- Prevent negative values
+                setLikeCount(prev => Math.max(0, prev - 1));
             } else {
+                // Usar la imagen ya cargada de Storage
                 await setDoc(favoriteRef, {
                     userId: user.uid,
                     productId: id,
@@ -129,7 +184,7 @@ const ProductDetail = () => {
                     productData: {
                         name: product.name,
                         price: product.price,
-                        image: product.images[0]
+                        image: productImages[0] || product.images[0] // Usar imagen cargada o fallback
                     }
                 });
                 await updateDoc(productRef, {
@@ -143,6 +198,32 @@ const ProductDetail = () => {
         }
     };
 
+    // Cargar imágenes para productos relacionados
+    useEffect(() => {
+        const loadRelatedProductImages = async () => {
+            const imagesMap = {};
+
+            await Promise.all(
+                relatedProducts.map(async (product) => {
+                    try {
+                        // Cargar solo la primera imagen de cada producto relacionado
+                        const images = await loadImagesFromStorage([product.images[0]]);
+                        imagesMap[product.id] = images[0];
+                    } catch (error) {
+                        console.error(`Error loading image for related product ${product.id}:`, error);
+                        imagesMap[product.id] = product.images[0]; // Fallback
+                    }
+                })
+            );
+
+            setRelatedProductImagesMap(imagesMap);
+        };
+
+        if (relatedProducts.length > 0) {
+            loadRelatedProductImages();
+        }
+    }, [relatedProducts]);
+
     useEffect(() => {
         const fetchRelatedProducts = async () => {
             if (!product) return;
@@ -152,8 +233,8 @@ const ProductDetail = () => {
                 const categoryQuery = query(
                     collection(db, 'Productos'),
                     where('category', '==', product.category),
-                    where('__name__', '!=', id), // Exclude current product
-                    firestoreLimit(4) // Use firestoreLimit instead of limit
+                    where('__name__', '!=', id),
+                    firestoreLimit(4)
                 );
 
                 let querySnapshot = await getDocs(categoryQuery);
@@ -167,8 +248,8 @@ const ProductDetail = () => {
                     // Get random products from other categories
                     const otherProductsQuery = query(
                         collection(db, 'Productos'),
-                        where('__name__', '!=', id), // Exclude current product
-                        firestoreLimit(4 - relatedProducts.length) // Use firestoreLimit
+                        where('__name__', '!=', id),
+                        firestoreLimit(4 - relatedProducts.length)
                     );
 
                     const otherSnapshot = await getDocs(otherProductsQuery);
@@ -204,19 +285,31 @@ const ProductDetail = () => {
 
                 if (docSnap.exists()) {
                     const productData = docSnap.data();
+
+                    // Guardar producto en estado
                     setProduct({
                         id: docSnap.id,
                         ...productData,
                         likes: productData.likes || 0
                     });
+
                     setLikeCount(productData.likes || 0);
                     setMainImage(0);
+
+                    // Cargar imágenes desde Storage
+                    try {
+                        const loadedImages = await loadImagesFromStorage(productData.images);
+                        setProductImages(loadedImages);
+                    } catch (imageError) {
+                        console.error('Error cargando imágenes:', imageError);
+                        setProductImages(productData.images); // Usar las referencias originales como fallback
+                    }
 
                     // Initialize fit type if product has one
                     if (productData.fitType && productData.fitType !== 'Ambos') {
                         setSelectedFitType(productData.fitType);
                     } else if (productData.fitType === 'Ambos') {
-                        setSelectedFitType('Normal'); // Default to Normal for "Ambos"
+                        setSelectedFitType('Normal');
                         setShowFitTypes(true);
                     }
                 } else {
@@ -261,7 +354,7 @@ const ProductDetail = () => {
                     <div className={`${styles.imageSection} ${isOutOfStock ? styles.outOfStock : ''}`}>
                         <div className={styles.mainImage}>
                             <ImageMagnifier
-                                src={product.images[mainImage]}
+                                src={productImages[mainImage] || '/assets/placeholder.jpg'}
                                 alt={product.name}
                             />
                             {isOutOfStock && (
@@ -271,13 +364,20 @@ const ProductDetail = () => {
                             )}
                         </div>
                         <div className={styles.thumbnails}>
-                            {product.images.map((image, index) => (
+                            {productImages.map((image, index) => (
                                 <img
                                     key={index}
                                     src={image}
                                     alt={`${product.name} ${index + 1}`}
                                     className={mainImage === index ? styles.active : ''}
-                                    onClick={() => setMainImage(index)}
+                                    onClick={() => {
+                                        // Primero reseteamos la imagen para forzar el cambio completo
+                                        setMainImage(null);
+                                        // Después de un pequeño delay establecemos la nueva imagen
+                                        setTimeout(() => {
+                                            setMainImage(index);
+                                        }, 50);
+                                    }}
                                 />
                             ))}
                         </div>
@@ -344,12 +444,6 @@ const ProductDetail = () => {
                                             <i className={`fas fa-chevron-${showSizes ? 'up' : 'down'}`}></i>
                                         </button>
                                     </h3>
-                                    <button
-                                        className={styles.sizeGuideButton}
-                                        onClick={() => setShowSizeGuide(true)}
-                                    >
-                                        <i className="fas fa-ruler"></i> Guía de tallas
-                                    </button>
                                 </div>
 
                                 <div className={`${styles.sizesGrid} ${showSizes ? styles.show : ''}`}>
@@ -368,6 +462,14 @@ const ProductDetail = () => {
                                         </button>
                                     ))}
                                 </div>
+
+                                {/* Mover el botón de guía de tallas fuera del header pero dentro del sizesSection */}
+                                <button
+                                    className={styles.sizeGuideButton}
+                                    onClick={() => setShowSizeGuide(true)}
+                                >
+                                    <i className="fas fa-ruler"></i> Ver guía de tallas
+                                </button>
                             </div>
                         )}
 
@@ -404,7 +506,6 @@ const ProductDetail = () => {
                                 )}
                             </div>
                         )}
-
 
                         <div className={styles.addToCart}>
                             {isOutOfStock ? (
@@ -476,6 +577,9 @@ const ProductDetail = () => {
                                     relatedProduct.price * (1 - relatedProduct.discount / 100) :
                                     relatedProduct.price;
 
+                                // Usar imagen cargada desde Storage o caer en la original
+                                const relatedProductImage = relatedProductImagesMap[relatedProduct.id] || relatedProduct.images[0];
+
                                 return (
                                     <Link
                                         to={`/product/${relatedProduct.id}`}
@@ -484,8 +588,9 @@ const ProductDetail = () => {
                                     >
                                         <div className={styles.relatedImage}>
                                             <img
-                                                src={relatedProduct.images[0]}
+                                                src={relatedProductImage}
                                                 alt={relatedProduct.name}
+                                                loading="lazy" // Añadir carga diferida para mejorar rendimiento
                                             />
                                             {relatedProduct.discount > 0 && (
                                                 <span className={styles.relatedDiscountBadge}>

@@ -12,7 +12,7 @@
 }
 
 .modal {
-    background: white;
+    background: var(--card-bg);
     border-radius: 8px;
     padding: 2rem;
     width: 90%;
@@ -30,7 +30,7 @@
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: #666;
+    color: var(--text-color);
 }
 
 .form {
@@ -47,7 +47,7 @@
 
 .formGroup label {
     font-weight: 500;
-    color: #333;
+    color: var(--text-color);
 }
 
 .formGroup input,

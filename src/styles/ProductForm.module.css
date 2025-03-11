@@ -109,13 +109,7 @@
     text-align: center;
 }
 
-.error {
-    background-color: var(--background-color);
-    color: #dc2626;
-    padding: 1rem;
-    border-radius: 6px;
-    margin-top: 1rem;
-}
+
 
 .submitButton {
     background-color: #e10600;
@@ -153,11 +147,7 @@
     opacity: 0.5;
 }
 
-.uploadProgress {
-    margin-top: 0.5rem;
-    color: #4b5563;
-    font-size: 0.875rem;
-}
+
 
 .imageHelp {
     display: block;
@@ -190,6 +180,81 @@
     height: 1rem;
     cursor: pointer;
 }
+
+.progressContainer {
+    width: 100%;
+    height: 8px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    margin-top: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+
+.progressBar {
+    height: 100%;
+    background: linear-gradient(90deg, #e10600, #ff4d4d);
+    transition: width 0.3s ease;
+}
+
+.progressText {
+    position: absolute;
+    top: -18px;
+    right: 0;
+    font-size: 0.75rem;
+    color: var(--text-gray);
+}
+
+.uploadProgress {
+    font-size: 0.85rem;
+    color: var(--text-gray);
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.uploadProgress:before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border: 2px solid #e10600;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+}
+
+
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Ajuste para el mensaje de error para que también funcione como mensaje de éxito */
+.error {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+/* Color dinámico según el tipo de mensaje */
+.error:not(:empty) {
+    background-color: var(--error-bg, rgba(255, 0, 0, 0.1));
+    border: 1px solid var(--error-border, rgba(255, 0, 0, 0.3));
+    color: var(--error-text, #d32f2f);
+}
+
+/* Aplicar estilo de éxito cuando el mensaje no contiene palabras clave de error */
+.error:not(:empty):not(:contains('Error')):not(:contains('error')):not(:contains('No puedes')) {
+    --error-bg: rgba(76, 175, 80, 0.1);
+    --error-border: rgba(76, 175, 80, 0.3);
+    --error-text: #388e3c;
+}
+
 
 select {
     width: 100%;

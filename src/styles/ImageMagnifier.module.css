@@ -4,11 +4,23 @@
     height: 100%;
 }
 
+.imageMagnifierContainer {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    cursor: zoom-in;
+}
+
+
 .imageContainer {
     position: relative;
     width: 100%;
     height: 100%;
-    cursor: zoom-in;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 
 .mainImage {
@@ -19,7 +31,8 @@
 }
 
 .magnifier {
-    position: fixed; /* Changed from absolute to fixed */
+    position: fixed;
+    /* Changed from absolute to fixed */
     pointer-events: none;
     opacity: 1;
     border: 2px solid #e10600;
@@ -44,4 +57,132 @@
     color: #e10600;
     font-size: 14px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.imageMagnifierContainer {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    cursor: zoom-in;
+}
+
+.imageContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.image {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.magnifier {
+    position: absolute;
+    z-index: 100;
+    width: 200px;
+    height: 200px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    background-repeat: no-repeat;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+.magnifier {
+    animation: fadeIn 0.2s ease;
+}
+
+/* Zoom indicator */
+.zoomIndicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    pointer-events: none;
+    animation: fadeInZoom 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #333;
+    z-index: 1;
+}
+
+.zoomIndicator i {
+    font-size: 16px;
+    color: #e10600;
+}
+
+@keyframes fadeInZoom {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Media queries for touch devices */
+@media (pointer: coarse) {
+    .magnifier {
+        width: 150px;
+        height: 150px;
+    }
+
+    .imageMagnifierContainer {
+        cursor: default;
+    }
+}
+
+
+/* Larger magnifier on desktop for better detail viewing */
+@media (min-width: 1024px) {
+    .magnifier {
+        width: 200px;
+        height: 200px;
+    }
+}
+
+/* Ajustes para móviles */
+@media (max-width: 768px) {
+    .zoomIndicator {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    .magnifier {
+        width: 150px;
+        height: 150px;
+    }
 }

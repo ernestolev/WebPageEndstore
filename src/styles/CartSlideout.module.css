@@ -504,6 +504,184 @@ span {
     font-size: 0.7rem;
 }
 
+
+.discountSection {
+    margin: 1rem 0;
+    padding: 1rem 0;
+    border-top: 1px dashed rgba(var(--text-color-rgb), 0.1);
+    position: relative;
+}
+
+.discountForm {
+    display: flex;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.discountInput {
+    flex: 1;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    transition: all 0.2s ease;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.discountInput::placeholder {
+    color: var(--text-gray);
+    opacity: 0.7;
+    transition: all 0.2s ease;
+}
+
+.discountInput:focus {
+    border-color: #e10600;
+    outline: none;
+}
+
+.discountInput:focus::placeholder {
+    opacity: 0.4;
+}
+
+
+.discountButton {
+    background: linear-gradient(135deg, #e10600, #ff4d4d);
+    color: white;
+    border: none;
+    border-radius: 0 8px 8px 0;
+    padding: 0 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    width: 48px;
+    position: relative;
+    overflow: hidden;
+}
+
+.discountButton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+
+.discountButton:hover:not(:disabled)::before {
+    transform: translateX(0);
+}
+
+.discountButton:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.discountButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.discountButton.removeButton {
+    background: var(--text-gray);
+}
+
+.discountButton.removeButton:hover:not(:disabled) {
+    background: #e74c3c;
+}
+
+
+.miniSpinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.codeMessage {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.codeMessage.success {
+    background-color: rgba(46, 204, 113, 0.1);
+    color: #2ecc71;
+}
+
+.codeMessage.error {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+}
+
+.codeMessage.info {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+}
+
+.codeMessage i {
+    font-size: 0.9rem;
+}
+
+
+.discountRow {
+    color: #e10600;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    animation: fadeIn 0.3s ease;
+}
+
+.discountCode {
+    display: inline-block;
+    margin-left: 0.5rem;
+    background-color: rgba(225, 6, 0, 0.1);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+}
+
+.discountAmount {
+    font-weight: 600;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 @media (max-width: 480px) {
     .slideout {
         max-width: 100%;

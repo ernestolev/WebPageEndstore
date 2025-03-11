@@ -1,5 +1,5 @@
 .ordersPage {
-    background: #f9fafb;
+    background: var(--background-color);
 }
 
 .header {
@@ -28,7 +28,7 @@
     gap: 0.5rem;
     padding: 0.75rem 1.25rem;
     background: #008060;
-    color: white;
+    color: var(--text-color);
     border: none;
     border-radius: 8px;
     font-weight: 500;
@@ -47,7 +47,7 @@
     gap: 1rem;
     margin-bottom: 2rem;
     padding: 1.5rem;
-    background: white;
+    background: var(--background-color);
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -90,7 +90,7 @@
     padding: 0.875rem 2.5rem 0.875rem 1rem;
     border: 1px solid #dfe3e8;
     border-radius: 8px;
-    background: white;
+    background: var(--card-bg);
     font-size: 0.95rem;
     cursor: pointer;
     flex: 1;
@@ -107,7 +107,7 @@
 }
 
 .ordersTable {
-    background: white;
+    background: var(--card-bg);
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     overflow: hidden;
@@ -117,8 +117,8 @@
     display: grid;
     grid-template-columns: 1fr 1.5fr 2fr 1fr 1fr 0.5fr;
     padding: 1rem 1.5rem;
-    background: #f9fafb;
-    border-bottom: 1px solid #dfe3e8;
+    background: var(--card-bg);
+    border-bottom: 1px solid #adadad;
     font-weight: 500;
     color: #637381;
 }
@@ -127,13 +127,13 @@
     display: grid;
     grid-template-columns: 1fr 1.5fr 2fr 1fr 1fr 0.5fr;
     padding: 0.5rem 1rem;
-    border-bottom: 1px solid #dfe3e8;
+    border-bottom: 1px solid #949494;
     align-items: center;
     transition: background-color 0.2s;
 }
 
 .orderRow:hover {
-    background: #f4f6f8;
+    background: var(--background-color);
 }
 
 .customerInfo {
@@ -144,7 +144,7 @@
 
 .customerName {
     font-weight: 500;
-    color: #1a1a1a;
+    color: var(--text-color);
 }
 
 .customerEmail {

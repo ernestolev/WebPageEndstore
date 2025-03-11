@@ -12,7 +12,8 @@ import {
   updateDoc,
   increment
 } from 'firebase/firestore';
-import { db } from '../Firebase';
+import { ref, getDownloadURL } from 'firebase/storage'; // Añadir importaciones de Storage
+import { db, storage } from '../Firebase'; // Añadir storage
 import { toast } from 'react-toastify';
 import LogReg from './LogReg';
 
@@ -25,15 +26,82 @@ const ProductCard = ({ product }) => {
   const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(product.likes || 0);
-  const [showLoginModal, setShowLoginModal] = useState(false); // Add this state
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [productImages, setProductImages] = useState([]); // Nuevo estado para imágenes
+  const [imagesLoaded, setImagesLoaded] = useState(false); // Control de carga de imágenes
+
+  // Función para cargar imágenes desde Storage o usar URLs directamente
+  const loadImagesFromStorage = async (imageRefs) => {
+    if (!imageRefs || imageRefs.length === 0) {
+      return [];
+    }
+
+    try {
+      // Si la primera imagen ya es una URL completa, asumimos que todas lo son
+      if (typeof imageRefs[0] === 'string' && imageRefs[0].startsWith('http')) {
+        return imageRefs;
+      }
+
+      // Si son referencias a Storage o base64, procesarlas adecuadamente
+      const loadedImages = await Promise.all(
+        imageRefs.map(async (imagePath, index) => {
+          try {
+            // Si es una URL completa, devolverla directamente
+            if (typeof imagePath === 'string' && imagePath.startsWith('http')) {
+              return imagePath;
+            }
+            
+            // Si es base64, devolverlo directamente
+            if (typeof imagePath === 'string' && imagePath.startsWith('data:')) {
+              return imagePath;
+            }
+
+            // Construir la referencia a Storage
+            const storageRef = ref(storage, imagePath);
+            
+            // Obtener la URL
+            const url = await getDownloadURL(storageRef);
+            return url;
+          } catch (error) {
+            console.error(`Error cargando imagen ${index} para ${product.name}:`, error);
+            // Fallback: si falla, usar la referencia original
+            return imagePath;
+          }
+        })
+      );
+      
+      return loadedImages;
+    } catch (error) {
+      console.error('Error cargando imágenes desde Storage:', error);
+      return imageRefs; // Fallback: devolver las referencias originales
+    }
+  };
+
+  // Cargar imágenes cuando se renderiza el componente
+  useEffect(() => {
+    const loadImages = async () => {
+      try {
+        const images = await loadImagesFromStorage(product.images);
+        setProductImages(images);
+        setImagesLoaded(true);
+      } catch (error) {
+        console.error(`Error cargando imágenes para ${product.name}:`, error);
+        setProductImages(product.images); // Usar las referencias originales como fallback
+        setImagesLoaded(true);
+      }
+    };
+
+    loadImages();
+  }, [product.id, product.images]);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
-    if (product.images.length > 1) {
+    if (productImages.length > 1) {
       setCurrentImageIndex(1);
     }
   };
+  
   const handleMouseLeave = () => {
     setIsHovered(false);
     setCurrentImageIndex(0);
@@ -51,7 +119,14 @@ const ProductCard = ({ product }) => {
       setShowSizes(true);
       return;
     }
-    addToCart(product, 1, selectedSize);
+    
+    // Usar el producto con las imágenes ya cargadas
+    const productWithImages = {
+      ...product,
+      images: productImages
+    };
+    
+    addToCart(productWithImages, 1, selectedSize);
     setShowSizes(false);
   };
 
@@ -84,7 +159,7 @@ const ProductCard = ({ product }) => {
         await updateDoc(productRef, {
           likes: increment(-1)
         });
-        setLikeCount(prev => prev - 1);
+        setLikeCount(prev => Math.max(0, prev - 1));
         toast.info(`Se ha eliminado ${product.name} de tus favoritos`, {
           position: "top-right",
           autoClose: 3000,
@@ -104,7 +179,8 @@ const ProductCard = ({ product }) => {
           productData: {
             name: product.name,
             price: product.price,
-            image: product.images[0]
+            // Usar la imagen ya cargada desde Storage
+            image: productImages[0] || product.images[0]
           }
         });
         await updateDoc(productRef, {
@@ -135,6 +211,21 @@ const ProductCard = ({ product }) => {
     }
   };
 
+  // Mostrar un esqueleto de carga mientras se cargan las imágenes
+  if (!imagesLoaded) {
+    return (
+      <div className={`${styles.card} ${styles.loading}`}>
+        <div className={styles.imageWrapper}>
+          <div className={styles.imageSkeleton}></div>
+        </div>
+        <div className={styles.content}>
+          <div className={styles.titleSkeleton}></div>
+          <div className={styles.priceSkeleton}></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Link to={`/product/${product.id}`} className={styles.card}>
       <div
@@ -142,7 +233,7 @@ const ProductCard = ({ product }) => {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {product.images.map((image, index) => (
+        {productImages.map((image, index) => (
           <img
             key={index}
             src={image}
@@ -152,6 +243,7 @@ const ProductCard = ({ product }) => {
               ${isOutOfStock ? styles.outOfStock : ''} 
               ${index === currentImageIndex ? styles.visible : ''}
             `}
+            loading="lazy" // Carga diferida para mejor rendimiento
           />
         ))}
 
@@ -205,7 +297,7 @@ const ProductCard = ({ product }) => {
           <div className={styles.addToCartSection}>
             {showSizes && (
               <div className={styles.sizesGrid}>
-                {Object.entries(product.sizes).map(([size, stock]) => (
+                {Object.entries(product.sizes || {}).map(([size, stock]) => (
                   <button
                     key={size}
                     className={`${styles.sizeButton} ${selectedSize === size ? styles.selected : ''
