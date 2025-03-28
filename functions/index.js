@@ -1,95 +1,80 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const crypto = require('crypto');
+const axios = require('axios');
+const cors = require('cors')({ origin: true });
 
 admin.initializeApp();
 
-const runtimeOpts = {
-    timeoutSeconds: 300,
-    memory: '256MB',
-    nodejs: 20
-};
+exports.processPayment = functions.https.onRequest((request, response) => {
+  cors(request, response, async () => {
+    try {
+      console.log('Recibida solicitud para procesar pago:', JSON.stringify(request.body));
 
-// Define hardcoded PayU configuration with consistent casing
-const payuConfig = {
-    merchantId: '1020877',          // Changed to camelCase
-    accountId: '1029941',           // Changed to camelCase
-    apiKey: 'D3xpZdI3LesEFz96645ohZEnhf',  // Changed to camelCase
-    apiLogin: 'BI8S0csf1QbADQY',    // Changed to camelCase
-    publicKey: 'PKfiBYnG78w9f7K912C2122d7l', // Changed to camelCase
-    responseUrl: 'https://endstore.web.app/payment-response', // Changed to camelCase
-    confirmationUrl: 'https://endstore.web.app/api/payment-confirmation', // Changed to camelCase
-    checkoutUrl: 'https://checkout.payulatam.com/ppp-web-gateway-payu/', // Changed to camelCase
-    currency: 'PEN',
-    country: 'PE',
-    test: 0
-};
+      // Verificar método y origen
+      if (request.method !== 'POST') {
+        console.error('Método no permitido:', request.method);
+        return response.status(405).send('Método no permitido');
+      }
 
-exports.createPayuPayment = functions
-    .runWith(runtimeOpts)
-    .https.onCall(async (data, context) => {
-        if (!context.auth) {
-            throw new functions.https.HttpsError('unauthenticated', 'Usuario no autenticado');
+      // Recibir datos del cliente
+      const { token, amount, orderId, email, description } = request.body;
+
+      if (!token || !amount || !orderId) {
+        console.error('Faltan datos requeridos:', { token: !!token, amount, orderId });
+        return response.status(400).send('Faltan datos requeridos');
+      }
+
+      console.log('Procesando pago para orden:', orderId, 'monto:', amount);
+
+      // Configurar solicitud a Culqi
+      const culqiAPI = axios.create({
+        baseURL: 'https://api.culqi.com/v2',
+        headers: {
+          'Authorization': `Bearer sk_live_7b91e396e5e04658`, // Clave privada de producción actualizada
+          'Content-Type': 'application/json'
         }
+      });
 
-        try {
-            const { orderId, amount, shipping } = data;
-
-            // Log received data for debugging
-            console.log('Received payment data:', { orderId, amount, shipping });
-
-            // Generate signature using camelCase properties
-            const signatureString = `${payuConfig.apiKey}~${payuConfig.merchantId}~${orderId}~${amount}~${payuConfig.currency}`;
-            const signature = crypto.createHash('md5').update(signatureString).digest('hex');
-
-            // Save transaction
-            const transactionRef = admin.firestore().collection('PayuTransactions').doc();
-            await transactionRef.set({
-                orderId,
-                userId: context.auth.uid,
-                amount,
-                status: 'PENDING',
-                createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                shipping,
-                signature // Save signature for reference
-            });
-
-            // Create form data with matching PayU field names
-            const formData = {
-                merchantId: payuConfig.merchantId,
-                accountId: payuConfig.accountId,
-                description: `Compra en EndStore - Orden ${orderId}`,
-                referenceCode: orderId,
-                amount,
-                tax: "0",
-                taxReturnBase: "0",
-                currency: payuConfig.currency,
-                signature,
-                test: payuConfig.test,
-                buyerEmail: shipping.email,
-                buyerFullName: shipping.fullName,
-                shippingAddress: shipping.address,
-                shippingCity: shipping.city,
-                telephone: shipping.phone,
-                responseUrl: payuConfig.responseUrl,
-                confirmationUrl: payuConfig.confirmationUrl
-            };
-
-            // Log form data for debugging
-            console.log('PayU Form Data:', formData);
-
-            return {
-                success: true,
-                formData,
-                transactionId: transactionRef.id
-            };
-
-        } catch (error) {
-            console.error('Payment error:', {
-                message: error.message,
-                stack: error.stack,
-                data: { orderId: data.orderId, amount: data.amount }
-            });
-            throw new functions.https.HttpsError('internal', 'Error procesando el pago: ' + error.message);
+      // Crear el cargo
+      const chargeData = {
+        amount: Math.round(amount * 100), // Convertir a centavos
+        currency_code: 'PEN',
+        email: email,
+        source_id: token.id,
+        description: description || `Compra en End Store - Pedido ${orderId}`,
+        capture: true,
+        metadata: {
+          order_id: orderId
         }
-    });
+      };
+
+      console.log('Enviando datos a Culqi:', JSON.stringify(chargeData));
+
+      // Realizar la solicitud de cargo a Culqi
+      const chargeResponse = await culqiAPI.post('/charges', chargeData);
+
+      console.log('Respuesta exitosa de Culqi:', JSON.stringify(chargeResponse.data));
+
+      // Devolver respuesta exitosa
+      return response.status(200).json({
+        success: true,
+        charge: chargeResponse.data
+      });
+
+    } catch (error) {
+      console.error('Error en processPayment:', error.message);
+      
+      // Obtener más detalles del error
+      let errorDetails = error.message;
+      if (error.response) {
+        console.error('Error de respuesta de Culqi:', JSON.stringify(error.response.data));
+        errorDetails = JSON.stringify(error.response.data);
+      }
+      
+      return response.status(500).json({
+        success: false,
+        error: errorDetails
+      });
+    }
+  });
+});

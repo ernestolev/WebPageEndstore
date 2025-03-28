@@ -1,13 +1,82 @@
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Racing+Sans+One&family=Roboto:ital,wght@0,100..900;1,100..900&family=Shrikhand&family=Space+Grotesk:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Climate+Crisis&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nabla&display=swap');
 
 .home {
     display: flex;
     flex-direction: column;
     background-color: var(--background-color);
     color: #121212;
-    max-width: 1380px;
+    max-width: 1440px;
     margin: auto;
     padding: 0;
+}
+
+.heroPortadaDesktop {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.heroPortadaMobile {
+    width: 100%;
+    height: auto;
+    display: none;
+    /* Oculto por defecto */
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.heroNew {
+    width: 100%;
+    margin-top: 8rem;
+    position: relative;
+}
+
+.heroImageContainer {
+    position: relative;
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.heroPortada {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.heroImageContainer:hover .heroPortada {
+    transform: scale(1.02);
+}
+
+.heroExploreButton {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    background-color: #ff0000;
+    color: #ffffff;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.5rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    z-index: 2;
+}
+
+.heroExploreButton:hover {
+    background-color: #ff807b;
 }
 
 .hero {
@@ -420,7 +489,7 @@
 .saleCard {
     background-color: var(--card-bg);
     border-radius: 12px;
-    
+
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     display: flex;
@@ -481,7 +550,7 @@
 }
 
 .category {
-    color: #666666;
+    color: var(--text-gray);
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -678,7 +747,7 @@
 .qualityTitle {
     font-size: 3rem;
     font-weight: 700;
-    color: var(  --text-color);
+    color: var(--text-color);
     font-family: 'Montserrat', sans-serif;
 }
 
@@ -692,7 +761,7 @@
 .qualityText {
     font-size: 1.1rem;
     line-height: 1.8;
-    color: #666666;
+    color: var(--text-gray);
     font-family: 'Montserrat', sans-serif;
     margin-bottom: 1rem;
 }
@@ -851,7 +920,7 @@
 
 .featureText {
     font-size: 1rem;
-    color: #666666;
+    color: var(--text-gray);
     line-height: 1.6;
     max-width: 280px;
     margin: 0 auto;
@@ -900,7 +969,7 @@
 
 .supportDescription {
     font-size: 1.1rem;
-    color: #666666;
+    color: var(--text-gray);
     line-height: 1.6;
     max-width: 600px;
     margin: 0 auto;
@@ -1083,6 +1152,19 @@
 /* Modificar las media queries existentes y agregar nuevas */
 
 @media (max-width: 768px) {
+
+    .heroNew {
+        padding: 1rem;
+        margin-top: 60px;
+    }
+
+    .heroExploreButton {
+        bottom: 20px;
+        left: 20px;
+        padding: 0.8rem 1.6rem;
+        font-size: 0.9rem;
+    }
+
     .hero {
         grid-template-columns: 1fr;
         padding: 2rem 1rem;
@@ -1115,9 +1197,13 @@
 
     /* Ajustes para secciones de categorías */
     .categoriesGrid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
         gap: 1.5rem;
         padding: 0 1rem;
+    }
+
+    .flashSaleSection{
+        display: none;
     }
 
     .categoryImageContainer {
@@ -1208,6 +1294,33 @@
 
 
 @media (max-width: 480px) {
+
+    .heroNew {
+        padding: 0.5rem;
+        margin-top: 90px;
+    }
+
+    .heroPortadaDesktop {
+        display: none;
+        /* Ocultar versión desktop */
+    }
+
+    .heroPortadaMobile {
+        display: block;
+        /* Mostrar versión móvil */
+    }
+
+    .heroImageContainer {
+        border-radius: 15px;
+    }
+
+    .heroExploreButton {
+        bottom: 58%;
+        left: 1.5rem;
+        padding: 0.7rem 1.4rem;
+        font-size: 1.2rem;
+    }
+
     .home {
         width: 100%;
     }
@@ -1322,8 +1435,8 @@
     }
 
     .sectionTitle {
-        font-size: 2.5rem;
-        text-align: left;
+        text-align: center;
+        font-size: 1.5rem;
     }
 
     .gridGallery {
@@ -1363,7 +1476,7 @@
     }
 
     .productsGrid {
-        grid-template-columns: repeat(1, 1fr);
+        grid-template-columns: repeat(1, 1fr 1fr);
     }
 
     .exploreButton {

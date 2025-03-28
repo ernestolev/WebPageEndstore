@@ -55,7 +55,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
-  color: #ffffff;
+  color: var(--text-color);
 }
 
 .columnLinks {

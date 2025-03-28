@@ -16,6 +16,8 @@ import streetcol from '../assets/imgs/streetcolect.png';
 import TrackingSection from '../components/TrackingSection';
 import videoq from '../assets/video/vid-quiality.mov';
 import imgq from '../assets/imgs/qualityimg.png';
+import imgportada from '../assets/imgs/portada.png';
+import imgportadamov from '../assets/imgs/portada-movil.png';
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
@@ -226,25 +228,20 @@ const Home = () => {
     <>
       <AnnouncementBar />
       <div className={styles.home}>
-        <section className={styles.hero}>
-          <div className={styles.heroLeft}>
-            <h1 className={styles.heroTitle}>
-              Eleva tu <span className={styles.accentText}>estilo</span>
-              <br />con el espiritu racing
-            </h1>
-            <p className={styles.heroSubtitle}>
-              Descubre nuestras exclusivas colecciones basadas en inspiraciones de carros y tematicas F1.
-              Hoodies, Jackets, Camisetas y más.
-            </p>
-            <Link to="/catalogo" className={styles.shopNow}>Explorar</Link>
-          </div>
-          <div className={styles.heroRight}>
-            <div className={styles.imageWrapper}>
-              <img src={modelimg} alt="Featured Product" className={styles.heroImage} />
-            </div>
+        <section className={styles.heroNew}>
+          <div className={styles.heroImageContainer}>
+            <img src={imgportada} alt="End Store - Colección" className={styles.heroPortadaDesktop} />
+            <img src={imgportadamov} alt="End Store - Colección" className={styles.heroPortadaMobile} />
+            <Link to="/catalogo" className={styles.heroExploreButton}>
+              Explorar
+            </Link>
           </div>
         </section>
         <SlideBar />
+
+        <section id="tracking-section" name="tracking">
+          <TrackingSection />
+        </section>
         <section className={styles.categoriesSection}>
           <div className={styles.container}>
             <h2 className={styles.sectionTitle}>Nuestra Top Collection</h2>
@@ -285,7 +282,7 @@ const Home = () => {
                 <img src={racingcol} alt="Racing Collection" />
                 <div className={styles.overlay}>
                   <h3>Racing Collection</h3>
-                  <Link to="/catalolgo" className={styles.linkButton}>Ver más</Link>
+                  <Link to="/catalogo" className={styles.linkButton}>Ver más</Link>
                 </div>
               </div>
               <div className={styles.secondaryImages}>
@@ -293,23 +290,21 @@ const Home = () => {
                   <img src={sumercol} alt="Summer Collection" />
                   <div className={styles.overlay}>
                     <h3>Summer Collection</h3>
-                    <Link to="/catalolgo" className={styles.linkButton}>Ver más</Link>
+                    <Link to="/catalogo" className={styles.linkButton}>Ver más</Link>
                   </div>
                 </div>
                 <div className={styles.bottomImage}>
                   <img src={streetcol} alt="Street Collection" />
                   <div className={styles.overlay}>
                     <h3>Street Collection</h3>
-                    <Link to="/catalolgo" className={styles.linkButton}>Ver más</Link>
+                    <Link to="/catalogo" className={styles.linkButton}>Ver más</Link>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
-        <section id="tracking-section" name="tracking">
-          <TrackingSection />
-        </section>
+
         <section className={styles.flashSaleSection}>
           <div className={styles.container}>
             <div className={styles.saleHeader}>

@@ -82,6 +82,20 @@ const CartSlideout = () => {
         }
     }, [discountCode]);
 
+
+    useEffect(() => {
+        if (cart.length > 0) {
+            console.log("Estado del carrito:", cart.map(item => ({
+                id: item.id,
+                name: item.name,
+                size: item.size,
+                fitType: item.fitType,
+                quantity: item.quantity
+            })));
+        }
+    }, [cart]);
+
+
     const handleDiscountCode = async () => {
         if (!user) {
             setCodeStatus({ loading: false, message: 'Inicia sesión para usar códigos', type: 'error' });
@@ -154,14 +168,24 @@ const CartSlideout = () => {
             applyDiscountCode({
                 id: codeId,
                 code: codeData.code,
-                discount: codeData.discount
+                discount: codeData.discount,
+                freeShipping: codeData.freeShipping || false // Asegurarse de incluir freeShipping
             });
 
-            setCodeStatus({
-                loading: false,
-                message: `¡${codeData.discount}% de descuento aplicado!`,
-                type: 'success'
-            });
+            // Mensaje específico según si tiene envío gratis o no
+            if (codeData.freeShipping) {
+                setCodeStatus({
+                    loading: false,
+                    message: `¡${codeData.discount}% de descuento y envío gratis aplicado!`,
+                    type: 'success'
+                });
+            } else {
+                setCodeStatus({
+                    loading: false,
+                    message: `¡${codeData.discount}% de descuento aplicado!`,
+                    type: 'success'
+                });
+            }
         } catch (error) {
             console.error('Error validating discount code:', error);
             setCodeStatus({
@@ -225,6 +249,34 @@ const CartSlideout = () => {
         exit: { opacity: 0, x: -20, transition: { duration: 0.2 } }
     };
 
+    const isItemOutOfStock = (item) => {
+        // Para productos con tallas, verificar según la talla seleccionada
+        if (item.hasSizes && item.size) {
+            return (productsData[item.id]?.sizes?.[item.size] || 0) <= 0;
+        }
+        // Para productos sin tallas, verificar stock general
+        return (productsData[item.id]?.stock || 0) <= 0;
+    };
+
+    const getStockText = (item) => {
+        // Determinar stock real según tipo de producto
+        const stock = item.hasSizes && item.size
+            ? productsData[item.id]?.sizes?.[item.size] || 0
+            : productsData[item.id]?.stock || 0;
+
+        if (stock <= 0) {
+            return "Producto agotado";
+        }
+        if (stock < item.quantity) {
+            return `Solo hay ${stock} unidades disponibles`;
+        }
+        if (stock <= 5) {
+            return `¡Quedan solo ${stock} unidades!`;
+        }
+        return null;
+    };
+
+
     if (!isCartOpen) return null;
 
     return (
@@ -263,111 +315,111 @@ const CartSlideout = () => {
                                 ) : (
                                     <AnimatePresence>
                                         {cart.map((item) => {
-                                            const product = productsData[item.id];
+                                            // Determinar stock real según tipo de producto
+                                            const itemStock = item.hasSizes && item.size
+                                                ? productsData[item.id]?.sizes?.[item.size] || 0
+                                                : productsData[item.id]?.stock || 0;
+
+                                            // Actualizar propiedades necesarias para verificación
+                                            const itemWithStock = {
+                                                ...item,
+                                                stock: itemStock
+                                            };
+
+                                            const stockText = getStockText(itemWithStock);
+                                            const isOutOfStock = isItemOutOfStock(itemWithStock);
+
                                             return (
-                                                <motion.div
-                                                    key={`${item.id}-${item.size}-${item.fitType || 'default'}`}
-                                                    className={styles.item}
-                                                    variants={itemVariants}
-                                                    initial="hidden"
-                                                    animate="visible"
-                                                    exit="exit"
-                                                    layout
-                                                >
-                                                    <div className={styles.itemImageContainer}>
-                                                        <img
-                                                            src={item.image}
-                                                            alt={item.name}
-                                                            className={styles.itemImage}
-                                                        />
+                                                <div key={`${item.id}-${item.size}`} className={styles.cartItem}>
+                                                    <div className={styles.cartItemImage}>
+                                                        <img src={item.image} alt={item.name} />
                                                     </div>
-                                                    <div className={styles.itemInfo}>
-                                                        <h3>{item.name}</h3>
-                                                        <div className={styles.itemAttributes}>
-                                                            {/* Display size if available */}
-                                                            {item.size && product && product.hasSizes && (
-                                                                <div className={styles.attributeWrapper}>
-                                                                    <div className={styles.attributeLabel}>
-                                                                        Talla
-                                                                    </div>
-                                                                    <div className={styles.attributeSelector}>
-                                                                        {Object.entries(product.sizes || {}).map(([size, stock]) => (
+                                                    <div className={styles.cartItemDetails}>
+                                                        <h4>{item.name}</h4>
+                                                        <div className={styles.cartItemMeta}>
+                                                            {item.size && (
+                                                                <span className={styles.attributeTag}>
+                                                                    <i className="fas fa-ruler"></i> Talla: {item.size}
+                                                                </span>
+                                                            )}
+                                                            {item.fitType && item.fitType !== 'Regular' && (
+                                                                <span className={styles.attributeTag}>
+                                                                    <i className="fas fa-tshirt"></i> Fit: {item.fitType}
+                                                                </span>
+                                                            )}
+                                                            <span className={styles.priceTag}>
+                                                                <i className="fas fa-tag"></i> S/. {item.price.toFixed(2)}
+                                                            </span>
+                                                        </div>
+                                                        {productsData[item.id]?.hasSizes && (
+                                                            <div className={styles.itemOptions}>
+                                                                <div className={styles.optionsRow}>
+                                                                    <span className={styles.optionsLabel}>Talla:</span>
+                                                                    <div className={styles.optionsButtons}>
+                                                                        {Object.entries(productsData[item.id]?.sizes || {}).map(([size, stock]) => (
                                                                             <button
                                                                                 key={size}
-                                                                                className={`${styles.attributeOption} ${item.size === size ? styles.selected : ''
-                                                                                    } ${stock === 0 && size !== item.size ? styles.disabled : ''}`}
+                                                                                className={`${styles.sizeOption} ${item.size === size ? styles.selectedOption : ''
+                                                                                    } ${stock <= 0 ? styles.disabledOption : ''}`}
                                                                                 onClick={() => handleSizeChange(item, size)}
-                                                                                disabled={stock === 0 && size !== item.size}
+                                                                                disabled={stock <= 0}
+                                                                                title={stock <= 0 ? 'Agotado' : `${stock} disponibles`}
                                                                             >
                                                                                 {size}
                                                                             </button>
                                                                         ))}
                                                                     </div>
                                                                 </div>
-                                                            )}
 
-                                                            {/* Display fit type if it's a polo */}
-                                                            {item.fitType && product && product.category === 'Polo' && (
-                                                                <div className={styles.attributeWrapper}>
-                                                                    <div className={styles.attributeLabel}>
-                                                                        Fit
+                                                                {productsData[item.id]?.fitOptions && (
+                                                                    <div className={styles.optionsRow}>
+                                                                        <span className={styles.optionsLabel}>Fit:</span>
+                                                                        <div className={styles.optionsButtons}>
+                                                                            {productsData[item.id]?.fitOptions.map(fit => (
+                                                                                <button
+                                                                                    key={fit}
+                                                                                    className={`${styles.fitOption} ${item.fitType === fit ? styles.selectedOption : ''
+                                                                                        }`}
+                                                                                    onClick={() => handleFitChange(item, fit)}
+                                                                                >
+                                                                                    {fit}
+                                                                                </button>
+                                                                            ))}
+                                                                        </div>
                                                                     </div>
-                                                                    <div className={styles.attributeSelector}>
-                                                                        {(product.fitType === 'Ambos' ? ['Normal', 'Oversize'] : [product.fitType]).map(fit => (
-                                                                            <button
-                                                                                key={fit}
-                                                                                className={`${styles.attributeOption} ${item.fitType === fit ? styles.selected : ''
-                                                                                    }`}
-                                                                                onClick={() => handleFitChange(item, fit)}
-                                                                            >
-                                                                                {fit}
-                                                                            </button>
-                                                                        ))}
-                                                                    </div>
-                                                                </div>
-                                                            )}
-                                                        </div>
-
-                                                        <div className={styles.priceRow}>
-                                                            <span className={styles.itemPrice}>
-                                                                S/. {(item.price * item.quantity).toFixed(2)}
-                                                            </span>
-                                                            <div className={styles.quantity}>
-                                                                <button
-                                                                    onClick={() => updateQuantity(
-                                                                        item.id,
-                                                                        item.size,
-                                                                        item.fitType,
-                                                                        item.quantity - 1
-                                                                    )}
-                                                                    disabled={item.quantity <= 1}
-                                                                    aria-label="Disminuir cantidad"
-                                                                >
-                                                                    <i className="fas fa-minus"></i>
-                                                                </button>
-                                                                <span>{item.quantity}</span>
-                                                                <button
-                                                                    onClick={() => updateQuantity(
-                                                                        item.id,
-                                                                        item.size,
-                                                                        item.fitType,
-                                                                        item.quantity + 1
-                                                                    )}
-                                                                    aria-label="Aumentar cantidad"
-                                                                >
-                                                                    <i className="fas fa-plus"></i>
-                                                                </button>
+                                                                )}
                                                             </div>
+                                                        )}
+                                                        <div className={styles.quantityControls}>
+                                                            <button
+                                                                onClick={() => updateQuantity(item.id, item.size, item.fitType, Math.max(1, item.quantity - 1))}
+                                                                disabled={item.quantity <= 1}
+                                                            >
+                                                                <i className="fas fa-minus"></i>
+                                                            </button>
+                                                            <span>{item.quantity}</span>
+                                                            <button
+                                                                onClick={() => updateQuantity(item.id, item.size, item.fitType, item.quantity + 1)}
+                                                                disabled={isOutOfStock || item.quantity >= itemStock}
+                                                            >
+                                                                <i className="fas fa-plus"></i>
+                                                            </button>
                                                         </div>
+                                                        {stockText && (
+                                                            <div className={`${styles.stockWarning} ${isOutOfStock ? styles.stockError :
+                                                                (itemStock <= 5 ? styles.stockLow : '')
+                                                                }`}>
+                                                                {stockText}
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                    <button
-                                                        className={styles.removeButton}
-                                                        onClick={() => removeFromCart(item.id, item.size, item.fitType)}
-                                                        aria-label="Eliminar producto"
-                                                    >
+                                                    <div className={styles.cartItemPrice}>
+                                                        S/. {(item.price * item.quantity).toFixed(2)}
+                                                    </div>
+                                                    <button className={styles.removeButton} onClick={() => removeFromCart(item.id, item.size, item.fitType)}>
                                                         <i className="fas fa-trash"></i>
                                                     </button>
-                                                </motion.div>
+                                                </div>
                                             );
                                         })}
                                     </AnimatePresence>
@@ -380,14 +432,22 @@ const CartSlideout = () => {
                                         <span>S/. {getSubtotal().toFixed(2)}</span>
                                     </div>
                                     <div className={styles.summaryRow}>
-                                        <span>Envío</span>
+                                        <span>
+                                            Envío
+                                            {discountCode && discountCode.freeShipping && (
+                                                <span className={styles.freeShippingBadge}>
+                                                    <i className="fas fa-gift"></i> Gratis con código
+                                                </span>
+                                            )}
+                                        </span>
                                         {getShippingCost() === 0 ? (
                                             <span className={styles.freeShipping}>Gratis</span>
                                         ) : (
                                             <span>S/. {SHIPPING_COST.toFixed(2)}</span>
                                         )}
                                     </div>
-                                    {getShippingCost() > 0 && (
+
+                                    {getShippingCost() > 0 && !discountCode?.freeShipping && (
                                         <div className={styles.shippingInfo}>
                                             <div className={styles.shippingProgress}>
                                                 <div

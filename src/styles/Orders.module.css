@@ -194,26 +194,55 @@
 }
 
 .actionButton {
-    padding: 0.5rem;
-    background: none;
+    background-color: transparent;
     border: none;
-    color: #637381;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    color: #555;
+    margin-right: 6px;
     cursor: pointer;
     transition: all 0.2s;
-    border-radius: 6px;
-    margin: 0 0.25rem;
 }
 
 .actionButton:hover {
-    color: #008060;
-    background: #f4f6f8;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.actionButton:last-child {
+    margin-right: 0;
 }
 
 .actionButton i {
-    font-size: 1.1rem;
+    font-size: 14px;
+}
+
+.actionButton:nth-child(1):hover {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.actionButton:nth-child(2):hover {
+    background-color: #e8f5e9;
+    color: #43a047;
+}
+
+.actionButton:nth-child(3):hover {
+    background-color: #fff3e0;
+    color: #ff9800;
+}
+
+.actionButton:nth-child(4):hover {
+    background-color: #fce4ec;
+    color: #e91e63;
 }
 
 @media (max-width: 1024px) {
+
     .tableHeader,
     .orderRow {
         grid-template-columns: 1fr 1fr 1.5fr 1fr 1fr 0.5fr;
@@ -241,6 +270,289 @@
     }
 }
 
+/* Añadir estos estilos al final del archivo */
+
+/* Estilos para estado de carga */
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 4px solid #693181;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Estilos para "sin resultados" */
+.noResults {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+    color: #666;
+    text-align: center;
+}
+
+.noResults i {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: #ccc;
+}
+
+.noResults h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.noResults p {
+    color: #888;
+}
+
+/* Estilos para el modal de detalles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.modalContent {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+    background-color: #f9f9f9;
+    border-radius: 8px 8px 0 0;
+}
+
+.modalHeader h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0;
+    color: #333;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #666;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.closeButton:hover {
+    background-color: #eee;
+    color: #333;
+}
+
+.modalBody {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.modalFooter {
+    padding: 16px 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.printButton,
+.closeModalButton {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.printButton {
+    background-color: #693181;
+    color: white;
+    border: none;
+}
+
+.printButton:hover {
+    background-color: #7c3b97;
+}
+
+.closeModalButton {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.closeModalButton:hover {
+    background-color: #eee;
+}
+
+/* Estilos para detalles de orden */
+.orderDetailSection {
+    margin-bottom: 24px;
+}
+
+.orderDetailSection h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #eee;
+}
+
+.orderDetailRow {
+    display: flex;
+    margin-bottom: 8px;
+}
+
+.label {
+    flex: 0 0 130px;
+    font-weight: 500;
+    color: #666;
+}
+
+.value {
+    flex: 1;
+    color: #333;
+}
+
+.orderProductList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.orderProduct {
+    display: flex;
+    gap: 15px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+}
+
+.productImage {
+    width: 70px;
+    height: 70px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.productImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.productInfo {
+    flex: 1;
+}
+
+.productInfo h4 {
+    margin: 0 0 6px 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.productMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.orderSummary {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 6px;
+}
+
+.totalRow {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #ddd;
+}
+
+.totalRow .label,
+.totalRow .value {
+    font-weight: 600;
+    color: #333;
+}
+
+.labelButton {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #e91e63;
+    color: white;
+    border: none;
+  }
+  
+  .labelButton:hover {
+    background-color: #d81b60;
+  }
+
+  .actionButtons{
+    display: flex;
+    flex-direction: row;
+  }
+
 @media (max-width: 640px) {
     .ordersTable {
         display: block;
@@ -252,10 +564,25 @@
     .orderRow {
         min-width: 900px;
     }
-    .header{
+
+    .header {
         margin-bottom: 1rem
     }
-    .ordersPage{
+
+    .ordersPage {
         padding: 0px;
+    }
+
+    .orderDetailRow {
+        flex-direction: column;
+    }
+
+    .label {
+        margin-bottom: 4px;
+    }
+
+    .modalContent {
+        width: 95%;
+        max-height: 95vh;
     }
 }

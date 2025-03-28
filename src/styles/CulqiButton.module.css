@@ -1,54 +1,148 @@
-.container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+.culqiWrapper {
+  margin-top: 20px;
+  width: 100%;
+  position: relative;
+  font-family: 'Poppins', 'Helvetica Neue', sans-serif;
+}
+
+.culqiButton {
+  width: 100%;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #00a19b, #00c4c3);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 161, 155, 0.2);
+}
+
+.culqiButton:hover {
+  background: linear-gradient(135deg, #009090, #00b0b0);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 161, 155, 0.3);
+}
+
+.culqiButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.buttonContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.paymentIcons {
+  display: flex;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.paymentIcons i {
+  font-size: 1.2rem;
+}
+
+.culqiButton i {
+  font-size: 1rem;
+}
+
+.miniSpinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  z-index: 10;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.errorMessage {
+  background-color: #fff3f3;
+  border: 1px solid #ffcccc;
+  border-left: 4px solid #d32f2f;
+  color: #d32f2f;
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.errorMessage i {
+  font-size: 1.1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Efecto de brillo en el botón */
+.culqiButton::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(30deg);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.culqiButton:hover::after {
+  opacity: 1;
+  animation: shine 1.5s ease-in-out;
+}
+
+@keyframes shine {
+  0% {
+    left: -50%;
+    opacity: 0;
   }
-  
-  .culqiButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 1rem 2rem;
-    background: #00a19b;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s;
-    width: 100%;
+  50% {
+    opacity: 1;
   }
-  
-  .culqiButton:hover {
-    background: #008f89;
+  100% {
+    left: 150%;
+    opacity: 0;
   }
-  
-  .culqiButton:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-  }
-  
-  .error {
-    padding: 0.75rem;
-    background: #fee2e2;
-    color: #dc2626;
-    border-radius: 4px;
-    font-size: 0.875rem;
-  }
-  
-  .spinner {
-    width: 20px;
-    height: 20px;
-    border: 2px solid #ffffff;
-    border-radius: 50%;
-    border-top-color: transparent;
-    animation: spin 1s linear infinite;
-  }
-  
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
+}

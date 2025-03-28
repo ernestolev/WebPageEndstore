@@ -8,8 +8,6 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../Firebase';
 import { useAuth } from '../context/AuthContext';
 
-// Set Mapbox token
-
 const Contacto = () => {
     const { theme } = useTheme();
     const { user } = useAuth();
@@ -23,33 +21,35 @@ const Contacto = () => {
     });
     const [sending, setSending] = useState(false);
     const [hoverSocial, setHoverSocial] = useState(null);
-    
+
     // Handle form input changes
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
-    
+
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!formData.name || !formData.email || !formData.message) {
             toast.error('Por favor completa los campos requeridos', {
                 theme: theme === 'dark' ? 'dark' : 'light',
             });
             return;
         }
-        
+
         try {
             setSending(true);
-            
-            await addDoc(collection(db, 'messages'), {
+
+            // Enviar mensaje a la colección "mensajes" (no "messages")
+            await addDoc(collection(db, 'mensajes'), {
                 ...formData,
                 userId: user?.uid || 'guest',
-                createdAt: serverTimestamp()
+                createdAt: serverTimestamp(),
+                status: 'nuevo' // Agregar estado inicial para facilitar la gestión
             });
-            
+
             toast.success('¡Mensaje enviado con éxito! Nos pondremos en contacto pronto.', {
                 theme: theme === 'dark' ? 'dark' : 'light',
                 icon: '📨',
@@ -58,7 +58,7 @@ const Contacto = () => {
                     color: 'white',
                 }
             });
-            
+
             // Reset form
             setFormData({
                 name: '',
@@ -76,9 +76,9 @@ const Contacto = () => {
             setSending(false);
         }
     };
-    
 
-    
+
+
     const socialMedia = [
         {
             name: 'WhatsApp',
@@ -108,12 +108,12 @@ const Contacto = () => {
             stats: '6.5K seguidores'
         }
     ];
-    
+
     return (
         <>
             <AnnouncementBar />
             <div className={styles.contactPage}>
-                <motion.div 
+                <motion.div
                     className={styles.heroSection}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -122,9 +122,9 @@ const Contacto = () => {
                     <h1>Contáctanos</h1>
                     <p>Estamos aquí para ayudarte. ¡Conecta con nosotros!</p>
                 </motion.div>
-                
+
                 <div className={styles.contactContainer}>
-                    <motion.div 
+                    <motion.div
                         className={styles.contactInfo}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -134,7 +134,7 @@ const Contacto = () => {
                         <p className={styles.infoText}>
                             Estamos comprometidos a brindarte la mejor atención. Elige el canal que prefieras para comunicarte con nuestro equipo.
                         </p>
-                        
+
                         <div className={styles.socialGrid}>
                             {socialMedia.map((social, index) => (
                                 <motion.a
@@ -146,15 +146,15 @@ const Contacto = () => {
                                     style={{
                                         boxShadow: hoverSocial === index ? `0 8px 24px rgba(${social.name === 'WhatsApp' ? '37, 211, 102' : social.name === 'Instagram' ? '225, 48, 108' : social.name === 'TikTok' ? '0, 0, 0' : '211, 70, 56'}, 0.25)` : '',
                                     }}
-                                    whileHover={{ 
+                                    whileHover={{
                                         scale: 1.05,
                                         y: -5
                                     }}
                                     onHoverStart={() => setHoverSocial(index)}
                                     onHoverEnd={() => setHoverSocial(null)}
                                 >
-                                    <div 
-                                        className={styles.socialIcon} 
+                                    <div
+                                        className={styles.socialIcon}
                                         style={{ backgroundColor: social.color }}
                                     >
                                         <i className={social.icon}></i>
@@ -172,10 +172,10 @@ const Contacto = () => {
                                 </motion.a>
                             ))}
                         </div>
-                        
+
                     </motion.div>
-                    
-                    <motion.div 
+
+                    <motion.div
                         className={styles.contactForm}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -184,7 +184,7 @@ const Contacto = () => {
                         <div className={styles.formContainer}>
                             <h2>Envíanos un mensaje</h2>
                             <p>Completa el formulario y nos pondremos en contacto contigo lo más pronto posible.</p>
-                            
+
                             <form onSubmit={handleSubmit}>
                                 <div className={styles.inputGroup}>
                                     <div className={styles.inputWrapper}>
@@ -212,7 +212,7 @@ const Contacto = () => {
                                         />
                                     </div>
                                 </div>
-                                
+
                                 <div className={styles.inputGroup}>
                                     <div className={styles.inputWrapper}>
                                         <label htmlFor="phone">Teléfono</label>
@@ -237,7 +237,7 @@ const Contacto = () => {
                                         />
                                     </div>
                                 </div>
-                                
+
                                 <div className={styles.textareaWrapper}>
                                     <label htmlFor="message">Mensaje *</label>
                                     <textarea
@@ -250,7 +250,7 @@ const Contacto = () => {
                                         placeholder="Escribe tu mensaje aquí..."
                                     ></textarea>
                                 </div>
-                                
+
                                 <motion.button
                                     type="submit"
                                     className={styles.submitButton}
@@ -265,14 +265,14 @@ const Contacto = () => {
                                         </>
                                     ) : (
                                         <>
-                                            Enviar mensaje 
+                                            Enviar mensaje
                                             <i className="fas fa-paper-plane"></i>
                                         </>
                                     )}
                                 </motion.button>
                             </form>
                         </div>
-                        
+
                         <div className={styles.contactBoxes}>
                             <div className={styles.contactBox}>
                                 <div className={styles.boxIcon}>
@@ -291,8 +291,8 @@ const Contacto = () => {
                         </div>
                     </motion.div>
                 </div>
-                
-                <motion.div 
+
+                <motion.div
                     className={styles.faqSection}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -318,12 +318,12 @@ const Contacto = () => {
                         </div>
                     </div>
                 </motion.div>
-                
+
                 <div className={styles.ctaSection}>
                     <h2>¿Listo para llevar tu estilo al siguiente nivel?</h2>
                     <p>Explora nuestra colección exclusiva inspirada en la Fórmula 1</p>
-                    <motion.a 
-                        href="/catalogo" 
+                    <motion.a
+                        href="/catalogo"
                         className={styles.ctaButton}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}

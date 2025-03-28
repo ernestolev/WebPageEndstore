@@ -54,7 +54,6 @@ const Dashboard = () => {
   // Estado para controlar el periodo de las gráficas
   const [timeRange, setTimeRange] = useState('7days');
 
-  // Cargar datos del dashboard
   useEffect(() => {
     const fetchDashboardData = async () => {
       setLoading(true);
@@ -95,43 +94,82 @@ const Dashboard = () => {
         const usersSnapshot = await getDocs(collection(db, 'Users'));
         const usersCount = usersSnapshot.size;
 
-        // Obtener pedidos pendientes (pagados pero no enviados/entregados)
-        const pendingOrdersQuery = query(
-          collection(db, 'Orders'),
-          where('trackingStatus', '==', 'aceptado')
+        // ==================
+        // CAMBIOS PRINCIPALES
+        // ==================
+
+        // Obtener TODAS las órdenes sin filtros restrictivos
+        console.log('Obteniendo todas las órdenes...');
+        const ordersRef = collection(db, 'Orders');
+        const ordersSnapshot = await getDocs(ordersRef);
+
+        console.log(`Se encontraron ${ordersSnapshot.size} órdenes en la colección`);
+
+        // Mostrar los IDs para verificar
+        ordersSnapshot.docs.forEach(doc => {
+          console.log(`ID de orden: ${doc.id}`);
+        });
+
+        // Procesar todas las órdenes con manejo robusto de fechas
+        const allOrders = ordersSnapshot.docs.map(doc => {
+          const data = doc.data();
+          console.log(`Procesando orden ${doc.id}:`, data);
+
+          // Manejar diferentes formatos de timestamp
+          let orderDate = new Date();
+          if (data.createdAt) {
+            if (typeof data.createdAt.toDate === 'function') {
+              orderDate = data.createdAt.toDate();
+            } else if (data.createdAt.seconds) {
+              orderDate = new Date(data.createdAt.seconds * 1000);
+            } else {
+              orderDate = new Date(data.createdAt);
+            }
+          }
+
+          return {
+            id: doc.id,
+            ...data,
+            createdAt: orderDate,
+            // Dar valores predeterminados a campos importantes
+            status: data.status || 'PENDING',
+            total: parseFloat(data.total || 0),
+            shipping: data.shipping || {},
+            items: data.items || []
+          };
+        });
+
+        // Considerar todas las órdenes para las estadísticas, no solo las "PAID"
+        const totalOrders = allOrders.length;
+
+        // Filtrar órdenes para pedidos pendientes con un enfoque más inclusivo
+        const pendingOrders = allOrders.filter(order =>
+          order.status === 'PENDING' ||
+          order.status === 'pending' ||
+          order.status === 'PAID' ||
+          order.status === 'paid' ||
+          order.status === 'ACCEPTED' ||
+          order.status === 'accepted' ||
+          order.trackingStatus === 'aceptado'
         );
 
-        const pendingOrdersSnapshot = await getDocs(pendingOrdersQuery);
-        const pendingOrdersCount = pendingOrdersSnapshot.size;
+        const pendingOrdersCount = pendingOrders.length;
 
-        // Obtener todos los pedidos
-        const ordersSnapshot = await getDocs(
-          query(collection(db, 'Orders'), orderBy('createdAt', 'desc'))
+        // Filtrar órdenes pagadas de manera más inclusiva
+        const paidOrders = allOrders.filter(order =>
+          order.status === 'PAID' ||
+          order.status === 'paid' ||
+          order.status === 'COMPLETED' ||
+          order.status === 'completed' ||
+          order.status === 'DELIVERED' ||
+          order.status === 'delivered' ||
+          order.status === 'PROCESSED' ||
+          order.status === 'processed'
         );
-
-        const orders = ordersSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          createdAt: doc.data().createdAt?.toDate() || new Date()
-        }));
-
-        // Consulta directa para órdenes pagadas
-        const paidOrdersQuery = query(
-          collection(db, 'Orders'),
-          where('status', '==', 'PAID')
-        );
-        const paidOrdersSnapshot = await getDocs(paidOrdersQuery);
-        const paidOrders = paidOrdersSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          createdAt: doc.data().createdAt?.toDate() || new Date()
-        }));
 
         console.log("Órdenes pagadas encontradas:", paidOrders.length);
 
-        const totalPaidOrders = paidOrders.length;
-
-        // Calcular ventas del mes (solo órdenes PAID)
+        // Calcular ventas del mes (órdenes pagadas)
         const now = new Date();
         const monthStart = startOfMonth(now);
         const monthEnd = endOfMonth(now);
@@ -143,25 +181,43 @@ const Dashboard = () => {
           })
           .reduce((total, order) => total + (Number(order.total) || 0), 0);
 
-        // Obtener pedidos recientes para mostrar
-        const recentOrders = orders
-          .filter(order => ['PAID', 'paid', 'processing', 'delivered', 'shipped'].includes(order.status))
-          .slice(0, 5);
+        // Obtener pedidos recientes - mostrar todas para verificar
+        // Usar un límite mayor para ver más órdenes durante depuración
+        const recentOrders = allOrders
+          .sort((a, b) => b.createdAt - a.createdAt)
+          .slice(0, 10);  // Incrementé a 10 para ver más órdenes
+
+        console.log("Órdenes recientes procesadas:", recentOrders.length);
 
         // Preparar datos para gráficas basados en el rango de tiempo seleccionado
         const daysToInclude = timeRange === '30days' ? 30 : timeRange === '7days' ? 7 : 14;
         let salesData = [];
 
-        // Crear array con fechas para el rango seleccionado - solo PAID
+
+
+
+        // Crear array con fechas para el rango seleccionado con un enfoque más inclusivo
         for (let i = daysToInclude - 1; i >= 0; i--) {
           const date = subDays(new Date(), i);
           const formattedDate = format(date, 'yyyy-MM-dd');
-          const dayOrders = paidOrders.filter(order => {
+
+          // Incluir todas las órdenes para esta fecha
+          const dayOrders = allOrders.filter(order => {
             const orderDate = format(order.createdAt, 'yyyy-MM-dd');
             return orderDate === formattedDate;
           });
 
-          const daySales = dayOrders.reduce((sum, order) => sum + (Number(order.total) || 0), 0);
+          // Calcular ventas considerando solo órdenes pagadas
+          const daySales = dayOrders
+            .filter(order =>
+              order.status === 'PAID' ||
+              order.status === 'paid' ||
+              order.status === 'COMPLETED' ||
+              order.status === 'completed' ||
+              order.status === 'DELIVERED' ||
+              order.status === 'delivered'
+            )
+            .reduce((sum, order) => sum + (Number(order.total) || 0), 0);
 
           salesData.push({
             date: formattedDate,
@@ -175,7 +231,7 @@ const Dashboard = () => {
           pendingOrders: pendingOrdersCount,
           activeUsers: usersCount,
           monthSales: monthSales,
-          totalOrders: totalPaidOrders,
+          totalOrders: totalOrders, // Mostrar todas las órdenes, no solo las pagadas
           productsByCategory,
           recentOrders,
           salesData,
@@ -360,6 +416,28 @@ const Dashboard = () => {
     );
   }
 
+  const getOrderStatusClass = (status) => {
+    if (!status) return '';
+
+    // Convertir a minúsculas para comparaciones insensibles a mayúsculas/minúsculas
+    const statusLower = status.toLowerCase();
+
+    if (statusLower.includes('paid') || statusLower.includes('pago') || statusLower.includes('pagado')) {
+      return styles.paid;
+    } else if (statusLower.includes('process') || statusLower.includes('pending') || statusLower.includes('accept') || statusLower.includes('acept')) {
+      return styles.processing;
+    } else if (statusLower.includes('deliver') || statusLower.includes('entrega')) {
+      return styles.delivered;
+    } else if (statusLower.includes('cancel') || statusLower.includes('canc')) {
+      return styles.cancelled;
+    } else if (statusLower.includes('ship') || statusLower.includes('sent') || statusLower.includes('envi')) {
+      return styles.shipped;
+    }
+
+    // Estado no reconocido - usar estilo predeterminado
+    return '';
+  };
+
   return (
     <motion.div
       className={styles.dashboardContainer}
@@ -518,28 +596,23 @@ const Dashboard = () => {
                 {stats.recentOrders.map(order => (
                   <li
                     key={order.id}
-                    className={`${styles.orderItem} ${order.status === 'PAID' || order.status === 'paid' ? styles.paid :
-                      order.status === 'processing' ? styles.processing :
-                        order.status === 'delivered' ? styles.delivered :
-                          order.status === 'cancelled' ? styles.cancelled : ''
-                      }`}
+                    className={`${styles.orderItem} ${getOrderStatusClass(order.status)}`}
                   >
-                    <div className={`${styles.orderStatus} ${order.status === 'PAID' || order.status === 'paid' ? styles.paid :
-                      order.status === 'processing' ? styles.processing :
-                        order.status === 'delivered' ? styles.delivered :
-                          order.status === 'cancelled' ? styles.cancelled : ''
-                      }`}></div>
+                    <div className={`${styles.orderStatus} ${getOrderStatusClass(order.status)}`}></div>
                     <div className={styles.orderInfo}>
                       <div className={styles.orderTopRow}>
                         <span className={styles.orderId}>{order.id}</span>
                         <span className={styles.orderDate}>
-                          {format(order.createdAt, 'dd/MM/yyyy')}
+                          {format(order.createdAt, 'dd/MM/yyyy', { locale: es })}
                         </span>
                       </div>
                       <div className={styles.orderBottomRow}>
                         <span className={styles.orderCustomer}>
                           <i className="fas fa-user"></i>
-                          {order.shipping?.firstName || 'Cliente'}
+                          {order.shipping?.fullName ||
+                            order.shipping?.firstName ||
+                            order.customer?.name ||
+                            'Cliente'}
                         </span>
                         <span className={styles.orderPrice}>S/. {Number(order.total).toFixed(2)}</span>
                       </div>

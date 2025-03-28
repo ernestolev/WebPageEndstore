@@ -1,0 +1,588 @@
+.mensajesContainer {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.header p {
+    color: var(--text-gray);
+}
+
+.filterSection {
+    margin-bottom: 2rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.statusFilter {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: 0.95rem;
+    min-width: 200px;
+}
+
+.searchBox {
+    flex-grow: 1;
+    max-width: 500px;
+    position: relative;
+}
+
+.searchBox i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-gray);
+}
+
+.searchBox input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: 0.95rem;
+}
+
+.statsBar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+}
+
+.statItem {
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+}
+
+.statCount {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-color, #e10600);
+    margin-bottom: 0.25rem;
+}
+
+.statLabel {
+    font-size: 0.9rem;
+    color: var(--text-gray);
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 0;
+    color: var(--text-gray);
+}
+
+.loadingContainer i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color, #e10600);
+}
+
+.emptyState {
+    text-align: center;
+    padding: 4rem 0;
+    color: var(--text-gray);
+}
+
+.emptyState i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}
+
+.mensajesGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.mensajeCard {
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mensajeCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.mensajeHeader {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.mensajeInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.mensajeInfo h3 {
+    font-size: 1.2rem;
+    margin: 0;
+    color: var(--text-color);
+}
+
+.mensajeStatus {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.3rem 0.8rem;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.statusNuevo {
+    background-color: #fff8e1;
+    color: #f57f17;
+}
+
+.statusLeido {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.statusEnProceso {
+    background-color: #e3f2fd;
+    color: #1565c0;
+}
+
+.statusRespondido {
+    background-color: #e1f5fe;
+    color: #0288d1;
+}
+
+.statusCerrado {
+    background-color: #f5f5f5;
+    color: #757575;
+}
+
+.mensajeMeta {
+    font-size: 0.9rem;
+    color: var(--text-gray);
+}
+
+.mensajeDate {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mensajeContent {
+    padding: 1.5rem;
+}
+
+.senderInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.senderAvatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-gray);
+    font-size: 1.5rem;
+}
+
+.senderDetails h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+
+.contactDetails {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.email, .phone {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-gray);
+    text-decoration: none;
+}
+
+.email:hover, .phone:hover {
+    color: var(--primary-color, #e10600);
+}
+
+.messageBody {
+    padding: 1.5rem;
+    background-color: rgba(0, 0, 0, 0.02);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.messageBody p {
+    margin: 0;
+    line-height: 1.6;
+    color: var(--text-color);
+    white-space: pre-line;
+}
+
+.responseSection {
+    margin-bottom: 1.5rem;
+}
+
+.responseSection h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.responseContent {
+    background-color: #f0f8ff;
+    padding: 1.25rem;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.responseContent p {
+    margin: 0;
+    line-height: 1.6;
+    color: var(--text-color);
+    white-space: pre-line;
+}
+
+.responseDate {
+    text-align: right;
+    font-size: 0.85rem;
+    color: var(--text-gray);
+    margin-top: 1rem !important;
+}
+
+.mensajeActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.btnMarkRead, .btnProcess, .btnRespond, .btnEdit, .btnClose, .btnDelete {
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+    border: none;
+}
+
+.btnMarkRead {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.btnMarkRead:hover {
+    background-color: #c8e6c9;
+}
+
+.btnProcess {
+    background-color: #e3f2fd;
+    color: #1565c0;
+}
+
+.btnProcess:hover {
+    background-color: #bbdefb;
+}
+
+.btnRespond {
+    background-color: #e1f5fe;
+    color: #0288d1;
+}
+
+.btnRespond:hover {
+    background-color: #b3e5fc;
+}
+
+.btnEdit {
+    background-color: #ede7f6;
+    color: #5e35b1;
+}
+
+.btnEdit:hover {
+    background-color: #d1c4e9;
+}
+
+.btnClose {
+    background-color: #f5f5f5;
+    color: #616161;
+}
+
+.btnClose:hover {
+    background-color: #e0e0e0;
+}
+
+.btnDelete {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.btnDelete:hover {
+    background-color: #ffcdd2;
+}
+
+/* Modal styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal {
+    background: var(--card-bg);
+    width: 95%;
+    max-width: 700px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+.modalHeader {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modalHeader h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-color);
+}
+
+.closeBtn {
+    background: transparent;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: var(--text-gray);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.closeBtn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--text-color);
+}
+
+.modalContent {
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.messageInfo {
+    margin-bottom: 1.5rem;
+    background-color: rgba(0, 0, 0, 0.02);
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.messageInfo p {
+    margin: 0.5rem 0;
+}
+
+.messageContent h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-color);
+}
+
+.originalMessage {
+    background-color: rgba(0, 0, 0, 0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.originalMessage p {
+    margin: 0;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+.responseForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.formGroup label {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.formGroup textarea {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+}
+
+.formActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.cancelBtn, .submitBtn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+    border: none;
+}
+
+.cancelBtn {
+    background-color: var(--button-secondary-bg, #f5f5f5);
+    color: var(--text-color);
+}
+
+.cancelBtn:hover {
+    background-color: #e0e0e0;
+}
+
+.submitBtn {
+    background-color: var(--primary-color, #e10600);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.submitBtn:hover {
+    background-color: #c10500;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .mensajesContainer {
+        padding: 1rem;
+    }
+    
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .searchBox {
+        max-width: 100%;
+    }
+    
+    .mensajeHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .mensajeActions {
+        flex-direction: column;
+    }
+    
+    .btnMarkRead, .btnProcess, .btnRespond, .btnEdit, .btnClose, .btnDelete {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .formActions {
+        flex-direction: column;
+    }
+    
+    .cancelBtn, .submitBtn {
+        width: 100%;
+    }
+}

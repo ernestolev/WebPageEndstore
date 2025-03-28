@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react'; // Añadir useRef
 import { useParams, Link } from 'react-router-dom';
 import {
     doc,
@@ -24,6 +24,9 @@ import Comentarios from '../components/Comentarios';
 import { useAuth } from '../context/AuthContext';
 import LogReg from '../components/LogReg';
 import GuiaTallas from '../components/GuiaTallas';
+import { toast } from 'react-toastify';
+import { onSnapshot } from 'firebase/firestore';
+
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -43,8 +46,8 @@ const ProductDetail = () => {
     const [showSizeGuide, setShowSizeGuide] = useState(false);
     const [productImages, setProductImages] = useState([]); // Nuevo estado para las imágenes cargadas desde Storage
     const [relatedProductImagesMap, setRelatedProductImagesMap] = useState({}); // Mapa para las imágenes de productos relacionados
+    const { addToCart, setIsCartOpen } = useCart();
 
-    const { addToCart } = useCart();
 
     // Función para cargar imágenes desde Storage o usar URLs de Firestore
     const loadImagesFromStorage = async (imageRefs) => {
@@ -94,40 +97,91 @@ const ProductDetail = () => {
         }
     };
 
+    const [selectedSizeError, setSelectedSizeError] = useState(false);
+    const sizesRef = useRef(null);
+
+    // Añadir esta función para abrir el carrito
+    const toggleMiniCart = () => setIsCartOpen(true);
+
+
     const handleAddToCart = () => {
-        if (product.hasSizes && !selectedSize) {
-            setShowSizes(true);
+        if (!selectedSize && product.hasSizes) {
+            setSelectedSizeError(true);
+            // Scroll to size selection
+            if (sizesRef.current) {
+                sizesRef.current.scrollIntoView({ behavior: 'smooth' });
+            }
             return;
         }
 
-        // Validate fit type if category is Polo and fitType is Ambos
-        if (product.category === 'Polo' && product.fitType === 'Ambos' && !selectedFitType) {
-            setShowFitTypes(true);
+        // Verificar stock antes de añadir al carrito
+        if (product.hasSizes && selectedSize) {
+            const sizeStock = product.sizes?.[selectedSize] || 0;
+            if (sizeStock < quantity) {
+                toast.error(`Solo hay ${sizeStock} unidades disponibles en talla ${selectedSize}`);
+                return;
+            }
+        } else if (!product.hasSizes && product.stock < quantity) {
+            toast.error(`Solo hay ${product.stock} unidades disponibles`);
             return;
         }
 
-        // Usar el producto con las imágenes ya cargadas
-        const productWithImages = {
-            ...product,
-            images: productImages
+        // Determinar el fit type final
+        const finalFitType = selectedFitType || product.fitType || 'Regular';
+
+        console.log("Añadiendo al carrito con:", {
+            talla: selectedSize,
+            fit: finalFitType,
+            cantidad: quantity
+        });
+
+        // Crear el ítem del carrito con todos los datos correctos
+        const item = {
+            id: product.id,
+            name: product.name,
+            price: product.discount ? product.price * (1 - product.discount / 100) : product.price,
+            image: productImages[0] || product.images[0],
+            quantity: quantity,
+            size: selectedSize, // Asegurar que la talla se pase correctamente
+            hasSizes: product.hasSizes || false,
+            fitType: finalFitType, // Asegurar que el fit se pase correctamente
+            stock: product.hasSizes ? (product.sizes?.[selectedSize] || 0) : product.stock,
         };
 
-        addToCart(
-            productWithImages,
-            quantity,
-            product.hasSizes ? selectedSize : null,
-            product.category === 'Polo' ? selectedFitType : null
-        );
+        // Añadir al carrito con todos los datos
+        addToCart(item);
 
-        // Clear selection after adding to cart
-        if (product.hasSizes) {
-            setSelectedSize('');
+        // Mostrar toast de éxito con los detalles correctos
+        const sizeInfo = selectedSize ? ` talla ${selectedSize}` : '';
+        const fitInfo = finalFitType && finalFitType !== 'Regular' ? ` (${finalFitType})` : '';
+
+        toast.success(`¡${quantity} ${quantity > 1 ? 'unidades' : 'unidad'} añadidas al carrito${sizeInfo}${fitInfo}!`, {
+            position: "bottom-right",
+            autoClose: 3000
+        });
+
+        // Abrir el mini carrito
+        setIsCartOpen(true);
+    };
+
+
+
+    // Funciones auxiliares
+    const isItemOutOfStock = (item) => {
+        return item.stock <= 0;
+    };
+
+    const getStockText = (item) => {
+        if (item.stock <= 0) {
+            return "Producto agotado";
         }
-        if (product.fitType === 'Ambos') {
-            setSelectedFitType('Normal');
+        if (item.stock < item.quantity) {
+            return `Solo hay ${item.stock} unidades disponibles`;
         }
-        setQuantity(1);
-        setShowSizes(false);
+        if (item.stock <= 5) {
+            return `¡Quedan solo ${item.stock} unidades!`;
+        }
+        return null;
     };
 
     useEffect(() => {
@@ -158,6 +212,46 @@ const ProductDetail = () => {
 
         checkIfLiked();
     }, [user, id]);
+
+    useEffect(() => {
+        // Suscribirse a cambios en tiempo real en el producto seleccionado
+        if (id) {
+            const productRef = doc(db, 'Productos', id);
+            const unsubscribe = onSnapshot(productRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const productData = docSnap.data();
+
+                    // Actualizar datos del producto, manteniendo las imágenes ya cargadas
+                    setProduct(prev => ({
+                        id: docSnap.id,
+                        ...productData,
+                        likes: productData.likes || 0
+                    }));
+
+                    setLikeCount(productData.likes || 0);
+
+                    // Verificar si la talla seleccionada todavía tiene stock
+                    if (selectedSize && productData.hasSizes) {
+                        const sizeStock = productData.sizes?.[selectedSize] || 0;
+                        if (sizeStock <= 0) {
+                            // La talla seleccionada ya no tiene stock, mostrar alerta
+                            toast.warning(`La talla ${selectedSize} se ha agotado mientras estabas en esta página`);
+                            setSelectedSize(''); // Desseleccionar la talla
+                        } else if (sizeStock < quantity) {
+                            // Si había seleccionado más unidades que el stock disponible
+                            toast.warning(`Solo quedan ${sizeStock} unidades en talla ${selectedSize}`);
+                            setQuantity(sizeStock); // Ajustar la cantidad al máximo disponible
+                        }
+                    }
+                }
+            }, (error) => {
+                console.error("Error en tiempo real:", error);
+            });
+
+            // Limpiar suscripción cuando el componente se desmonte
+            return () => unsubscribe();
+        }
+    }, [id, selectedSize, quantity]);
 
     const handleLike = async () => {
         if (!user) {
@@ -433,7 +527,7 @@ const ProductDetail = () => {
                         />
 
                         {product.hasSizes && (
-                            <div className={styles.sizesSection}>
+                            <div className={styles.sizesSection} ref={sizesRef}>
                                 <div className={styles.sizesSectionHeader}>
                                     <h3 className={styles.sizesTitle}>
                                         Selecciona tu talla
@@ -450,20 +544,21 @@ const ProductDetail = () => {
                                     {Object.entries(product.sizes).map(([size, stock]) => (
                                         <button
                                             key={size}
-                                            className={`${styles.sizeButton} ${selectedSize === size ? styles.selected : ''
-                                                } ${stock === 0 ? styles.disabled : ''}`}
-                                            onClick={() => setSelectedSize(size)}
+                                            className={`${styles.sizeButton} 
+                        ${selectedSize === size ? styles.selected : ''} 
+                        ${stock === 0 ? styles.disabled : ''}
+                        ${selectedSizeError && !selectedSize ? styles.error : ''}`}
+                                            onClick={() => {
+                                                setSelectedSize(size);
+                                                setSelectedSizeError(false);
+                                            }}
                                             disabled={stock === 0}
                                         >
                                             <span className={styles.sizeLabel}>{size}</span>
-                                            <span className={styles.stockLabel}>
-                                                {stock === 0 ? 'Agotado' : `${stock} disponibles`}
-                                            </span>
                                         </button>
                                     ))}
                                 </div>
 
-                                {/* Mover el botón de guía de tallas fuera del header pero dentro del sizesSection */}
                                 <button
                                     className={styles.sizeGuideButton}
                                     onClick={() => setShowSizeGuide(true)}
@@ -472,7 +567,6 @@ const ProductDetail = () => {
                                 </button>
                             </div>
                         )}
-
                         {product.category === 'Polo' && (
                             <div className={styles.fitTypeSection}>
                                 <h3 className={styles.fitTypeTitle}>
@@ -524,12 +618,30 @@ const ProductDetail = () => {
                                         <input
                                             type="number"
                                             value={quantity}
-                                            onChange={e => setQuantity(Math.max(1, parseInt(e.target.value)))}
+                                            onChange={(e) => {
+                                                // Convertir a número y asegurar que sea al menos 1
+                                                const newValue = parseInt(e.target.value) || 1;
+                                                setQuantity(Math.max(1, newValue));
+                                            }}
                                             min="1"
                                             disabled={product.hasSizes && !selectedSize}
+                                            // Asegurarnos de que el input tenga un ancho adecuado y se muestre el valor
+                                            style={{ width: '40px', textAlign: 'center' }}
                                         />
                                         <button
-                                            onClick={() => setQuantity(q => q + 1)}
+                                            onClick={() => {
+                                                // Verificar que no exceda el stock disponible
+                                                const maxStock = product.hasSizes && selectedSize
+                                                    ? (product.sizes?.[selectedSize] || 0)
+                                                    : product.stock;
+                                                const newQuantity = quantity + 1;
+
+                                                if (newQuantity <= maxStock) {
+                                                    setQuantity(newQuantity);
+                                                } else {
+                                                    toast.warning(`No puedes añadir más de ${maxStock} unidades`);
+                                                }
+                                            }}
                                             disabled={product.hasSizes && !selectedSize}
                                         >
                                             +
@@ -559,7 +671,7 @@ const ProductDetail = () => {
                                 <i className="fas fa-exclamation-circle"></i>
                                 <div>
                                     <h4>Aviso</h4>
-                                    <p>Debido a las fuertes demandas los pedidos pueden tardar entre 2 a 5 dias en ser entregados.</p>
+                                    <p>Debido a las fuertes demandas los pedidos pueden tardar entre 1 a 5 dias en ser entregados. Podrás revisar el estado de tu pedido en nuestro Tracking. </p>
                                 </div>
                             </div>
                         </div>

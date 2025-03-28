@@ -1,5 +1,6 @@
 .trackingSection {
     padding: 6rem 2rem;
+    border-radius: 10px;
     background: linear-gradient(
         135deg,
         var(--tracking-gradient-start) 0%,
@@ -10,7 +11,7 @@
 }
 
 .trackingContainer {
-    max-width: 1200px;
+    max-width: 1440px;
     margin: 0 auto;
 }
 
@@ -50,7 +51,7 @@
 }
 
 .trackingDescription {
-    color: #666;
+    color: var(--text-gray);
     margin-bottom: 2rem;
     line-height: 1.6;
     font-family: 'Montserrat', sans-serif;
@@ -83,8 +84,8 @@
     display: inline-flex;
     align-items: center;
     gap: 0.75rem;
-    background: #1a1a1a;
-    color: white;
+    background: var(--background-color);
+    color: var(--text-color);
     padding: 1rem 2rem;
     border-radius: 8px;
     font-weight: 600;
@@ -189,7 +190,7 @@
 
 .stepTime {
     font-size: 0.8rem;
-    color: #6b7280;
+    color: var(--text-gray);
 }
 
 .stepDot {
@@ -222,7 +223,7 @@
 
 @media (max-width: 640px) {
     .trackingSection {
-        padding: 4rem 1rem;
+        padding: 1rem 1rem;
     }
 
     .trackingTitle {

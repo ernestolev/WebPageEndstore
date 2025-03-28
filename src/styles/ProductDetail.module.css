@@ -180,29 +180,51 @@
 .quantitySelector {
     display: flex;
     align-items: center;
+    margin-right: 1rem;
     border: 1px solid #ddd;
-    border-radius: 6px;
-}
-
-.quantitySelector button {
-    padding: 0.5rem 1rem;
-    border: none;
-    font-size: 0.8rem;
-    background: none;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .quantitySelector button {
+    background: var(--card-bg);    border: none;
     color: var(--text-color);
+    font-size: 1.2rem;
+    height: 40px;
+    width: 40px;
     cursor: pointer;
-}
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
 
-.quantitySelector button:hover {
-    transform: none;
-    box-shadow: none;
-}
-
-.quantitySelector input {
-    width: 30px;
-    text-align: center;
+  .quantitySelector button:hover:not(:disabled) {
+    background: var(--card-bg);
+  }
+  
+  .quantitySelector button:disabled {
+    color: #999;
+    cursor: not-allowed;
+  }
+  
+  .quantitySelector input {
     border: none;
-    -moz-appearance: textfield;
+    text-align: center;
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    -moz-appearance: textfield; /* Firefox */
+  }
+
+  
+/* Eliminar las flechas del input number en Chrome y Safari */
+.quantitySelector input::-webkit-outer-spin-button,
+.quantitySelector input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .addToCartButton {
@@ -420,7 +442,7 @@
 }
 
 .relatedPrice {
-    color: #111;
+    color: var(--text-color);
     font-weight: 600;
 }
 
@@ -734,7 +756,7 @@
 @media (max-width: 480px) {
     .productDetail {
         padding: 0 1rem;
-        margin: 100px auto 0;
+        margin: 90px auto 0;
     }
 
     .productContent {
@@ -743,10 +765,17 @@
         gap: 2rem;
     }
 
-
-
     .productInfo {
         gap: 0.5rem;
+    }
+
+    .productInfo h1 {
+        font-size: 1.5rem;
+    }
+
+    .productInfo p{
+        font-size: 0.9rem;
+        color: var(--text-gray);
     }
 
 

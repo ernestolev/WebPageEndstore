@@ -1,22 +1,47 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/end-logo.png" />
+  <link rel="icon" type="image/svg+xml" href="/src/assets/imgs/end-logo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EndStore</title>
-  <script src="https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/"></script>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <script src="https://maf.pagosonline.net/ws/fp/tags.js?id=3836626785141962"></script>
-  <script src="https://checkout.payulatam.com/ppp-web-gateway-payu/"></script>
-  <script src="https://checkout.culqi.com/js/v4"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  
+  <!-- SEO Metatags -->
+  <title>End Store - Tienda de prendas racing y urbanas | Perú</title>
+  <meta name="description" content="End Store: la tienda #1 de ropa y accesorios inspirados en la Fórmula 1 y estilo urbano en Perú. Envío gratuito en compras mayores a S/.99." />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://endstore.com.pe/" />
+  <meta property="og:title" content="End Store - Tienda de Moda Racing | Perú" />
+  <meta property="og:description" content="Descubre nuestra colección exclusiva de ropa y accesorios inspirados en la Fórmula 1 y racing. Envíos a todo Perú." />
+  <meta property="og:image" content="/src/assets/imgs/og-image.jpg" />
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://endstore.com.pe/" />
+  <meta property="twitter:title" content="End Store - Moda Racing y Urbana" />
+  <meta property="twitter:description" content="Ropa y accesorios de estilo racing y urbano en Perú. Calidad premium, diseños exclusivos." />
+  <meta property="twitter:image" content="/src/assets/imgs/twitter-image.jpg" />
+  
+  <!-- Keywords -->
+  <meta name="keywords" content="end store, ropa formula 1, moda racing, ropa urbana perú, f1 merchandise, polos racing, hoodies f1, moda urbana, ropa deportiva, tienda online perú" />
+  
+  <!-- Canonical URL -->
+  <meta rel="canonical" href="https://endstore.com.pe" />
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <!-- Asegurar que cualquier callback global anterior se limpie al recargar la página -->
+  <script>
+    window.onbeforeunload = function() {
+      // Eliminar cualquier callback global que pueda interferir
+      window.culqi = undefined;
+    };
+  </script>
 </head>
-
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>
-
 </html>

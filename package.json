@@ -11,6 +11,7 @@
     "emulators": "npm run kill-emulators && firebase emulators:start --import=./emulator-data --export-on-exit"
   },
   "dependencies": {
+    "@google-pay/button-react": "^3.1.0",
     "@studio-freight/lenis": "^1.0.42",
     "aos": "^2.3.4",
     "axios": "^1.7.9",
@@ -20,12 +21,14 @@
     "culqi-node": "^2.1.0",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
+    "emailjs-com": "^3.2.0",
     "express": "^4.21.2",
     "firebase": "^11.3.1",
     "framer-motion": "^12.4.11",
     "mapbox-gl": "^3.10.0",
     "react": "^19.0.0",
     "react-chartjs-2": "^5.3.0",
+    "react-confetti": "^6.4.0",
     "react-dom": "^19.0.0",
     "react-router": "^6.22.3",
     "react-router-dom": "^6.22.3",

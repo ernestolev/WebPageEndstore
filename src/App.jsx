@@ -41,6 +41,8 @@ import Contacto from './pages/Contacto';
 import MisFavoritos from './pages/MisFavoritos';
 import FAQs from './pages/FAQs';
 import Codigos from './pages/admin/Codigos';
+import Reclamos from './pages/admin/Reclamos';
+import Mensajes from './pages/admin/Mensajes';
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -170,7 +172,9 @@ function App() {
                   <Route path="categorias" element={<Categorias />} />
                   <Route path="orders" element={<Orders />} />
                   <Route path="users" element={<Users />} />
+                  <Route path="mensajes" element={<Mensajes />} /> 
                   <Route path="codigos" element={<Codigos />} />
+                  <Route path="reclamos" element={<Reclamos />} /> 
                   <Route path="settings" element={<div>Settings Page</div>} />
                 </Route>
               </Routes>

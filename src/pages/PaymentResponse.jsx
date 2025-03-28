@@ -32,38 +32,35 @@ const PaymentResponse = () => {
                         await runTransaction(db, async (transaction) => {
                             const productRef = doc(db, 'Productos', item.id);
                             const productDoc = await transaction.get(productRef);
-                            
+
                             if (!productDoc.exists()) return;
-                            
+
                             const productData = productDoc.data();
-                            const currentStock = productData.sizes[item.size] || 0;
-                            const newStock = Math.max(0, currentStock - item.quantity);
-                            
-                            transaction.update(productRef, {
-                                [`sizes.${item.size}`]: newStock
-                            });
+
+                            if (item.hasSizes && item.size) {
+                                // Producto con tallas
+                                const currentStock = productData.sizes[item.size] || 0;
+                                const newStock = Math.max(0, currentStock - item.quantity);
+
+                                // SOLO actualizamos la talla específica
+                                transaction.update(productRef, {
+                                    [`sizes.${item.size}`]: newStock
+                                });
+                            } else {
+                                // Producto sin tallas
+                                const currentStock = productData.stock || 0;
+                                const newStock = Math.max(0, currentStock - item.quantity);
+
+                                transaction.update(productRef, {
+                                    stock: newStock
+                                });
+                            }
                         });
                     }
 
-                    // Clear the cart after successful payment
-                    clearCart();
-
-                    // Update PayU transaction status
+                    // Marcar que el stock ya fue actualizado
                     await updateDoc(payuTransactionRef, {
-                        status: 'APPROVED',
-                        lastUpdated: new Date(),
-                        payuResponse: Object.fromEntries(searchParams.entries())
-                    });
-
-                    // Create tracking document
-                    await setDoc(doc(db, 'tracking', referenceCode), {
-                        orderId: referenceCode,
-                        currentStatus: 'ACCEPTED',
-                        updates: {
-                            ACCEPTED: new Date().toISOString()
-                        },
-                        createdAt: new Date().toISOString(),
-                        lastUpdated: new Date().toISOString()
+                        stockUpdated: true
                     });
                 }
 

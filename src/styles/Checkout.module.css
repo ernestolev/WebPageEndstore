@@ -16,6 +16,12 @@
     gap: 2rem;
 }
 
+.discountApplied {
+    font-size: 0.8rem;
+    font-style: italic;
+    opacity: 0.8;
+  }
+
 .shippingSection {
     background: var(--card-bg);
     padding: 2rem;
@@ -350,6 +356,1002 @@
     font-weight: 600;
 }
 
+
+.googlePayLogo {
+    height: 20px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.googlePayWrapper {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.googlePayButton {
+    width: 100% !important;
+    height: 50px !important;
+}
+
+.googlePayButton {
+    width: 100% !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
+}
+
+/* Ensure Google Pay button maintains proper size */
+.googlePayButton>div {
+    min-width: 160px !important;
+    min-height: 48px !important;
+}
+
+/* Ensure the button is the same size or larger than other payment buttons */
+.googlePayButton>div>button {
+    min-height: 48px !important;
+    height: 100% !important;
+    width: 100% !important;
+    border-radius: 4px !important;
+}
+
+.paymentOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.paymentOption {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.paymentOption:hover {
+    border-color: #e10600;
+    background-color: rgba(225, 6, 0, 0.05);
+}
+
+.paymentOption i {
+    font-size: 20px;
+    color: #333;
+}
+
+.paymentOption input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.radioButton {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    position: relative;
+}
+
+.paymentOption input[type="radio"]:checked+.radioButton {
+    border-color: #e10600;
+}
+
+.paymentOption input[type="radio"]:checked+.radioButton:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #e10600;
+}
+
+.paymentDisabledMessage {
+    margin-top: 10px;
+    color: #e10600;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Mejorar estilos para PayU y Google Pay cuando son seleccionados */
+.paymentOption input[type="radio"]:checked~i.fa-credit-card,
+.paymentOption input[type="radio"]:checked~i.fa-google-pay {
+    color: #e10600;
+}
+
+.culqiWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+.culqiWrapper .continueButton {
+    width: 100%;
+    max-width: 400px;
+}
+
+.culqiTrustMessage {
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: #495057;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.culqiButton {
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #ff0000, #00c4c3);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.formGroup input.error {
+    border-color: #e53e3e;
+    box-shadow: 0 0 0 1px #e53e3e;
+}
+
+.culqiButton:hover {
+    background: linear-gradient(135deg, #009090, #00b0b0);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.culqiButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.culqiButton i {
+    font-size: 0.9rem;
+}
+
+.miniSpinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top: 3px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loadingOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    z-index: 10;
+    border-radius: 6px;
+}
+
+
+.checkoutSteps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #6b7280;
+    position: relative;
+    width: 100px;
+}
+
+.stepCircle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #4b5563;
+    transition: all 0.3s ease;
+}
+
+.stepConnector {
+    flex: 1;
+    height: 2px;
+    background-color: #e5e7eb;
+    margin: 0 10px;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+}
+
+.activeStep .stepCircle {
+    background-color: #ff0000;
+    color: white;
+}
+
+.completedStep .stepCircle {
+    background-color: #059669;
+    color: white;
+}
+
+.completedStep~.stepConnector {
+    background-color: #059669;
+}
+
+.activeStep span,
+.completedStep span {
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.stepContent {
+    position: relative;
+    width: 100%;
+    min-height: 300px;
+}
+
+.stepHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.backButton {
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.backButton:hover {
+    color: #ff0000;
+    background-color: rgba(0, 161, 155, 0.05);
+}
+
+.continueButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #ff0000, #000000);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.continueButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(135deg, #000000, #ff0000);
+}
+
+.continueButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.continueButton i {
+    transition: transform 0.2s ease;
+}
+
+.continueButton:hover:not(:disabled) i {
+    transform: translateX(3px);
+}
+
+.nextButtonContainer {
+    grid-column: 1 / -1;
+    margin-top: 1rem;
+}
+
+.paymentFormContainer {
+    margin-top: 2rem;
+}
+
+.supportedMethods {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.supportedMethodsText {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.paymentMethodsIcons {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.paymentMethodsIcons i {
+    font-size: 1.8rem;
+    color: #6c757d;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.disabledPaymentOption {
+    opacity: 0.7;
+    cursor: not-allowed;
+    position: relative;
+}
+
+
+.disabledPaymentMessage {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.disabledPaymentMessage i {
+    color: #f0ad4e;
+    font-size: 1.2rem;
+    margin-top: 2px;
+}
+
+.disabledPaymentMessage p {
+    margin: 0;
+    color: #495057;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.comingSoonBadge {
+    background-color: #000000;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 8px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.paymentDisabledMessage {
+    background-color: rgba(253, 237, 237, 0.8);
+    border: 1px solid #ffcccc;
+    color: #d32f2f;
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.culqiFormContainer {
+    background: var(--background-color);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    margin: 1rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.culqiFormContainer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(90deg, #ff0000, #000000, #ff0000);
+    background-size: 200% 100%;
+    animation: gradientMove 3s ease infinite;
+}
+
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.secureNotice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.8rem;
+    background-color: rgba(0, 161, 155, 0.08);
+    padding: 14px 18px;
+    border-radius: 12px;
+    color: #ff0000;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.secureNotice:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 161, 155, 0.1);
+}
+
+.secureNotice i {
+    font-size: 1.2rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.culqiTrustMessage {
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+    color: var(--text-gray);
+    text-align: center;
+    line-height: 1.6;
+    background-color: var(--card-bg);
+    padding: 1rem;
+    border-radius: 12px;
+    border-left: 4px solid #ff0000;
+}
+
+/* Contenedor de tarjeta 3D */
+.cardContainer {
+    perspective: 1000px;
+    margin-bottom: 2.5rem;
+}
+
+.cardPreview {
+    height: 200px;
+    width: 100%;
+    max-width: 340px;
+    margin: 0 auto 2rem;
+    background: linear-gradient(135deg, #434343, #000000);
+    border-radius: 16px;
+    padding: 20px;
+    color: white;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.cardPreview.flip {
+    transform: rotateY(180deg);
+}
+
+.cardFront,
+.cardBack {
+    position: absolute;
+    backface-visibility: hidden;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.cardBack {
+    transform: rotateY(180deg);
+    background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
+}
+
+.cardChip {
+    width: 50px;
+    height: 40px;
+    background: linear-gradient(135deg, #cca500, #ffdb58);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.cardChip::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    height: 70%;
+    background: linear-gradient(135deg, #d4af37, #f5d742);
+    transform: translate(-50%, -50%);
+    border-radius: 4px;
+}
+
+.cardBrand {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.cardNumber {
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    margin: 10px 0;
+}
+
+.cardDetails {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.cardDetails span{
+    color: #ffffff;
+}
+
+.cardHolder,
+.cardExpiry {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.cardHolder span,
+.cardExpiry span {
+    display: block;
+    font-size: 0.7rem;
+    opacity: 0.7;
+    margin-bottom: 5px;
+}
+
+.cardBack .magneticStrip {
+    width: 100%;
+    height: 40px;
+    background: #444;
+    margin: 20px 0;
+}
+
+.cardBack .cvvContainer {
+    background: white;
+    color: black;
+    padding: 10px;
+    text-align: right;
+    font-size: 0.9rem;
+    border-radius: 4px;
+}
+
+.cardBack .cvvTitle {
+    font-size: 0.7rem;
+    opacity: 0.7;
+    margin-bottom: 5px;
+}
+
+/* Mejorar aspecto del formulario */
+.cardForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-gray);
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+}
+
+.formGroup input {
+    width: 100%;
+    padding: 0.95rem 1.2rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #f9fafb;
+}
+
+.formGroup input:focus {
+    outline: none;
+    border-color: #ff0000;
+    box-shadow: 0 0 0 3px rgba(0, 161, 155, 0.1);
+    background-color: white;
+}
+
+.formGroup:hover label {
+    color: #ff0000;
+}
+
+.cardNumberInput {
+    position: relative;
+}
+
+.cardBrands {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 8px;
+    color: #cbd5e0;
+}
+
+.cardBrands i {
+    font-size: 1.4rem;
+    transition: all 0.3s ease;
+}
+
+.cardBrands i.active {
+    color: #ff0000;
+}
+
+.cvvInput {
+    position: relative;
+}
+
+.cvvHelp {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #718096;
+    cursor: help;
+    transition: all 0.3s ease;
+}
+
+.cvvHelp:hover {
+    color: #ff0000;
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* Botón de pago mejorado */
+.paymentButton {
+    background: linear-gradient(135deg, #ff0000, #000000);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 16px 24px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 161, 155, 0.2);
+    z-index: 1;
+}
+
+.paymentButton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #000000, #ff0000);
+    z-index: -1;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
+
+.paymentButton:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0, 161, 155, 0.3);
+}
+
+.paymentButton:hover:not(:disabled)::before {
+    opacity: 1;
+}
+
+.paymentButton:active:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(0, 161, 155, 0.2);
+}
+
+.paymentButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Información de seguridad */
+.securityInfo {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.securityItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #718096;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.securityItem:hover {
+    transform: translateY(-2px);
+    color: #4a5568;
+}
+
+.securityItem i {
+    color: #ff0000;
+    font-size: 1.1rem;
+}
+
+.formGroup input {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.formGroup input:focus {
+    transform: translateY(-2px);
+}
+
+/* Estado de error para campos de formulario */
+.formGroup input.error {
+    border-color: #e53e3e;
+    background-color: rgba(229, 62, 62, 0.05);
+}
+
+.formGroup .errorMessage {
+    color: #e53e3e;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.formGroup .errorMessage i {
+    font-size: 0.7rem;
+}
+
+/* Estado de loading para inputs */
+.formGroup.loading input {
+    background-image: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loadingBg 1.5s infinite;
+    border-color: #e2e8f0;
+}
+
+@keyframes loadingBg {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Tooltip para el CVV */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltipContent {
+    visibility: hidden;
+    width: 180px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -90px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.8rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.tooltip:hover .tooltipContent {
+    visibility: visible;
+    opacity: 1;
+}
+
+.tooltip .tooltipContent::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+
+.select {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: var(--text-color, #333);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    transition: border-color 0.2s ease;
+}
+
+.select:focus {
+    outline: none;
+    border-color: var(--primary-color, #e10600);
+    box-shadow: 0 0 0 2px rgba(225, 6, 0, 0.1);
+}
+
+.select:disabled {
+    background-color: var(--disabled-bg, #f5f5f5);
+    cursor: not-allowed;
+    color: var(--text-muted, #999);
+}
+
+.select option {
+    color: var(--text-color, #333);
+}
+
+/* Estilos para mensajes de ayuda dentro de los selectores */
+.select option[value=""] {
+    color: var(--text-muted, #999);
+}
+
+.dataWarning {
+    display: flex;
+    background-color: rgba(255, 245, 215, 0.8);
+    backdrop-filter: blur(5px);
+    border-left: 4px solid #f3c74f;
+    border-radius: 6px;
+    padding: 16px;
+    margin: 24px 0 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    animation: fadeIn 0.4s ease-out;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .dataWarning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  }
+  
+  .warningIcon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #fff5d7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: #e6a819;
+    font-size: 1.2rem;
+  }
+  
+  .warningContent {
+    flex: 1;
+  }
+  
+  .warningContent h4 {
+    margin: 0 0 8px;
+    font-weight: 600;
+    color: #d18700;
+    font-size: 1rem;
+  }
+  
+  .warningContent p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #6b5900;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
 @media (max-width: 968px) {
     .content {
         grid-template-columns: 1fr;
@@ -361,12 +1363,51 @@
 }
 
 @media (max-width: 640px) {
+
+    .container {
+        padding: 0;
+    }
+
+    .formRow {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+    }
+
+    .stepHeader{
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .securityInfo {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .cardPreview {
+        height: 180px;
+        max-width: 300px;
+    }
+
     .formGrid {
         grid-template-columns: 1fr;
     }
 
+    .formGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .formGroup {
+        margin-bottom: 15px;
+    }
+
+    .select,
+    .formGroup input {
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
+
     .checkoutPage {
-        padding: 7rem 0;
+        padding: 6rem 0;
     }
 
     .shippingSection {
@@ -379,5 +1420,21 @@
 
     .noticeContent li {
         font-size: 0.85rem;
+    }
+
+    .culqiFormContainer{
+        padding: 2rem 1rem;
+    }
+
+    .culqiTrustMessage{
+        font-size: 0.6rem;
+    }
+
+    .cardNumber{
+        font-size: 0.8rem;
+    }
+
+    .cardDetails{
+        margin-top: 0px;
     }
 }

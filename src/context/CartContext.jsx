@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+// Corregir la definición del CartContext
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { db } from '../Firebase';
-import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
+import { toast } from 'react-toastify';
 
 const CartContext = createContext();
 
@@ -9,6 +10,7 @@ export const CartProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [discountCode, setDiscountCode] = useState(null);
+    const [discountAmount, setDiscountAmount] = useState(0);
     const [loading, setLoading] = useState(true);
     const { user } = useAuth();
 
@@ -16,255 +18,183 @@ export const CartProvider = ({ children }) => {
     const SHIPPING_THRESHOLD = 99;
     const SHIPPING_COST = 12;
 
-    // Load cart from Firestore when user changes
+    // Synchronize cart with localStorage
     useEffect(() => {
-        const loadCart = async () => {
+        // Load cart from localStorage on component mount
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
             try {
-                setLoading(true);
-                if (user) {
-                    const cartRef = doc(db, 'Carts', user.uid);
-                    const cartSnap = await getDoc(cartRef);
-                    
-                    if (cartSnap.exists()) {
-                        console.log("Carrito encontrado en Firestore:", cartSnap.data());
-                        const cartData = cartSnap.data();
-                        setCart(cartData.items || []);
-                        setDiscountCode(cartData.discountCode || null);
-                    } else {
-                        console.log("No se encontró carrito, creando uno nuevo.");
-                        // Initialize empty cart in Firestore
-                        await setDoc(cartRef, {
-                            items: [],
-                            discountCode: null,
-                            updatedAt: new Date()
-                        });
-                        setCart([]);
-                        setDiscountCode(null);
-                    }
-                } else {
-                    console.log("No hay usuario autenticado, carrito vacío");
-                    setCart([]);
-                    setDiscountCode(null);
-                }
+                setCart(JSON.parse(savedCart));
             } catch (error) {
-                console.error("Error cargando carrito desde Firestore:", error);
+                console.error('Error parsing cart from localStorage:', error);
                 setCart([]);
-                setDiscountCode(null);
-            } finally {
-                setLoading(false);
             }
-        };
-
-        loadCart();
-    }, [user]);
-
-    // Update cart in Firestore whenever cart changes
-    useEffect(() => {
-        const saveCart = async () => {
-            if (user && !loading) {
-                try {
-                    console.log("Guardando carrito en Firestore:", cart);
-                    const cartRef = doc(db, 'Carts', user.uid);
-                    await updateDoc(cartRef, {
-                        items: cart,
-                        discountCode: discountCode,
-                        updatedAt: new Date()
-                    }).catch(error => {
-                        // If document doesn't exist yet, create it
-                        if (error.code === 'not-found') {
-                            return setDoc(cartRef, {
-                                items: cart,
-                                discountCode: discountCode,
-                                updatedAt: new Date()
-                            });
-                        }
-                        throw error;
-                    });
-                } catch (error) {
-                    console.error("Error guardando carrito en Firestore:", error);
-                }
-            }
-        };
-
-        // Only save cart if we're not in the initial loading phase
-        if (!loading) {
-            saveCart();
         }
-    }, [cart, discountCode, user, loading]);
+        setLoading(false);
+    }, []);
 
-    const addToCart = (product, quantity = 1, size = null, fitType = null) => {
+    useEffect(() => {
+        // Save cart to localStorage whenever it changes
+        if (!loading) {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+    }, [cart, loading]);
+
+    // Update discount amount when discount code or cart changes
+    useEffect(() => {
+        if (discountCode) {
+            const subtotal = getSubtotal();
+            setDiscountAmount((subtotal * discountCode.discount) / 100);
+        } else {
+            setDiscountAmount(0);
+        }
+    }, [discountCode, cart]);
+
+    const addToCart = (product) => {
         if (!user) {
-            alert('Por favor, inicia sesión para agregar productos al carrito');
+            toast.error('Por favor, inicia sesión para agregar productos al carrito');
             return;
         }
+
+        // Verificar que el producto tiene todos los datos necesarios
+        if (!product.id || !product.name || !product.price) {
+            console.error("Producto inválido para añadir al carrito:", product);
+            return;
+        }
+
+        // Asegúrate de que quantity sea un número
+        const quantity = parseInt(product.quantity) || 1;
+
+        // Información para debug
+        console.log("addToCart recibiendo:", {
+            id: product.id,
+            size: product.size,
+            fitType: product.fitType,
+            quantity: quantity
+        });
 
         setCart(prevCart => {
             // Check if this exact item is already in the cart
             const existingItem = prevCart.find(item =>
                 item.id === product.id &&
-                item.size === size &&
-                item.fitType === fitType
+                item.size === product.size &&
+                item.fitType === product.fitType
             );
+
+            console.log("¿Item existente?", existingItem);
 
             if (existingItem) {
                 // Update existing item quantity
                 return prevCart.map(item =>
                     item.id === product.id &&
-                    item.size === size &&
-                    item.fitType === fitType
+                        item.size === product.size &&
+                        item.fitType === product.fitType
                         ? { ...item, quantity: item.quantity + quantity }
                         : item
                 );
             } else {
-                // Add new item
+                // Add new item with all properties preserved
                 return [...prevCart, {
                     id: product.id,
                     name: product.name,
-                    price: product.discount ? product.price * (1 - product.discount / 100) : product.price,
-                    image: product.images && product.images.length > 0 ? product.images[0] : '',
-                    quantity,
-                    size,
-                    fitType
+                    price: product.price,
+                    image: product.image,
+                    quantity: quantity,
+                    size: product.size || null, // Preservar la talla, null si no hay
+                    fitType: product.fitType || null, // Preservar el fit, null si no hay
+                    hasSizes: product.hasSizes || false,
+                    stock: product.stock || 0
                 }];
             }
         });
 
-        setIsCartOpen(true);
+        // Info para debug
+        console.log("Carrito actualizado!");
     };
 
-    // Rest of the methods remain the same
-    const removeFromCart = (productId, size = null, fitType = null) => {
-        setCart(prevCart => prevCart.filter(item =>
-            !(item.id === productId && item.size === size && item.fitType === fitType)
-        ));
+    const removeFromCart = (id, size = null, fitType = null) => {
+        setCart(prevCart =>
+            prevCart.filter(item =>
+                !(item.id === id &&
+                    item.size === size &&
+                    item.fitType === fitType)
+            )
+        );
     };
 
-    const updateQuantity = (productId, size = null, fitType = null, newQuantity) => {
-        if (newQuantity <= 0) {
-            removeFromCart(productId, size, fitType);
-            return;
-        }
+    const updateQuantity = (id, size = null, fitType = null, newQuantity) => {
+        if (newQuantity < 1) return;
 
-        setCart(prevCart => prevCart.map(item =>
-            item.id === productId &&
-            item.size === size &&
-            item.fitType === fitType
-                ? { ...item, quantity: newQuantity }
-                : item
-        ));
+        setCart(prevCart =>
+            prevCart.map(item =>
+                (item.id === id &&
+                    item.size === size &&
+                    item.fitType === fitType)
+                    ? { ...item, quantity: newQuantity }
+                    : item
+            )
+        );
     };
 
-    const clearCart = async () => {
-        try {
-            setCart([]);
-            setDiscountCode(null);
-            if (user) {
-                const cartRef = doc(db, 'Carts', user.uid);
-                await setDoc(cartRef, { 
-                    items: [],
-                    discountCode: null,
-                    updatedAt: new Date()
-                });
-            }
-        } catch (error) {
-            console.error('Error clearing cart:', error);
-        }
-    };
-
-    // Discount code functions
-    const applyDiscountCode = async (code) => {
-        setDiscountCode(code);
-        if (user) {
-            try {
-                const cartRef = doc(db, 'Carts', user.uid);
-                await updateDoc(cartRef, { 
-                    discountCode: code,
-                    updatedAt: new Date()
-                }).catch(error => {
-                    // If document doesn't exist yet, create it
-                    if (error.code === 'not-found') {
-                        return setDoc(cartRef, {
-                            items: cart,
-                            discountCode: code,
-                            updatedAt: new Date()
-                        });
-                    }
-                    throw error;
-                });
-            } catch (error) {
-                console.error('Error saving discount code:', error);
-            }
-        }
-    };
-
-    const removeDiscountCode = async () => {
+    const clearCart = () => {
+        setCart([]);
         setDiscountCode(null);
-        if (user) {
-            try {
-                const cartRef = doc(db, 'Carts', user.uid);
-                await updateDoc(cartRef, { 
-                    discountCode: null,
-                    updatedAt: new Date()
-                }).catch(error => {
-                    // If document doesn't exist yet, create it
-                    if (error.code === 'not-found') {
-                        return setDoc(cartRef, {
-                            items: cart,
-                            discountCode: null,
-                            updatedAt: new Date()
-                        });
-                    }
-                    throw error;
-                });
-            } catch (error) {
-                console.error('Error removing discount code:', error);
-            }
-        }
-    };
-
-    const getDiscountAmount = () => {
-        if (!discountCode) return 0;
-        const subtotal = getSubtotal();
-        return (subtotal * discountCode.discount) / 100;
+        setDiscountAmount(0);
     };
 
     const getSubtotal = () => {
-        return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        return cart.reduce((total, item) => total + item.price * item.quantity, 0);
     };
 
     const getShippingCost = () => {
+        // Si hay un código de descuento con envío gratis, retornar 0
+        if (discountCode && discountCode.freeShipping) {
+            return 0;
+        }
+
+        // Lógica original
         const subtotal = getSubtotal();
         return subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
     };
 
     const getCartTotal = () => {
         const subtotal = getSubtotal();
-        const shipping = getShippingCost();
-        const discount = getDiscountAmount();
-        
-        return subtotal + shipping - discount;
+        const shippingCost = getShippingCost();
+        return subtotal + shippingCost - discountAmount;
+    };
+
+    const applyDiscountCode = (code) => {
+        setDiscountCode(code);
+        // Discount amount will be updated via useEffect
+    };
+
+    const removeDiscountCode = () => {
+        setDiscountCode(null);
+        setDiscountAmount(0);
     };
 
     return (
-        <CartContext.Provider value={{
-            cart,
-            isCartOpen,
-            setIsCartOpen,
-            addToCart,
-            removeFromCart,
-            updateQuantity,
-            clearCart,
-            getCartTotal,
-            getSubtotal,
-            getShippingCost,
-            SHIPPING_THRESHOLD,
-            SHIPPING_COST,
-            loading,
-            discountCode,
-            applyDiscountCode,
-            removeDiscountCode,
-            discountAmount: getDiscountAmount()
-        }}>
+        <CartContext.Provider
+            value={{
+                cart,
+                addToCart,
+                removeFromCart,
+                updateQuantity, // Renamed this to match what you use in CartSlideout
+                clearCart,
+                getCartTotal,
+                isCartOpen,
+                setIsCartOpen,
+                getSubtotal,
+                getShippingCost,
+                SHIPPING_THRESHOLD,
+                SHIPPING_COST,
+                applyDiscountCode,
+                discountCode,
+                discountAmount,
+                removeDiscountCode,
+                loading
+            }}
+        >
             {children}
         </CartContext.Provider>
     );

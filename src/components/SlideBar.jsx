@@ -6,24 +6,24 @@ const SlideBar = () => {
     <div className={styles.slideBar}>
       <div className={styles.slider}>
         <div className={styles.slide}>
-          <span>Delivery a todo Perú - Lima y Provincias</span>
+          <span>DELIVERY A TODO PERÚ</span>
           <span className={styles.divider}>•</span>
-          <span>Usa el código "END005" para un 5% de descuento</span>
+          <span>USA "END005" PARA UN 5% DE DSCT.</span>
           <span className={styles.divider}>•</span>
-          <span>La mejor calidad en polos y hoodies!</span>
+          <span>SIGUE TUS PEDIDOS CON NUESTRO SISTEMA DE TRACKING</span>
           <span className={styles.divider}>•</span>
         </div>
         <div className={styles.slide} aria-hidden="true">
-          <span>Delivery a todo Perú - Lima y Provincias</span>
+          <span>DELIVERY A TODO PERÚ</span>
           <span className={styles.divider}>•</span>
-          <span>Usa el código "END005" para un 5% de descuento</span>
+          <span>USA "END005" PARA UN 5% DE DSCT.</span>
           <span className={styles.divider}>•</span>
-          <span>La mejor calidad en polos y hoodies!</span>
+          <span>SIGUE TUS PEDIDOS CON NUESTRO SISTEMA DE TRACKING</span>
           <span className={styles.divider}>•</span>
         </div>
       </div>
     </div>
   );
-};
+};  
 
 export default SlideBar;

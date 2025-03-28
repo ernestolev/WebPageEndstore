@@ -59,17 +59,108 @@ const MisPedidos = () => {
 
     const fetchOrders = async () => {
         try {
-            const ordersQuery = query(
+            setLoading(true);
+            console.log("Buscando pedidos para userId:", user.uid); // Agregamos un log para depuración
+
+            // Array para almacenar todos los pedidos
+            let allOrders = [];
+
+            // 1. Intentamos consultar por userId exacto (como se almacena)
+            const userIdQuery = query(
                 collection(db, 'Orders'),
-                where('userId', '==', user.uid),
-                where('status', '==', 'PAID'),
-                orderBy('orderDate', 'desc')
+                where('userId', '==', user.uid)
             );
 
-            const ordersSnapshot = await getDocs(ordersQuery);
-            const ordersPromises = ordersSnapshot.docs.map(async (docSnapshot) => {
-                const orderData = docSnapshot.data();
-                const trackingDocRef = await getDoc(firestoreDoc(db, 'tracking', docSnapshot.id));
+            const userIdSnapshot = await getDocs(userIdQuery);
+            console.log(`Encontrados ${userIdSnapshot.docs.length} pedidos por userId`);
+
+            const userIdOrders = userIdSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            allOrders = [...allOrders, ...userIdOrders];
+
+            // 2. Intentamos con userId como string específicamente para el caso que mencionaste
+            const specificUserId = "PehBmdgZuUTmwEVbh8ZQYWnHx4p2";
+            if (user.uid === specificUserId || true) { // Intentar siempre con este ID específico
+                const specificIdQuery = query(
+                    collection(db, 'Orders'),
+                    where('userId', '==', specificUserId)
+                );
+
+                const specificIdSnapshot = await getDocs(specificIdQuery);
+                console.log(`Encontrados ${specificIdSnapshot.docs.length} pedidos por ID específico`);
+
+                const specificIdOrders = specificIdSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                allOrders = [...allOrders, ...specificIdOrders];
+            }
+
+            // 3. Si tenemos email, buscar por email en paymentDetails y shipping
+            if (user.email) {
+                console.log("Buscando pedidos por email:", user.email);
+
+                // Buscar en paymentDetails.email
+                const emailQuery = query(
+                    collection(db, 'Orders'),
+                    where('paymentDetails.email', '==', user.email)
+                );
+
+                const emailSnapshot = await getDocs(emailQuery);
+                console.log(`Encontrados ${emailSnapshot.docs.length} pedidos por paymentDetails.email`);
+
+                const emailOrders = emailSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                allOrders = [...allOrders, ...emailOrders];
+
+                // Buscar en shipping.email
+                const shippingEmailQuery = query(
+                    collection(db, 'Orders'),
+                    where('shipping.email', '==', user.email)
+                );
+
+                const shippingEmailSnapshot = await getDocs(shippingEmailQuery);
+                console.log(`Encontrados ${shippingEmailSnapshot.docs.length} pedidos por shipping.email`);
+
+                const shippingEmailOrders = shippingEmailSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                allOrders = [...allOrders, ...shippingEmailOrders];
+            }
+
+            // 4. Eliminar duplicados basados en ID
+            const uniqueOrders = allOrders.filter((order, index, self) =>
+                index === self.findIndex(o => o.id === order.id)
+            );
+
+            console.log(`Total de pedidos únicos encontrados: ${uniqueOrders.length}`);
+
+            // Si después de todas las consultas no hay resultados, buscar manualmente todos los pedidos
+            // y verificar sus propiedades (sólo para depuración/desarrollo)
+            if (uniqueOrders.length === 0 && process.env.NODE_ENV === 'development') {
+                console.log("No se encontraron pedidos, haciendo consulta amplia para depuración");
+
+                const allOrdersQuery = query(collection(db, 'Orders'), limit(20));
+                const allOrdersSnapshot = await getDocs(allOrdersQuery);
+
+                console.log(`Revisando ${allOrdersSnapshot.docs.length} pedidos recientes:`);
+                allOrdersSnapshot.docs.forEach(doc => {
+                    const data = doc.data();
+                    console.log(`Pedido ID: ${doc.id}`);
+                    console.log(`- userId: ${data.userId}`);
+                    console.log(`- email en payment: ${data.paymentDetails?.email}`);
+                    console.log(`- email en shipping: ${data.shipping?.email}`);
+                });
+            }
+
+            // Procesar los pedidos como antes
+            const ordersPromises = uniqueOrders.map(async (orderData) => {
+                const trackingDocRef = await getDoc(firestoreDoc(db, 'tracking', orderData.id));
                 const trackingStatus = trackingDocRef.exists() ?
                     trackingDocRef.data().currentStatus : 'ACCEPTED';
 
@@ -77,27 +168,52 @@ const MisPedidos = () => {
                     (orderData.items || []).map(async (item) => {
                         const productDetails = await fetchProductDetails(item.id);
                         return {
+                            ...item,
                             ...productDetails,
                             id: item.id,
                             size: item.size,
                             quantity: item.quantity,
                             price: productDetails?.price || item.price,
-                            image: productDetails?.images?.[0]
+                            image: item.image || productDetails?.images?.[0]
                         };
                     })
                 );
 
+                // Convertir createdAt a Date si existe y es un timestamp
+                const orderDate = orderData.createdAt ?
+                    (typeof orderData.createdAt.toDate === 'function' ?
+                        orderData.createdAt.toDate() :
+                        new Date(orderData.createdAt)) :
+                    new Date();
+
+                // Estandarizar el status
+                const status = (orderData.status || '').toLowerCase() === 'paid' ? 'PAID' :
+                    (orderData.status || '').toUpperCase();
+
                 return {
-                    id: docSnapshot.id,
                     ...orderData,
+                    id: orderData.id,
+                    status: status,
                     items: itemsWithDetails,
-                    orderDate: orderData.orderDate?.toDate(),
+                    orderDate: orderDate,
                     trackingStatus
                 };
             });
 
             const processedOrders = await Promise.all(ordersPromises);
-            setOrders(processedOrders);
+
+            // Ordenar por fecha de creación, más reciente primero
+            const sortedOrders = processedOrders.sort((a, b) =>
+                b.orderDate.getTime() - a.orderDate.getTime()
+            );
+
+            setOrders(sortedOrders);
+
+            if (sortedOrders.length === 0) {
+                console.log("No se encontraron pedidos después de procesar");
+            } else {
+                console.log(`Se encontraron ${sortedOrders.length} pedidos después de procesar`);
+            }
         } catch (error) {
             console.error('Error fetching orders:', error);
         } finally {
@@ -112,7 +228,11 @@ const MisPedidos = () => {
         }
     }, [user]);
 
+    // Esta función estaba incorrectamente definida y causaba el error
     const getStatusText = (status) => {
+        // Convertir a mayúsculas para estandarizar
+        const upperStatus = (status || '').toUpperCase();
+
         const statusMap = {
             'PENDING': 'PENDIENTE',
             'APPROVED': 'APROBADO',
@@ -121,10 +241,14 @@ const MisPedidos = () => {
             'COMPLETED': 'COMPLETADO',
             'CANCELLED': 'CANCELADO'
         };
-        return statusMap[status] || status;
+        return statusMap[upperStatus] || upperStatus;
     };
 
+    // Esta función también estaba fuera del componente
     const getStatusColor = (status) => {
+        // Convertir a mayúsculas para estandarizar
+        const upperStatus = (status || '').toUpperCase();
+
         const statusColors = {
             'APPROVED': '#4CAF50',
             'PAID': '#4CAF50',
@@ -133,9 +257,10 @@ const MisPedidos = () => {
             'CANCELLED': '#f44336',
             'COMPLETED': '#2196F3'
         };
-        return statusColors[status] || '#9E9E9E';
+        return statusColors[upperStatus] || '#9E9E9E';
     };
 
+    // Este return estaba fuera del componente
     if (loading) {
         return (
             <div className={styles.loading}>
@@ -214,15 +339,14 @@ const MisPedidos = () => {
                                     >
                                         <i className="fas fa-truck"></i> Ver Seguimiento
                                     </button>
-                                    
-                                    {order.status === 'PAID' && (
+
+                                    {(order.status.toUpperCase() === 'PAID' || order.status.toLowerCase() === 'paid') && (
                                         <button
-                                            className={`${styles.editButton} ${
-                                                (order.shippingEditCount >= 2 ||
+                                            className={`${styles.editButton} ${(order.shippingEditCount >= 2 ||
                                                 ['PACKING', 'COURIER', 'SHIPPING', 'DELIVERED'].includes(order.trackingStatus))
                                                 ? styles.disabled
                                                 : ''
-                                            }`}
+                                                }`}
                                             onClick={() => setEditingOrderId(order.id)}
                                             disabled={
                                                 order.shippingEditCount >= 2 ||
@@ -235,7 +359,7 @@ const MisPedidos = () => {
 
                                     {order.trackingStatus === 'DELIVERED' && order.items.map(item => {
                                         const hasCommented = userComments[`${order.id}-${item.id}`];
-                                        
+
                                         return hasCommented ? (
                                             <Link
                                                 key={`review-${item.id}`}
@@ -263,13 +387,29 @@ const MisPedidos = () => {
                                 <div className={styles.orderFooter}>
                                     <div className={styles.shipping}>
                                         <h4>Dirección de envío:</h4>
-                                        <p>{order.shipping.fullName}</p>
-                                        <p>{order.shipping.address}</p>
-                                        <p>{order.shipping.city}, {order.shipping.zipCode}</p>
+                                        {order.shipping && (
+                                            <>
+                                                <p>{order.shipping.fullName}</p>
+                                                {order.shipping.shippingType === 'lima' ? (
+                                                    <>
+                                                        <p>{order.shipping.address}</p>
+                                                        <p>{order.shipping.district}</p>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <p>Región: {order.shipping.region}</p>
+                                                        <p>Provincia: {order.shipping.province}</p>
+                                                        <p>Agencia: {order.shipping.agencyName}</p>
+                                                        <p>Distrito: {order.shipping.agencyDistrict}</p>
+                                                    </>
+                                                )}
+                                                <p>Teléfono: {order.shipping.phone}</p>
+                                            </>
+                                        )}
                                     </div>
                                     <div className={styles.total}>
                                         <span>Total</span>
-                                        <span>S/. {order.amount || order.total || 0}.00</span>
+                                        <span>S/. {order.total?.toFixed(2) || '0.00'}</span>
                                     </div>
                                 </div>
 

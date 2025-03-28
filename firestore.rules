@@ -98,10 +98,43 @@ service cloud.firestore {
         favoriteId.matches(request.auth.uid + '_.*');
     }
 
-    // Discount codes rules - Add this new section
+    // Discount codes rules
     match /Codigos/{codeId} {
       allow read: if true;
       allow create, update, delete: if isAdmin();
+    }
+
+    // Reglas para el Libro de Reclamaciones
+    match /Reclamos/{reclamoId} {
+      // Permitir lectura solo a administradores y al usuario que creó el reclamo
+      allow read: if isAuth() && (
+        isAdmin() || 
+        (resource.data.userId == request.auth.uid)
+      );
+      
+      // Permitir crear reclamos a cualquier usuario (incluso no autenticado)
+      allow create: if true;
+      
+      // Solo administradores pueden actualizar los reclamos (para responder)
+      allow update: if isAdmin();
+      
+      // Solo administradores pueden eliminar reclamos
+      allow delete: if isAdmin();
+    }
+
+    // Reglas para mensajes de contacto
+    match /mensajes/{mensajeId} {
+      // Permitir lectura solo a administradores
+      allow read: if isAdmin();
+      
+      // Permitir crear mensajes a cualquier usuario (incluso no autenticado)
+      allow create: if true;
+      
+      // Solo administradores pueden actualizar los mensajes (para marcarlos como leídos/respondidos)
+      allow update: if isAdmin();
+      
+      // Solo administradores pueden eliminar mensajes
+      allow delete: if isAdmin();
     }
   }
 }

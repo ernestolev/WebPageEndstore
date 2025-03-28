@@ -16,11 +16,13 @@ const Codigos = () => {
     discount: 10,
     validUntil: '',
     isActive: true,
+    freeShipping: false, // Nueva propiedad para envío gratis
   });
+
   const [error, setError] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [filterActive, setFilterActive] = useState('all');
-  
+
   // Fetch discount codes
   useEffect(() => {
     const fetchCodes = async () => {
@@ -31,7 +33,7 @@ const Codigos = () => {
           id: doc.id,
           ...doc.data(),
         }));
-        
+
         // Sort by creation date (newest first)
         codesData.sort((a, b) => {
           if (a.createdAt && b.createdAt) {
@@ -39,7 +41,7 @@ const Codigos = () => {
           }
           return 0;
         });
-        
+
         setCodes(codesData);
       } catch (error) {
         console.error('Error fetching codes:', error);
@@ -48,10 +50,10 @@ const Codigos = () => {
         setLoading(false);
       }
     };
-    
+
     fetchCodes();
   }, []);
-  
+
   // Filter codes based on active status
   const filteredCodes = codes.filter(code => {
     if (filterActive === 'all') return true;
@@ -59,7 +61,7 @@ const Codigos = () => {
     if (filterActive === 'inactive') return !code.isActive;
     return true;
   });
-  
+
   // Generate random code
   const generateRandomCode = () => {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -69,11 +71,11 @@ const Codigos = () => {
     }
     setNewCode({ ...newCode, code: result });
   };
-  
+
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     if (name === 'code') {
       // Convert to uppercase and limit to 6 characters
       const formattedCode = value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
@@ -86,7 +88,7 @@ const Codigos = () => {
       setNewCode({ ...newCode, [name]: value });
     }
   };
-  
+
   // Toggle code active status
   const toggleCodeStatus = async (codeId, currentStatus) => {
     try {
@@ -94,23 +96,23 @@ const Codigos = () => {
         isActive: !currentStatus,
         updatedAt: serverTimestamp()
       });
-      
+
       // Update local state
-      setCodes(codes.map(code => 
+      setCodes(codes.map(code =>
         code.id === codeId ? { ...code, isActive: !code.isActive } : code
       ));
-      
+
       toast.success(`Código ${!currentStatus ? 'activado' : 'desactivado'} con éxito`);
     } catch (error) {
       console.error('Error updating code status:', error);
       toast.error('Error al actualizar el estado del código');
     }
   };
-  
+
   // Delete code
   const deleteCode = async (codeId) => {
     if (!window.confirm('¿Estás seguro de eliminar este código de descuento?')) return;
-    
+
     try {
       await deleteDoc(doc(db, 'Codigos', codeId));
       setCodes(codes.filter(code => code.id !== codeId));
@@ -120,54 +122,56 @@ const Codigos = () => {
       toast.error('Error al eliminar el código');
     }
   };
-  
-  // Submit new code
+
+  // Modificar la función handleSubmit para incluir freeShipping
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate code
     if (newCode.code.length !== 6) {
       setError('El código debe tener 6 caracteres');
       return;
     }
-    
+
     // Check if code already exists
     if (codes.some(c => c.code === newCode.code)) {
       setError('Este código ya existe');
       return;
     }
-    
+
     try {
       setIsAdding(true);
       setError('');
-      
+
       const validUntil = newCode.validUntil ? new Date(newCode.validUntil) : null;
-      
-      // Add new code to Firestore
+
+      // Add new code to Firestore, including freeShipping field
       const docRef = await addDoc(collection(db, 'Codigos'), {
         code: newCode.code,
         discount: newCode.discount,
         validUntil: validUntil,
         isActive: newCode.isActive,
+        freeShipping: newCode.freeShipping, // Incluir el nuevo campo
         createdAt: serverTimestamp(),
         createdBy: user.uid,
       });
-      
+
       // Add to local state
       setCodes([{
         id: docRef.id,
         ...newCode,
         createdAt: { toMillis: () => Date.now() }
       }, ...codes]);
-      
+
       // Reset form
       setNewCode({
         code: '',
         discount: 10,
         validUntil: '',
         isActive: true,
+        freeShipping: false, // Reiniciar también este campo
       });
-      
+
       toast.success('Código de descuento creado con éxito');
     } catch (error) {
       console.error('Error creating code:', error);
@@ -177,21 +181,21 @@ const Codigos = () => {
       setIsAdding(false);
     }
   };
-  
+
   // Format date for display
   const formatDate = (timestamp) => {
     if (!timestamp) return 'N/A';
     try {
       const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-      return new Intl.DateTimeFormat('es-ES', { 
-        dateStyle: 'medium', 
-        timeStyle: 'short' 
+      return new Intl.DateTimeFormat('es-ES', {
+        dateStyle: 'medium',
+        timeStyle: 'short'
       }).format(date);
     } catch (error) {
       return 'Fecha inválida';
     }
   };
-  
+
   // Check if a code is expired
   const isExpired = (validUntil) => {
     if (!validUntil) return false;
@@ -219,9 +223,9 @@ const Codigos = () => {
             </Link>
           </div>
         </div>
-        
+
         <div className={styles.codesContainer}>
-          <motion.div 
+          <motion.div
             className={styles.newCodeSection}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -256,7 +260,7 @@ const Codigos = () => {
                   </div>
                   <small>6 caracteres, solo letras mayúsculas y números</small>
                 </div>
-                
+
                 <div className={styles.formGroup}>
                   <label htmlFor="discount">Descuento (%)</label>
                   <div className={styles.discountInputWrapper}>
@@ -273,7 +277,7 @@ const Codigos = () => {
                     <span className={styles.percentSymbol}>%</span>
                   </div>
                 </div>
-                
+
                 <div className={styles.formGroup}>
                   <label htmlFor="validUntil">Válido Hasta (opcional)</label>
                   <input
@@ -284,7 +288,7 @@ const Codigos = () => {
                     onChange={handleChange}
                   />
                 </div>
-                
+
                 <div className={styles.formGroup}>
                   <label className={styles.checkboxLabel}>
                     <input
@@ -296,10 +300,23 @@ const Codigos = () => {
                     <span>Activo</span>
                   </label>
                 </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      name="freeShipping"
+                      checked={newCode.freeShipping}
+                      onChange={(e) => setNewCode({ ...newCode, freeShipping: e.target.checked })}
+                    />
+                    <span>Envío Gratis</span>
+                  </label>
+                  <small>Si está marcado, este código aplicará envío gratis independientemente del valor de la compra</small>
+                </div>
               </div>
-              
+
               {error && <p className={styles.errorMessage}>{error}</p>}
-              
+
               <button
                 type="submit"
                 className={styles.submitButton}
@@ -319,8 +336,8 @@ const Codigos = () => {
               </button>
             </form>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             className={styles.existingCodesSection}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -349,7 +366,7 @@ const Codigos = () => {
                 </button>
               </div>
             </div>
-            
+
             {loading ? (
               <div className={styles.loadingContainer}>
                 <div className={styles.spinner}></div>
@@ -374,7 +391,7 @@ const Codigos = () => {
                           -{code.discount}%
                         </span>
                       </div>
-                      
+
                       <div className={styles.codeDetails}>
                         <div className={styles.codeInfo}>
                           <div className={styles.infoItem}>
@@ -383,12 +400,12 @@ const Codigos = () => {
                               {code.isActive ? 'Activo' : 'Inactivo'}
                             </span>
                           </div>
-                          
+
                           <div className={styles.infoItem}>
                             <span className={styles.infoLabel}>Creado:</span>
                             <span>{formatDate(code.createdAt)}</span>
                           </div>
-                          
+
                           {code.validUntil && (
                             <div className={styles.infoItem}>
                               <span className={styles.infoLabel}>Válido hasta:</span>
@@ -400,8 +417,15 @@ const Codigos = () => {
                               </span>
                             </div>
                           )}
+                          {code.freeShipping && (
+                            <div className={styles.infoItem}>
+                              <span className={styles.specialBadge}>
+                                <i className="fas fa-truck"></i> Envío Gratis
+                              </span>
+                            </div>
+                          )}
                         </div>
-                        
+
                         <div className={styles.codeActions}>
                           <button
                             className={`${styles.actionButton} ${styles.toggleButton}`}

@@ -40,6 +40,8 @@
   --scrollbar-thumb: rgba(225, 6, 0, 0.5);
   --scrollbar-thumb-hover: #e10600;
   --scrollbar-radius: 4px;
+
+  --bg-nav: #ffffff65;
 }
 
 [data-theme='dark'] {
@@ -75,6 +77,8 @@
   --scrollbar-track: rgba(255, 255, 255, 0.05);
   --scrollbar-thumb: rgba(225, 6, 0, 0.6);
   --scrollbar-thumb-hover: #ff4d4d;
+
+  --bg-nav: #00000065;
 }
 
 

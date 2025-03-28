@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore'; // Añadir setDoc
 import { db } from '../Firebase';
 import styles from '../styles/TrackingModal.module.css';
 
-
-const AdminTrackingModal = ({ orderId, onClose }) => {
+const AdminTrackingModal = ({ orderId, onClose, onUpdate }) => { // Asegúrate de recibir onUpdate
     const [tracking, setTracking] = useState(null);
     const [loading, setLoading] = useState(true);
     const [editingDate, setEditingDate] = useState(null);
     const [selectedStatus, setSelectedStatus] = useState(null);
+    const [error, setError] = useState(null); // Añadir estado para errores
 
     const steps = [
         {
@@ -49,12 +49,21 @@ const AdminTrackingModal = ({ orderId, onClose }) => {
 
     const fetchTracking = async () => {
         try {
-            const trackingDoc = await getDoc(doc(db, 'tracking', orderId));
+            setLoading(true);
+            setError(null);
+            
+            console.log(`Obteniendo seguimiento para orden ID: ${orderId}`);
+            const trackingRef = doc(db, 'tracking', orderId);
+            const trackingDoc = await getDoc(trackingRef);
+            
             if (trackingDoc.exists()) {
-                setTracking(trackingDoc.data());
-                setSelectedStatus(trackingDoc.data().currentStatus);
+                console.log('Datos de seguimiento encontrados:', trackingDoc.data());
+                const trackingData = trackingDoc.data();
+                setTracking(trackingData);
+                setSelectedStatus(trackingData.currentStatus || 'ACCEPTED');
             } else {
-                // Create initial tracking if it doesn't exist
+                console.log('No existe seguimiento para esta orden, creando inicial...');
+                // Crear seguimiento inicial si no existe
                 const initialTracking = {
                     orderId,
                     currentStatus: 'ACCEPTED',
@@ -64,12 +73,34 @@ const AdminTrackingModal = ({ orderId, onClose }) => {
                     createdAt: new Date().toISOString(),
                     lastUpdated: new Date().toISOString()
                 };
-                await updateDoc(doc(db, 'tracking', orderId), initialTracking);
+                
+                // Usar setDoc en lugar de updateDoc para crear el documento
+                await setDoc(trackingRef, initialTracking);
+                console.log('Seguimiento inicial creado:', initialTracking);
+                
+                // Actualizar también el estado del pedido en la colección Orders
+                try {
+                    const orderRef = doc(db, 'Orders', orderId);
+                    await updateDoc(orderRef, {
+                        status: 'ACCEPTED',
+                        lastUpdated: new Date().toISOString()
+                    });
+                    console.log('Estado de la orden actualizado a ACCEPTED');
+                } catch (orderErr) {
+                    console.error('Error actualizando estado de la orden:', orderErr);
+                }
+                
                 setTracking(initialTracking);
                 setSelectedStatus('ACCEPTED');
+                
+                // Notificar al componente padre sobre el cambio
+                if (typeof onUpdate === 'function') {
+                    onUpdate(orderId, 'ACCEPTED');
+                }
             }
         } catch (error) {
             console.error('Error fetching tracking:', error);
+            setError('No se pudo cargar el seguimiento. Por favor, intenta de nuevo.');
         } finally {
             setLoading(false);
         }
@@ -77,6 +108,9 @@ const AdminTrackingModal = ({ orderId, onClose }) => {
 
     const updateTrackingStatus = async (newStatus, customDate = null) => {
         try {
+            setLoading(true);
+            console.log(`Actualizando estado a: ${newStatus}`);
+            
             const trackingRef = doc(db, 'tracking', orderId);
             const updateDate = customDate ? new Date(customDate).toISOString() : new Date().toISOString();
 
@@ -97,7 +131,7 @@ const AdminTrackingModal = ({ orderId, onClose }) => {
             // Always set the new status update with current date
             updatedUpdates[newStatus] = updateDate;
 
-            console.log('Updating with:', {
+            console.log('Actualizando con:', {
                 currentStatus: newStatus,
                 lastUpdated: updateDate,
                 updates: updatedUpdates
@@ -108,25 +142,57 @@ const AdminTrackingModal = ({ orderId, onClose }) => {
                 lastUpdated: updateDate,
                 updates: updatedUpdates
             });
+            
+            // Actualizar también el estado en la colección de órdenes
+            try {
+                const orderRef = doc(db, 'Orders', orderId);
+                await updateDoc(orderRef, {
+                    status: newStatus,
+                    lastUpdated: updateDate
+                });
+                console.log(`Estado de la orden actualizado a ${newStatus}`);
+            } catch (orderErr) {
+                console.error('Error actualizando estado de la orden:', orderErr);
+            }
 
+            // Recargar datos actualizados
             await fetchTracking();
             setEditingDate(null);
+            
+            // Notificar al componente padre sobre el cambio
+            if (typeof onUpdate === 'function') {
+                onUpdate(orderId, newStatus);
+            }
         } catch (error) {
             console.error('Error updating tracking:', error);
+            setError('No se pudo actualizar el estado. Por favor, intenta de nuevo.');
+        } finally {
+            setLoading(false);
         }
     };
 
     const updateStatusDate = async (status, newDate) => {
         try {
+            setLoading(true);
+            
             const trackingRef = doc(db, 'tracking', orderId);
+            const formattedDate = new Date(newDate).toISOString();
+            
+            console.log(`Actualizando fecha para estado ${status} a: ${formattedDate}`);
+            
             await updateDoc(trackingRef, {
-                [`updates.${status}`]: new Date(newDate).toISOString(),
+                [`updates.${status}`]: formattedDate,
                 lastUpdated: new Date().toISOString()
             });
+            
+            // Recargar datos actualizados
             await fetchTracking();
             setEditingDate(null);
         } catch (error) {
             console.error('Error updating date:', error);
+            setError('No se pudo actualizar la fecha. Por favor, intenta de nuevo.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -134,6 +200,7 @@ const AdminTrackingModal = ({ orderId, onClose }) => {
         if (!tracking) return 0;
         return steps.findIndex(step => step.status === tracking.currentStatus);
     };
+    
     return (
         <div className={styles.modalOverlay}>
             <div className={`${styles.modal} ${styles.adminModal}`}>
@@ -160,6 +227,13 @@ const AdminTrackingModal = ({ orderId, onClose }) => {
                         >
                             Actualizar Estado
                         </button>
+                    </div>
+                )}
+
+                {error && (
+                    <div className={styles.errorMessage}>
+                        <i className="fas fa-exclamation-circle"></i>
+                        {error}
                     </div>
                 )}
 
@@ -197,7 +271,9 @@ const AdminTrackingModal = ({ orderId, onClose }) => {
                                             <div className={styles.dateContainer}>
                                                 <span className={styles.date}>
                                                     {new Date(tracking.updates[step.status])
-                                                        .toLocaleString('es-PE')}
+                                                        .toLocaleString('es-PE', {
+                                                            timeZone: 'America/Lima' // UTC-5 (Perú)
+                                                        })}
                                                 </span>
                                                 <button
                                                     className={styles.editDateButton}
